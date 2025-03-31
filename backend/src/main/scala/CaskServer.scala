@@ -1,6 +1,6 @@
 //> using dependency com.lihaoyi::cask:0.10.2
 
-object CaskServer extends cask.MainRoutes{
+object CaskServer extends cask.MainRoutes {
   @cask.get("/")
   def welcome() = {
     "Welcome to Scala Days 2025 DDD workshop!"
@@ -37,6 +37,12 @@ object CaskServer extends cask.MainRoutes{
 
   @cask.post("/iron")
   def iron(request: cask.Request) = ???
+
+  @cask.post("/test_ok")
+  def testOk(request: cask.Request) = ???
+
+  @cask.post("/test_ko")
+  def testKo(request: cask.Request) = ???
 
   initialize()
 }
