@@ -11,6 +11,33 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  // Ignore non-relevant files globally
+  {
+    ignores: [
+      "**/*.css",
+      "**/*.json",
+      "**/*.yaml",
+      "**/*.lock",
+      "**/*.config.js",
+      ".next/",
+      "node_modules/",
+      "dist/",
+      "next-env.d.ts/",
+      ".env*",
+      ".local",
+      "public/*",
+      ".vscode",
+    ],
+  },
+
+  // Override rule for Tailwind config to allow require()
+  {
+    files: ["tailwind.config.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
