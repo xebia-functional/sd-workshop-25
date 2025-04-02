@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { ValidationForm } from "@/components/features/ValidationForm";
 import data from "@/lib/data";
-import Link from "next/link";
 
 export default async function Validator({
   params,
@@ -18,13 +17,7 @@ export default async function Validator({
       <h1 className="text-4xl sm:text-5xl font-bold text-center">
         {`${config.title} validator`}
       </h1>
-      <Button
-        asChild
-        variant="outline"
-        className="w-full h-12 cursor-pointer sm:w-auto"
-      >
-        <Link href={"/"}>Return to home page</Link>
-      </Button>
+      <ValidationForm />
     </>
   );
 }

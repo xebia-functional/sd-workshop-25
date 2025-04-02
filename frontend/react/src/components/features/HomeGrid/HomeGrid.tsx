@@ -11,7 +11,7 @@ const HomeGrid: React.FC = () => {
           key={item.name}
           asChild
           variant="outline"
-          className="w-full h-12 cursor-pointer sm:w-auto"
+          className="w-full h-12 sm:w-auto"
         >
           <Link href={`/${item.name}`}>{item.title}</Link>
         </Button>
