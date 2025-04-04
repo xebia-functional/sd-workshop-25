@@ -1,0 +1,27 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(fastLinkJS, Some(f2da4966-f61e-47e9-8849-a1c85acb3949), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / fastLinkJS[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mUpdating temp-module-da3aaa07a0d8e6fc0b1bb89d1fb1f5e5a9df70f8[0m
+[0m[[0m[0minfo[0m] [0m[0mResolved temp-module-da3aaa07a0d8e6fc0b1bb89d1fb1f5e5a9df70f8 dependencies[0m
+[0m[[0m[0minfo[0m] [0m[0mUpdating sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mResolved sdtyrianfrontend_sjs1_3 dependencies[0m
+[0m[[0m[0minfo[0m] [0m[0mUpdating sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mResolved sdtyrianfrontend_sjs1_3 dependencies[0m
+[0m[[0m[0minfo[0m] [0m[0mUpdating sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mResolved sdtyrianfrontend_sjs1_3 dependencies[0m
+[0m[[0m[0minfo[0m] [0m[0mUpdating sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mResolved sdtyrianfrontend_sjs1_3 dependencies[0m
+[0m[[0m[0minfo[0m] [0m[0mFetching artifacts of sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mFetched artifacts of sdtyrianfrontend_sjs1_3[0m
+[0m[[0m[0minfo[0m] [0m[0mFetching artifacts of temp-module-da3aaa07a0d8e6fc0b1bb89d1fb1f5e5a9df70f8[0m
+[0m[[0m[0minfo[0m] [0m[0mFetched artifacts of temp-module-da3aaa07a0d8e6fc0b1bb89d1fb1f5e5a9df70f8[0m
+[0m[[0m[0minfo[0m] [0m[0mFetching artifacts of temp-module-f02db565ec103839151504cb68a2a8c6f03e291a[0m
+[0m[[0m[0minfo[0m] [0m[0mFetched artifacts of temp-module-f02db565ec103839151504cb68a2a8c6f03e291a[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/classes ...[0m
+[0m[[0m[0minfo[0m] [0m[0mRunning scalafix on 1 Scala sources[0m
+[0m[[0m[0minfo[0m] [0m[0mFast optimizing /Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/sdtyrianfrontend-fastopt[0m
+[0m[[0m[0mdebug[0m] [0m[0mGlobal IR cache stats: reused: 0 -- invalidated: 24 -- trees read: 2290[0m
+[0m[[0m[0mdebug[0m] [0m[0mForcing garbage collection...[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 12 s, completed 4 Apr 2025, 12:30:33[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m
+[0m[[0m[0mdebug[0m] [0m[0mForcing garbage collection...[0m

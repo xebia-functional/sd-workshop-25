@@ -1,0 +1,25 @@
+[0m[[0m[0minfo[0m] [0m[0mFast optimizing /Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/sdtyrianfrontend-fastopt[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: Compute reachability: 462722 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: Assemble LinkedClasses: 32019 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mLinker: 515160 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Batch mode: true[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Incremental part: 54075 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Elidable constructors: 1526 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Optimizing 13276 methods.[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: Optimizer part: 518616 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mOptimizer: 580170 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: Compute reachability: 135335 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: Assemble LinkedClasses: 10156 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mRefiner: 146350 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Calculate Dependency Info: 863 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Analyze Modules: 321 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: Assemble Modules: 2312 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mModule Splitter: 3858 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Generate Classes: 491527 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Write trees: 12755 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Class tree cache stats: reused: 0 -- invalidated: 1714[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Method tree cache stats: reused: 0 -- invalidated: 5717[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: Pre prints: 8844[0m
+[0m[[0m[0mdebug[0m] [0m[0mEmitter: 520831 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mBasicBackend: Write result: 36080 us[0m
+[0m[[0m[0mdebug[0m] [0m[0mBasicBackend: total modules: 1; re-written: 1[0m

@@ -1,0 +1,40 @@
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] IncrementalCompile -----------[0m
+[0m[[0m[0mdebug[0m] [0m[0mIncrementalCompile.incrementalCompile[0m
+[0m[[0m[0mdebug[0m] [0m[0mprevious = Stamps for: 0 products, 0 sources, 0 libraries[0m
+[0m[[0m[0mdebug[0m] [0m[0mcurrent source = Set(${BASE}/src/main/scala/xebia/sdtyrian.scala)[0m
+[0m[[0m[0mdebug[0m] [0m[0m> initialChanges = InitialChanges(Changes(added = Set(${BASE}/src/main/scala/xebia/sdtyrian.scala), removed = Set(), changed = Set(), unmodified = ...),Set(),Set(),API Changes: Set())[0m
+[0m[[0m[0mdebug[0m] [0m[0mFull compilation, no sources in previous analysis.[0m
+[0m[[0m[0mdebug[0m] [0m[0mall 1 sources are invalidated[0m
+[0m[[0m[0mdebug[0m] [0m[0mInitial set of included nodes: [0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all sources: number of invalidated sources > 50.0 percent of all sources[0m
+[0m[[0m[0mdebug[0m] [0m[0mcompilation cycle 1[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mReturning already retrieved and compiled bridge: /Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-sbt-bridge/3.6.3/scala3-sbt-bridge-3.6.3.jar.[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] Running cached compiler 75fa3218 for Scala Compiler version 3.6.3[0m
+[0m[[0m[0mdebug[0m] [0m[0m[zinc] The Scala compiler is invoked with:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-scalajs[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-encoding[0m
+[0m[[0m[0mdebug[0m] [0m[0m	utf8[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-deprecation[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-feature[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-unchecked[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-language:experimental.macros[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-language:higherKinds[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-language:implicitConversions[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Xkind-projector[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wvalue-discard[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wnonunit-statement[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:implicits[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:explicits[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:imports[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:locals[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:params[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Wunused:privates[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Xfatal-warnings[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-Xsemanticdb[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-semanticdb-target[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/meta[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	/Users/syk/work/sd-workshop-25/frontend/tyrian/target/scala-3.6.3/classes:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala3-library_sjs1_3/3.6.3/scala3-library_sjs1_3-3.6.3.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-js/scalajs-library_2.13/1.18.2/scalajs-library_2.13-1.18.2.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/indigoengine/tyrian-io_sjs1_3/0.13.0/tyrian-io_sjs1_3-0.13.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.16/scala-library-2.13.16.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-js/scalajs-javalib/1.18.2/scalajs-javalib-1.18.2.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-js/scalajs-scalalib_2.13/2.13.16%2B1.18.2/scalajs-scalalib_2.13-2.13.16%2B1.18.2.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/indigoengine/tyrian_sjs1_3/0.13.0/tyrian_sjs1_3-0.13.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-js/scalajs-dom_sjs1_3/2.8.0/scalajs-dom_sjs1_3-2.8.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect_sjs1_3/3.5.7/cats-effect_sjs1_3-3.5.7.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/indigoengine/tyrian-tags_sjs1_3/0.13.0/tyrian-tags_sjs1_3-0.13.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-kernel_sjs1_3/3.5.7/cats-effect-kernel_sjs1_3-3.5.7.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/co/fs2/fs2-core_sjs1_3/3.11.0/fs2-core_sjs1_3-3.11.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/io/github/buntec/scala-js-snabbdom_sjs1_3/0.2.0-M3/scala-js-snabbdom_sjs1_3-0.2.0-M3.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-effect-std_sjs1_3/3.5.7/cats-effect-std_sjs1_3-3.5.7.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-js/scala-js-macrotask-executor_sjs1_3/1.1.1/scala-js-macrotask-executor_sjs1_3-1.1.1.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-core_sjs1_3/2.11.0/cats-core_sjs1_3-2.11.0.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scodec/scodec-bits_sjs1_3/1.1.38/scodec-bits_sjs1_3-1.1.38.jar:/Users/syk/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/typelevel/cats-kernel_sjs1_3/2.11.0/cats-kernel_sjs1_3-2.11.0.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0mScala compilation took 1.8604155 s[0m
+[0m[[0m[0mdebug[0m] [0m[0mdone compiling[0m
