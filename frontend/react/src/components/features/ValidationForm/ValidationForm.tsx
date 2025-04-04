@@ -5,13 +5,16 @@ import { useState } from "react";
 import { Send, CheckCircle, XCircle, X, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+type Props = {
+  endpoint: string;
+};
 type Status = {
   type: "success" | "error";
   message: string;
 };
 type ValidationStatus = Status | null;
 
-const ValidationForm = () => {
+const ValidationForm = ({ endpoint }: Props) => {
   const [value, setValue] = useState("");
   const [status, setStatus] = useState<ValidationStatus>(null);
   const isError = (error: unknown): error is Error => error instanceof Error;
@@ -20,19 +23,25 @@ const ValidationForm = () => {
     e.preventDefault();
 
     try {
-      // TODO: Replace with actual API request
-      if (value.trim() === "") {
-        throw new Error("ID must have 19 characters");
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ input: value }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
       }
 
-      setStatus({ type: "success", message: "ID validated successfully!" });
+      const data = await response.json();
+      setStatus({ type: "success", message: data.message });
     } catch (error: unknown) {
-      setStatus({
-        type: "error",
-        message: isError(error)
-          ? `Invalid ID: ${error.message}`
-          : "An error occurred.",
-      });
+      const message = isError(error)
+        ? error.message
+        : "An unknown error occurred.";
+      setStatus({ type: "error", message });
     }
   };
 
@@ -79,7 +88,7 @@ const ValidationForm = () => {
         )}
       </div>
       <div className="flex gap-2 justify-between mt-4">
-        <Button asChild variant="outline" className="w-full h-12 sm:w-auto">
+        <Button asChild variant="outline" className="h-12 sm:w-auto">
           <Link href={"/"}>
             <ArrowLeft />
             Return to home page
@@ -89,7 +98,7 @@ const ValidationForm = () => {
           <Button
             variant="ghost"
             onClick={clearForm}
-            className="w-full h-12 sm:w-auto"
+            className="h-12 sm:w-auto"
           >
             <X size={16} />
             Clear form

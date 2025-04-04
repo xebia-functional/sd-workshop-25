@@ -1,5 +1,6 @@
 import { ValidationForm } from "@/components/features/ValidationForm";
 import data from "@/lib/data";
+import { notFound } from "next/navigation";
 
 export default async function Validator({
   params,
@@ -9,15 +10,14 @@ export default async function Validator({
   const { validator } = await params;
   const config = data.find((item) => item.name === validator);
   if (!config) {
-    console.error(`Validator ${validator} not found`);
-    return;
+    notFound();
   }
   return (
     <>
       <h1 className="text-4xl sm:text-5xl font-bold text-center">
         {`${config.title} validator`}
       </h1>
-      <ValidationForm />
+      <ValidationForm endpoint={config.endpoint} />
     </>
   );
 }
