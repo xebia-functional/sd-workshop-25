@@ -2,3 +2,11 @@
 .idea
 .scala-build
 .vscode/
+
+frontend/tyrian/target/
+frontend/tyrian/dist/*
+frontend/tyrian/dist/
+
+*.class
+
+.DS_Store

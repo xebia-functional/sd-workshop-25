@@ -3,6 +3,7 @@ package xebia
 import cats.effect.IO
 import tyrian.Html.*
 import tyrian.*
+import tyrian.syntax.*
 
 import scala.scalajs.js.annotation.*
 
@@ -13,24 +14,55 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     Routing.none(Msg.NoOp)
 
   def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
-    (0, Cmd.None)
+    (Model("No validator selected", ""), Cmd.None)
 
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) =
-    case Msg.Increment => (model + 1, Cmd.None)
-    case Msg.Decrement => (model - 1, Cmd.None)
+    case Msg.Validator1 => (model.copy(currentValidator = "Validator 1"), Cmd.None)
+    case Msg.Validator2 => (model.copy(currentValidator = "Validator 2"), Cmd.None)
+    case Msg.UpdateInput(value) => (model.copy(inputValue = value), Cmd.None)
+    case Msg.Submit => 
+      (model, Cmd.emit(Msg.LogToConsole(model.inputValue)))
+    case Msg.LogToConsole(value) =>
+      println(s"Submitted value: $value")
+      (model, Cmd.None)
+    case Msg.Reset => 
+      (model.copy(inputValue = "", currentValidator = "No validator selected"), Cmd.None)
     case Msg.NoOp      => (model, Cmd.None)
 
   def view(model: Model): Html[Msg] =
     div(
-      button(onClick(Msg.Decrement))("-"),
-      div(model.toString),
-      button(onClick(Msg.Increment))("+")
+      h1(text("Welcome to ScalaDays 25 ID validator")),
+      button(onClick(Msg.Validator1))("Use Validator 1"),
+      button(onClick(Msg.Validator2))("Use Validator 2"),
+      h2(model.currentValidator),
+      if model.currentValidator == "No validator selected" then
+        Empty
+      else
+        input(
+          placeholder := "Enter ID",
+          onInput(Msg.UpdateInput(_)),
+          value := model.inputValue
+        ),
+      if model.currentValidator == "No validator selected" then
+        Empty
+      else
+        button(
+          onClick(Msg.Submit),
+        )("Validate"),
+      if model.currentValidator == "No validator selected" then
+        Empty
+      else
+        button(onClick(Msg.Reset))("Reset"),
     )
 
   def subscriptions(model: Model): Sub[IO, Msg] =
     Sub.None
 
-type Model = Int
+final case class Model(currentValidator: String, inputValue: String)
 
 enum Msg:
-  case Increment, Decrement, NoOp
+  case Validator1, Validator2, NoOp
+  case UpdateInput(value: String)
+  case Submit
+  case LogToConsole(value: String)
+  case Reset
