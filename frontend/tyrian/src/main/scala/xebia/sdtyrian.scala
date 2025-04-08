@@ -9,6 +9,18 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("TyrianApp")
 object sdtyrian extends TyrianIOApp[Msg, Model]:
 
+  private val validatorEndpoints: Map[String, String] = Map(
+    "Raw Class" -> "raw_class",
+    "Type Alias" -> "type_alias",
+    "Raw Value Class" -> "value_class",
+    "Class" -> "raw_class_validation",
+    "Value Class Error Handling" -> "value_class_error_handling",
+    "Neo Type" -> "neo_type",
+    "Opaque Type Validation" -> "opaque_type_validation",
+    "Opaque Type Error Handling" -> "opaque_type_error_handling",
+    "iron" -> "iron"
+  )
+
   def router: Location => Msg =
     Routing.none(Msg.NoOp)
 
@@ -16,15 +28,14 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     (Model("No validator selected", ""), Cmd.None)
 
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) =
-    case Msg.Validator1 => 
-      (model.copy(currentValidator = "Validator 1", submissionStatus = None), Cmd.None)
-    case Msg.Validator2 => 
-      (model.copy(currentValidator = "Validator 2", submissionStatus = None), Cmd.None)
+    case Msg.SelectValidator(name) => 
+      (model.copy(currentValidator = name, submissionStatus = None), Cmd.None)
     case Msg.UpdateInput(value) => 
       (model.copy(inputValue = value, submissionStatus = None), Cmd.None)
     case Msg.Submit =>
+      val endpoint = validatorEndpoints.getOrElse(model.currentValidator, "unknown")
       (model.copy(submissionStatus = None), Http.send(
-        Request.post("http://localhost:8080/test_ok", 
+        Request.post(s"http://localhost:8080/$endpoint", 
           Body.PlainText("application/json", model.inputValue)
         ),
         Msg.fromHttpResponse
@@ -41,8 +52,13 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
   def view(model: Model): Html[Msg] =
     div(
       h1(text("Welcome to ScalaDays 25 ID validator")),
-      button(onClick(Msg.Validator1))("Use Validator 1"),
-      button(onClick(Msg.Validator2))("Use Validator 2"),
+      div(
+        validatorEndpoints.keys.map { validatorName =>
+          button(
+            onClick(Msg.SelectValidator(validatorName))
+          )(validatorName)
+        }.toList
+      ),
       h2(model.currentValidator),
       
       if model.currentValidator == "No validator selected" then Empty
@@ -75,12 +91,13 @@ final case class Model(
 )
 
 enum Msg:
-  case Validator1, Validator2, NoOp
+  case SelectValidator(name: String)
   case UpdateInput(value: String)
   case Submit
   case SubmissionSucceeded(response: String)
   case SubmissionFailed(error: String)
   case Reset
+  case NoOp
 
 object Msg:
   val fromHttpResponse: Decoder[Msg] =
