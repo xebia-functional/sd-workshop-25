@@ -4,6 +4,7 @@
 .vscode/
 
 frontend/tyrian/target/
+frontend/tyrian/project/target/
 frontend/tyrian/dist/*
 frontend/tyrian/dist/
 

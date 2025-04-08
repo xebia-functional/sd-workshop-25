@@ -15,7 +15,10 @@ lazy val sdtyrianfrontend =
       organization := "xebia",
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "tyrian-io" % "0.13.0",
-        "org.scalameta"   %%% "munit"     % "1.1.0" % Test
+        "io.circe" %%% "circe-core" % "0.14.12",
+        "io.circe" %%% "circe-generic" % "0.14.12",
+        "io.circe" %%% "circe-parser" % "0.14.12",
+        "org.scalameta"   %%% "munit"     % "1.1.0" % Test,
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
