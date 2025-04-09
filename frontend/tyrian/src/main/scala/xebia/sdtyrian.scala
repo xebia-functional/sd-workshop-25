@@ -18,7 +18,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     ("Neo Type", "neo_type"),
     ("Opaque Type Validation", "opaque_type_validation"),
     ("Opaque Type Error Handling", "opaque_type_error_handling"),
-    ("iron", "iron")
+    ("Iron", "iron")
   )
 
   def router: Location => Msg =
@@ -50,33 +50,128 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
 
   def view(model: Model): Html[Msg] =
     div(
+      styles(
+        "display" -> "flex",
+        "flex-direction" -> "column",
+        "align-items" -> "center",
+        "justify-content" -> "center",
+        "gap" -> "24px",
+        "max-width" -> "900px",
+        "margin" -> "0 auto",
+        "padding" -> "1rem"
+      )
+    )(
       h1(text("Welcome to ScalaDays 25 ID validator")),
+      
       div(
+        styles(
+          "display" -> "flex",
+          "flex-wrap" -> "wrap",
+          "gap" -> "1rem",
+          "justify-content" -> "center",
+          "align-items" -> "center"
+        )
+      )(
         validatorEndpoints.map { case (name, _) =>
           button(
-            styles("margin" -> "5px"),
-            onClick(Msg.SelectValidator(name))
+            onClick(Msg.SelectValidator(name)),
+            styles(
+              "padding" -> "0.5rem 1rem",
+              "border-radius" -> "4px",
+              "background" -> (if model.currentValidator == name then "#8bc34a70" else ""),
+              "cursor" -> (if model.currentValidator == name then "default" else "pointer"),
+              "pointer-events" -> (if model.currentValidator == name then "none" else "auto")
+            )
           )(name)
         }
       ),
-      h2(model.currentValidator),
+      
+      h2(text(model.currentValidator)),
       
       if model.currentValidator == "No validator selected" then Empty
       else div(
+        styles(
+          "display" -> "flex",
+          "flex-direction" -> "column",
+          "align-items" -> "center",
+          "gap" -> "24px",
+          "max-width" -> "900px",
+          "width" -> "100%"
+        )
+      )(
         input(
           placeholder := "Enter ID",
           onInput(Msg.UpdateInput(_)),
-          value := model.inputValue
+          value := model.inputValue,
+          styles(
+            "width" -> "100%",
+            "max-width" -> "350px",
+            "padding" -> "0.8rem",
+            "border-radius" -> "4px",
+            "border" -> "1px solid #ccc",
+            "margin-bottom" -> "1rem"
+          )
         ),
-        button(onClick(Msg.Submit))("Validate"),
-        button(onClick(Msg.Reset))("Reset"),
+        
+        div(
+          styles(
+            "display" -> "flex",
+            "gap" -> "1rem",
+            "margin-bottom" -> "1.5rem"
+          )
+        )(
+          button(
+            onClick(Msg.Submit),
+            styles(
+              "padding" -> "0.8rem 2rem",
+              "border-radius" -> "4px",
+              "cursor" -> (if model.inputValue.nonEmpty then "pointer" else "default"),
+              "opacity" -> (if model.inputValue.nonEmpty then "1" else "0.5"),
+              "pointer-events" -> (if model.inputValue.nonEmpty then "all" else "none")
+            )
+          )("Validate"),
+          
+          button(
+            onClick(Msg.Reset),
+            styles(
+              "padding" -> "0.8rem 2rem",
+              "border-radius" -> "4px",
+              "background-color" -> "#f0f0f0",
+              "border" -> "1px solid #ddd"
+            )
+          )("Reset")
+        ),
+        
         model.submissionStatus match {
           case Some(Right(successMsg)) => 
-            div(styles("color" -> "green"))(text(s"✓ $successMsg"))
+            div(
+              styles(
+                "color" -> "green",
+                "font-size" -> "1.2rem",
+                "text-align" -> "center",
+                "padding" -> "1rem",
+                "min-width" -> "350px",
+                "border" -> "1px solid #e5e5e5",
+                "border-radius" -> "4px",
+                "background-color" -> "#f8fff8"
+              )
+            )(text(s"✓ $successMsg"))
+            
           case Some(Left(errorMsg)) => 
-            div(styles("color" -> "red"))(text(s"✗ $errorMsg"))
-          case None => 
-            Empty
+            div(
+              styles(
+                "color" -> "#dc3545",
+                "font-size" -> "1.2rem",
+                "text-align" -> "center",
+                "padding" -> "1rem",
+                "min-width" -> "350px",
+                "border" -> "1px solid #f8d7da",
+                "border-radius" -> "4px",
+                "background-color" -> "#f8f8f8"
+              )
+            )(text(s"✗ $errorMsg"))
+            
+          case None => Empty
         }
       )
     )
