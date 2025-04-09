@@ -10,4 +10,26 @@ frontend/tyrian/dist/
 
 *.class
 
+# React
+# dependencies
+frontend/react/node_modules
+
+# next.js
+frontend/react/.next/
+frontend/react/out/
+
+# production
+frontend/react/build
+
+# debug
+frontend/react/npm-debug.log*
+
+# vercel
+frontend/react/.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.vscode
+
 .DS_Store
