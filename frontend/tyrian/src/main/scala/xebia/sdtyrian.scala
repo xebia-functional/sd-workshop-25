@@ -9,16 +9,16 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("TyrianApp")
 object sdtyrian extends TyrianIOApp[Msg, Model]:
 
-  private val validatorEndpoints: Map[String, String] = Map(
-    "Raw Class" -> "raw_class",
-    "Type Alias" -> "type_alias",
-    "Raw Value Class" -> "value_class",
-    "Class" -> "raw_class_validation",
-    "Value Class Error Handling" -> "value_class_error_handling",
-    "Neo Type" -> "neo_type",
-    "Opaque Type Validation" -> "opaque_type_validation",
-    "Opaque Type Error Handling" -> "opaque_type_error_handling",
-    "iron" -> "iron"
+  private val validatorEndpoints: List[(String, String)] = List(
+    ("Raw Class", "raw_class"),
+    ("Type Alias", "type_alias"),
+    ("Raw Value Class", "value_class"),
+    ("Class", "raw_class_validation"),
+    ("Value Class Error Handling", "value_class_error_handling"),
+    ("Neo Type", "neo_type"),
+    ("Opaque Type Validation", "opaque_type_validation"),
+    ("Opaque Type Error Handling", "opaque_type_error_handling"),
+    ("iron", "iron")
   )
 
   def router: Location => Msg =
@@ -33,11 +33,10 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     case Msg.UpdateInput(value) => 
       (model.copy(inputValue = value, submissionStatus = None), Cmd.None)
     case Msg.Submit =>
-      val endpoint = validatorEndpoints.getOrElse(model.currentValidator, "unknown")
+      val endpoint = validatorEndpoints.find(_._1 == model.currentValidator).map(_._2).getOrElse("unknown")
+      val url = s"http://localhost:8080/$endpoint"
       (model.copy(submissionStatus = None), Http.send(
-        Request.post(s"http://localhost:8080/$endpoint", 
-          Body.PlainText("application/json", model.inputValue)
-        ),
+        Request.post(url, Body.PlainText("application/json", model.inputValue)),
         Msg.fromHttpResponse
       ))
     case Msg.SubmissionSucceeded(response) =>
@@ -53,11 +52,12 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     div(
       h1(text("Welcome to ScalaDays 25 ID validator")),
       div(
-        validatorEndpoints.keys.map { validatorName =>
+        validatorEndpoints.map { case (name, _) =>
           button(
-            onClick(Msg.SelectValidator(validatorName))
-          )(validatorName)
-        }.toList
+            styles("margin" -> "5px"),
+            onClick(Msg.SelectValidator(name))
+          )(name)
+        }
       ),
       h2(model.currentValidator),
       
