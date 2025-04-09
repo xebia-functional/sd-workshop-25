@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Quick start
+
+```sh
+cd frontend/react
+npm install
+npm run dev
+```
+
+Served at: `http://localhost:3000/`
+
 ## Getting Started
 
 First, run the development server:

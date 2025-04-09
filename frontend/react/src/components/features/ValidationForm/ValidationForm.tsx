@@ -23,20 +23,21 @@ const ValidationForm = ({ endpoint }: Props) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ input: value }),
+        body: value,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to submit form");
+      if (response.status >= 200 && response.status < 300) {
+        const data = await await response.text();
+        setStatus({ type: "success", message: data });
+      } else {
+        const data = await await response.text();
+        setStatus({ type: "error", message: data });
       }
-
-      const data = await response.json();
-      setStatus({ type: "success", message: data.message });
     } catch (error: unknown) {
       const message = isError(error)
         ? error.message
@@ -60,7 +61,11 @@ const ValidationForm = ({ endpoint }: Props) => {
           onChange={(e) => setValue(e.target.value)}
           className="w-full"
         />
-        <Button type="submit" className="flex gap-1 items-center">
+        <Button
+          type="submit"
+          className="flex gap-1 items-center"
+          disabled={!value}
+        >
           <Send size={16} />
           Submit
         </Button>

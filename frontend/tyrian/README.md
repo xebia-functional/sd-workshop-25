@@ -16,6 +16,8 @@ sbt
 fastLinkJS
 ```
 
+Served at: `http://localhost:1234/`
+
 To see changes to the frontend reload sbt server with `fastLinkJS`
 
 ## Setup instructions
