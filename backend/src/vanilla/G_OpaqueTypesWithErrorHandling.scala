@@ -75,7 +75,7 @@ object G_OpaqueTypesWithErrorHandling:
     private def apply(input: String): Letter = input
     def either(input: String): Either[String, Letter] =
       Either.cond(
-     ControlLetter.values.map(_.toString).contains(input),
+        ControlLetter.values.map(_.toString).contains(input),
         Letter(input),
         s"'$input' is not a valid DNI letter"
       )
