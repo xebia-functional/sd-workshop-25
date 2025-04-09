@@ -1,5 +1,23 @@
 # sdtyrian
 
+## Quick start
+
+```sh
+cd frontend/tyrian
+npm install
+npm run start
+```
+
+In a second terminal
+
+```sh
+cd frontend/tyrian
+sbt
+fastLinkJS
+```
+
+To see changes to the frontend reload sbt server with `fastLinkJS`
+
 ## Setup instructions
 
 To run the program in a browser you will need to have yarn (or npm) installed.
