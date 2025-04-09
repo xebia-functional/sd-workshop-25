@@ -44,7 +44,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     case Msg.SubmissionFailed(error) =>
       (model.copy(submissionStatus = Left(error)), Cmd.None)
     case Msg.Reset =>
-      (Model("No validator selected", "", Right("Please enter ID")), Cmd.None)
+      (Model(model.currentValidator, "", Right("Please enter ID")), Cmd.None)
     case Msg.NoOp => 
       (model, Cmd.None)
 
@@ -78,7 +78,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
             styles(
               "padding" -> "0.5rem 1rem",
               "border-radius" -> "4px",
-              "background" -> (if model.currentValidator == name then "#8bc34a70" else ""),
+              "background" -> (if model.currentValidator == name then "#00800029" else ""),
               "cursor" -> (if model.currentValidator == name then "default" else "pointer"),
               "pointer-events" -> (if model.currentValidator == name then "none" else "auto")
             )
@@ -137,7 +137,10 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
               "padding" -> "0.8rem 2rem",
               "border-radius" -> "4px",
               "background-color" -> "#f0f0f0",
-              "border" -> "1px solid #ddd"
+              "border" -> "1px solid #ddd",
+               "cursor" -> (if model.inputValue.nonEmpty then "pointer" else "default"),
+              "opacity" -> (if model.inputValue.nonEmpty then "1" else "0.5"),
+              "pointer-events" -> (if model.inputValue.nonEmpty then "all" else "none")
             )
           )("Reset")
         ),
@@ -196,6 +199,11 @@ enum Msg:
 object Msg:
   val fromHttpResponse: Decoder[Msg] =
     Decoder[Msg](
-      response => SubmissionSucceeded(response.body),
+      response => 
+        if response.status.code >= 200 && response.status.code < 300 then
+          SubmissionSucceeded(response.body)
+        else
+          SubmissionFailed(response.body),
       error => SubmissionFailed(error.toString)
     )
+
