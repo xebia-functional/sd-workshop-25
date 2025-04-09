@@ -25,26 +25,26 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     Routing.none(Msg.NoOp)
 
   def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
-    (Model("No validator selected", ""), Cmd.None)
+    (Model("No validator selected", "", Right("Please enter ID")), Cmd.None)
 
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) =
     case Msg.SelectValidator(name) => 
-      (model.copy(currentValidator = name, submissionStatus = None), Cmd.None)
+      (model.copy(currentValidator = name), Cmd.None)
     case Msg.UpdateInput(value) => 
-      (model.copy(inputValue = value, submissionStatus = None), Cmd.None)
+      (model.copy(inputValue = value), Cmd.None)
     case Msg.Submit =>
       val endpoint = validatorEndpoints.find(_._1 == model.currentValidator).map(_._2).getOrElse("unknown")
       val url = s"http://localhost:8080/$endpoint"
-      (model.copy(submissionStatus = None), Http.send(
+      (model, Http.send(
         Request.post(url, Body.PlainText("application/json", model.inputValue)),
         Msg.fromHttpResponse
       ))
     case Msg.SubmissionSucceeded(response) =>
-      (model.copy(submissionStatus = Some(Right(response))), Cmd.None)
+      (model.copy(submissionStatus = Right(response)), Cmd.None)
     case Msg.SubmissionFailed(error) =>
-      (model.copy(submissionStatus = Some(Left(error))), Cmd.None)
+      (model.copy(submissionStatus = Left(error)), Cmd.None)
     case Msg.Reset =>
-      (Model("No validator selected", ""), Cmd.None)
+      (Model("No validator selected", "", Right("Please enter ID")), Cmd.None)
     case Msg.NoOp => 
       (model, Cmd.None)
 
@@ -143,7 +143,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
         ),
         
         model.submissionStatus match {
-          case Some(Right(successMsg)) => 
+          case Right(successMsg) => 
             div(
               styles(
                 "color" -> "green",
@@ -157,7 +157,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
               )
             )(text(s"✓ $successMsg"))
             
-          case Some(Left(errorMsg)) => 
+          case Left(errorMsg) => 
             div(
               styles(
                 "color" -> "#dc3545",
@@ -171,7 +171,6 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
               )
             )(text(s"✗ $errorMsg"))
             
-          case None => Empty
         }
       )
     )
@@ -182,7 +181,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
 final case class Model(
   currentValidator: String,
   inputValue: String,
-  submissionStatus: Option[Either[String, String]] = None
+  submissionStatus: Either[String, String]
 )
 
 enum Msg:
