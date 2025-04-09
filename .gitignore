@@ -2,12 +2,15 @@
 .idea
 .scala-build
 .vscode/
+node_modules/
+**/node_modules/
 
 frontend/tyrian/target/
 frontend/tyrian/project/target/
 frontend/tyrian/dist/*
 frontend/tyrian/dist/
 frontend/tyrian/.parcel-cache/
+frontend/tyrian/node_modules
 
 *.class
 
