@@ -7,6 +7,7 @@ node_modules/
 
 frontend/tyrian/target/
 frontend/tyrian/project/target/
+frontend/tyrian/project/project/target/
 frontend/tyrian/dist/*
 frontend/tyrian/dist/
 frontend/tyrian/.parcel-cache/
