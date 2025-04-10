@@ -23,7 +23,7 @@ const ValidationForm = ({ endpoint }: Props) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
+      const response = await fetch(`http://localhost:8080${endpoint}ZZZ`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,13 +31,9 @@ const ValidationForm = ({ endpoint }: Props) => {
         body: value,
       });
 
-      if (response.status >= 200 && response.status < 300) {
-        const data = await await response.text();
-        setStatus({ type: "success", message: data });
-      } else {
-        const data = await await response.text();
-        setStatus({ type: "error", message: data });
-      }
+      const data = await response.text();
+      const type = response.ok ? "success" : "error";
+      setStatus({ type, message: data });
     } catch (error: unknown) {
       const message = isError(error)
         ? error.message
