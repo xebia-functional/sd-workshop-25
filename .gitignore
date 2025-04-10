@@ -1,3 +1,40 @@
 .bsp
 .idea
 .scala-build
+.vscode/
+node_modules/
+**/node_modules/
+
+frontend/tyrian/target/
+frontend/tyrian/project/target/
+frontend/tyrian/project/project/target/
+frontend/tyrian/dist/*
+frontend/tyrian/dist/
+frontend/tyrian/.parcel-cache/
+frontend/tyrian/node_modules
+
+*.class
+
+# React
+# dependencies
+frontend/react/node_modules
+
+# next.js
+frontend/react/.next/
+frontend/react/out/
+
+# production
+frontend/react/build
+
+# debug
+frontend/react/npm-debug.log*
+
+# vercel
+frontend/react/.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.vscode
+
+.DS_Store
