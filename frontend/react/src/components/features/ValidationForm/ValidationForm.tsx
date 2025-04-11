@@ -23,7 +23,7 @@ const ValidationForm = ({ endpoint }: Props) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:8080${endpoint}ZZZ`, {
+      const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
