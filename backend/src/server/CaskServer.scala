@@ -74,64 +74,49 @@ object CaskServer extends cask.MainRoutes {
   }
 
   @cask.post("/raw_class")
-  def rawClass(request: cask.Request) = {
-    handleEndpoint(A_RawClasses.ID(request.text()))
-  }
+  def rawClass(request: cask.Request) = handleEndpoint(A_RawClasses.ID(request.text()))
+  @cask.options("/raw_class")
+  def optionsRawClass() = cask.Response("Options of Raw Class", headers = corsHeaders)
 
   @cask.post("/type_alias")
-  def typeAlias(request: cask.Request) = {
-    handleEndpoint(B_TypeAliases.ID(request.text()))
-  }
+  def typeAlias(request: cask.Request) = handleEndpoint(B_TypeAliases.ID(request.text()))
+  @cask.options("/type_alias")
+  def optionsTypeAlias() = cask.Response("Options of Type Alias", headers = corsHeaders)
 
   @cask.post("/value_class")
-  def valueClass(request: cask.Request) = {
-    handleEndpoint(C_ValueClasses.ID(request.text()))
-  }
+  def valueClass(request: cask.Request) = handleEndpoint(C_ValueClasses.ID(request.text()))
+  @cask.options("/value_class")
+  def optionsValueClass() = cask.Response("Options of Value Class", headers = corsHeaders)
 
   @cask.post("/raw_class_validation")
-  def rawClassValidation(request: cask.Request) = {
-    handleEndpoint(D_RawClassesWithValidation.ID(request.text()))
-  }
+  def rawClassValidation(request: cask.Request) = handleEndpoint(D_RawClassesWithValidation.ID(request.text()))
+  @cask.options("/raw_class_validation")
+  def optionsRawClassValidation() = cask.Response("Options of Raw Class Validation", headers = corsHeaders)
 
   @cask.post("/opaque_type_validation")
-  def opaqueTypeValidation(request: cask.Request) = {
-    handleEndpoint(E_OpaqueTypesWithValidation.ID(request.text()))
-  }
+  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypesWithValidation.ID(request.text()))
+  @cask.options("/opaque_type_validation")
+  def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 
   @cask.post("/vaule_class_error_handling")
-  def valueClassErrorHandling(request: cask.Request) = {
-    handleEndpoint(F_ValueClassesWithErrorHandling.ID.either(request.text()))
-  }
+  def valueClassErrorHandling(request: cask.Request) = handleEndpoint(F_ValueClassesWithErrorHandling.ID.either(request.text()))
+  @cask.options("/vaule_class_error_handling")
+  def optionsValueClassErrorHandling() = cask.Response("Options of Value Class Error Handling", headers = corsHeaders)
 
   @cask.post("/opaque_type_error_handling")
-  def opaqueTypeErrorHandling(request: cask.Request) = {
-    handleEndpoint(G_OpaqueTypesWithErrorHandling.ID.either(request.text()))
-  }
+  def opaqueTypeErrorHandling(request: cask.Request) = handleEndpoint(G_OpaqueTypesWithErrorHandling.ID.either(request.text()))
+  @cask.options("/opaque_type_error_handling")
+  def optionsOpaqueTypeErrorHandling() = cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)
 
   @cask.post("/neo_type")
-  def neoType(request: cask.Request) = ???
-  // NeoType.ID(request.text())
+  def neoType(request: cask.Request) = ??? // NeoType.ID(request.text())
+  @cask.options("/neo_type")
+  def optionsNeoType() = cask.Response("Options of NeoType", headers = corsHeaders)
 
   @cask.post("/iron")
-  def iron(request: cask.Request) = ???
-  // Iron.ID(request.text())
-
-  @cask.post("/test_ok")
-  def testOk(request: cask.Request) = {
-    cask.Response(
-      ujson
-        .Obj("status" -> "success", "message" -> "Form submitted successfully!")
-        .render(),
-      headers = Seq(
-        "Access-Control-Allow-Origin" -> "*",
-        "Access-Control-Allow-Methods" -> "POST",
-        "Access-Control-Allow-Headers" -> "Content-Type"
-      )
-    )
-  }
-
-  @cask.post("/test_ko")
-  def testKo(request: cask.Request) = ???
+  def iron(request: cask.Request) = ??? // Iron.ID(request.text())
+  @cask.options("/iron")
+  def optionsIron() = cask.Response("Options of Iron", headers = corsHeaders)
 
   initialize()
 }
