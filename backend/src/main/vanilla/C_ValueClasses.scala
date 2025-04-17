@@ -44,47 +44,60 @@ import backend.common.*
 
 object C_ValueClasses:
 
-  private final class NIELetter(val value: String) extends AnyVal
-  private final class Number(val value: Int) extends AnyVal
-  private final class Letter(val value: String) extends AnyVal
+  private final class NIELetter private (val value: String) extends AnyVal
+  private object NIELetter:
+    def apply(value: String): NIELetter =
+      require(
+        NieLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid NIE letter"
+      )
+      NIELetter(value)
+
+  private final class NieNumber private (val value: Int) extends AnyVal
+  private object NieNumber:
+    def apply(value: Int): NieNumber =
+      require(value >= 0, s"'$value' is negative. It must be positive")
+      require(value <= 9999999, s"'$value' is too big. Max number is 9999999")
+      NieNumber(value)
+
+  private final class DniNumber private (val value: Int) extends AnyVal
+  private object DniNumber:
+    def apply(value: Int): DniNumber =
+      require(value >= 0, s"'$value' is negative. It must be positive")
+      require(value <= 99999999, s"'$value' is too big. Max number is 99999999")
+      DniNumber(value)
+
+  private final class Letter private (val value: String) extends AnyVal
+  private object Letter:
+    def apply(value: String): Letter=
+      require(
+        ControlLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid ID letter"
+      )
+      Letter(value)
+
 
   sealed trait ID
 
-  private final class DNI(number: Number, letter: Letter) extends ID:
+  private final class DNI(number: DniNumber, letter: Letter) extends ID:
     require(
-      number.value > 0,
-      s"'${number.value}' is negative. It must be positive"
-    )
-    require(
-      number.value <= 99999999,
-      s"'${number.value}' is too big. Max number is 99999999"
-    )
-    require(
-      ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'${letter.value}' is not a valid ID letter"
-    )
-    override def toString: String = s"${number.value}-${letter.value}"
-
-  private final class NIE(nieLetter: NIELetter, number: Number, letter: Letter)
-      extends ID:
-    require(
-      NieLetter.values.map(_.toString).contains(nieLetter.value),
-      s"'${nieLetter.value}' is not a valid NIE letter"
-    )
-    require(
-      number.value > 0,
-      s"'${number.value}' is negative. It must be positive"
-    )
-    require(
-      number.value <= 99999999,
-      s"'${number.value}' is too big. Max number is 99999999"
-    )
-    require(
-      ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'${letter.value}' is not a valid ID letter"
+      ControlLetter.isValidId(number.value, ControlLetter.valueOf(letter.value)),
+      "Number does not match correct control letter"
     )
     override def toString: String =
-      s"${nieLetter.value}-${number.value}-${letter.value}"
+      val paddedNumber = number.value.toString.reverse.padTo(8, "0").mkString.reverse
+      s"$paddedNumber-${letter.value}"
+
+  private final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter)
+      extends ID:
+    require(
+      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter.value).ordinal}$number".toInt, ControlLetter.valueOf(letter.value)),
+      "Number does not match correct control letter"
+    )
+    override def toString: String = {
+      val paddedNumber = number.value.toString.reverse.padTo(7, "0").mkString.reverse
+      s"${nieLetter.value}-$paddedNumber-${letter.value}"
+    }
 
   object ID:
     def apply(input: String): ID =
@@ -92,15 +105,19 @@ object C_ValueClasses:
       val withoutDash = trimmed.replace("-", "")
       if withoutDash.head.isDigit
       then
-        val (number, letter) = withoutDash.splitAt(8)
+        val (number, letter) = withoutDash.splitAt(withoutDash.length-1)
+        require(number.length == 8, s"number $number should contain 8 digits")
+        require(number.forall(_.isDigit), s"number $number should not contain letters")
         DNI(
-          number = Number(number.toInt),
-          letter = Letter(letter)
+          number = DniNumber(number.toInt),
+          letter = Letter(letter.toUpperCase())
         )
       else
-        val (number, letter) = withoutDash.tail.splitAt(7)
+        val (number, letter) = withoutDash.tail.splitAt(withoutDash.length-2)
+        require(number.length == 7, s"number $number should contain 7 digits")
+        require(number.forall(_.isDigit), s"number $number should not contain letters")
         NIE(
-          nieLetter = NIELetter(withoutDash.head.toString),
-          number = Number(number.toInt),
-          letter = Letter(letter)
+          nieLetter = NIELetter(withoutDash.head.toString.toUpperCase()),
+          number = NieNumber(number.toInt),
+          letter = Letter(letter.toUpperCase())
         )
