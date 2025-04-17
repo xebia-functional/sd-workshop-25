@@ -83,20 +83,15 @@ object common:
     def isValidId(number: Int, letter: ControlLetter): Boolean =
       ControlLetter.fromOrdinal(number % 23) == letter
 
-  sealed trait FailedValidation(cause: String)
-      extends Exception
-      with NoStackTrace:
+  sealed trait FailedValidation(cause: String) extends Exception with NoStackTrace:
     override def toString: String = cause
-  case class InvalidNieLetter(wrongInput: String)
-      extends FailedValidation(s"'$wrongInput' is not a valid NIE letter")
-  case class InvalidIdLetter(wrongInput: String)
-      extends FailedValidation(s"'$wrongInput' is not a valid ID letter")
+  case class InvalidNieLetter(wrongInput: String) extends FailedValidation(s"'$wrongInput' is not a valid NIE letter")
+  case class InvalidIdLetter(wrongInput: String) extends FailedValidation(s"'$wrongInput' is not a valid ID letter")
   case class InvalidControlLetter(wrongInput: String)
       extends FailedValidation(
         s"'$wrongInput' does not match the associated remainder letter"
       )
-  case class InvalidNumber(wrongInput: String)
-      extends FailedValidation(s"'$wrongInput' should only contain digits")
+  case class InvalidNumber(wrongInput: String) extends FailedValidation(s"'$wrongInput' should only contain digits")
   case class InvalidNegativeNumber(wrongInput: Int)
       extends FailedValidation(
         s"'$wrongInput' is negative. It must be positive"
