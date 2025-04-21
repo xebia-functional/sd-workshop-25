@@ -29,29 +29,34 @@ import backend.common.*
 
 object B_TypeAliases:
 
-  type NieLetter = String
-  type Number = Int
+  type NIELetter = String
+  type Number = String
   type Letter = String
 
   sealed trait ID
 
-  private final class DNI(number: Number, letter: Letter) extends ID:
-    require(number > 0, s"'$number' is negative. It must be positive")
-    require(number <= 99999999, s"'$number' is too big. Max number is 99999999")
+  private [vanilla] final class DNI(number: Number, letter: Letter) extends ID:
+    require(number.forall(_.isDigit), s"number $number should not contain letters")
+    require(number.length == 8, s"number $number should contain 8 digits")
+    val _number: Int = number.toInt
+    require(_number > 0, s"'$number' is negative. It must be positive")
+    require(_number <= 99999999, s"'$number' is too big. Max number is 99999999")
     require(
       ControlLetter.values.map(_.toString).contains(letter),
       s"'$letter' is not a valid ID letter"
     )
     override def toString: String = s"$number-$letter"
 
-  private final class NIE(nieLetter: NieLetter, number: Number, letter: Letter)
-      extends ID:
+  private [vanilla] final class NIE(nieLetter: NIELetter, number: Number, letter: Letter) extends ID:
+    require(number.forall(_.isDigit), s"number $number should not contain letters")
+    require(number.length == 7, s"number $number should contain 7 digits")
+    val _number: Int = number.toInt
     require(
       NieLetter.values.map(_.toString).contains(nieLetter),
       s"'$nieLetter' is not a valid NIE letter"
     )
-    require(number > 0, s"'$number' is negative. It must be positive")
-    require(number <= 99999999, s"'$number' is too big. Max number is 99999999")
+    require(_number > 0, s"'$number' is negative. It must be positive")
+    require(_number <= 99999999, s"'$number' is too big. Max number is 99999999")
     require(
       ControlLetter.values.map(_.toString).contains(letter),
       s"'$letter' is not a valid ID letter"
@@ -66,13 +71,13 @@ object B_TypeAliases:
       then
         val (number, letter) = withoutDash.splitAt(8)
         DNI(
-          number = number.toInt,
-          letter = letter
+          number = number,
+          letter = letter.toUpperCase()
         )
       else
         val (number, letter) = withoutDash.tail.splitAt(7)
         NIE(
-          nieLetter = withoutDash.head.toString,
-          number = number.toInt,
-          letter = letter
+          nieLetter = withoutDash.head.toString.toUpperCase(),
+          number = number,
+          letter = letter.toUpperCase()
         )
