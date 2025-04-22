@@ -78,6 +78,18 @@ object A_RawClassesTests extends TestSuite:
     test("IDs") {
       test("Compile false positives"):
 
+        test("empty"):
+          intercept[NoSuchElementException](ID(""))
+
+        test("invisible characters"):
+          intercept[NoSuchElementException](ID("\n\r\t"))
+
+        test("symbol"):
+          intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
+
+        test("absent number and control letter in NIE"):
+          intercept[IllegalArgumentException](ID("Y"))
+
         test("invalid nie letter"):
           intercept[IllegalArgumentException](ID("A1234567T"))
 
