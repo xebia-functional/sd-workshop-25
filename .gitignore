@@ -1,5 +1,6 @@
 .bsp
 .idea
+.metals
 .scala-build
 .vscode/
 node_modules/
