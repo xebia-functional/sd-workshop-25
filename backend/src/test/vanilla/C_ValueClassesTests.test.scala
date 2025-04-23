@@ -10,18 +10,18 @@ import utest.*
 object C_ValueClassesTests extends TestSuite:
 
   val tests = Tests {
-    test("DNI_") {
+    test("DNI") {
 
       test("Compile positives"):
         Seq(
           (("12345678", "Z"), "12345678-Z"),
           (("00000001", "R"), "00000001-R"),
           (("99999999", "R"), "99999999-R")
-        ).foreach { 
+        ).foreach {
           case (input, expected) =>
             val result = new DNI(DniNumber(input._1), Letter(input._2))
             assert(result.toString == expected)
-          case _ => false  
+          case _ => false
         }
 
       test("Compile false positives"):
@@ -38,12 +38,12 @@ object C_ValueClassesTests extends TestSuite:
         test("invalid control letter"):
           intercept[IllegalArgumentException](DNI(DniNumber("12345678"), Letter("Ñ")))
 
-        //test("flipping arguments"):
+        // test("flipping arguments"):
         //  intercept[IllegalArgumentException](DNI(Letter("Z"), DniNumber("12345678")))
 
     }
 
-    test("NIE_") {
+    test("NIE") {
       test("Compile positives"):
         Seq(
           (("X", "0000001", "R"), "X-0000001-R"),
@@ -70,14 +70,14 @@ object C_ValueClassesTests extends TestSuite:
         test("invalid controll letter"):
           intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("2345678"), Letter("Ñ")))
 
-        //test("flipping nie letter and control letter"):
+        // test("flipping nie letter and control letter"):
         //  intercept[IllegalArgumentException](NIE(Letter("R"), NieNumber("0000001"), NIELetter("X")))
 
-        //test("flipping all arguments"):
+        // test("flipping all arguments"):
         //  intercept[IllegalArgumentException](NIE(NieNumber("0000001"), Letter("R"), NIELetter("X")))
     }
 
-    test("IDs_") {
+    test("IDs") {
       test("Compile false positives"):
 
         test("empty"):

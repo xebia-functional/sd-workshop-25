@@ -53,8 +53,7 @@ object D_RawClassesWithValidation:
     )
     override def toString: String = s"${number.value}-${letter.value}"
 
-  private final class NIE(nieLetter: NIELetter, number: Number, letter: Letter)
-      extends ID:
+  private final class NIE(nieLetter: NIELetter, number: Number, letter: Letter) extends ID:
     require(
       NieLetter.values.map(_.toString).contains(nieLetter.value),
       s"'${nieLetter.value}' is not a valid NIE letter"
