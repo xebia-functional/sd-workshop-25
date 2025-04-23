@@ -4,10 +4,9 @@ import backend.common.*
 
 /** =Value Classes in Scala=
   *
-  * A value class in Scala is a mechanism to define a wrapper around a single
-  * value without the runtime overhead of creating an actual instance of the
-  * wrapper class. For a regular class to become a value class, it must contain
-  * only one parameter and extend `AnyVal`.
+  * A value class in Scala is a mechanism to define a wrapper around a single value without the runtime overhead of
+  * creating an actual instance of the wrapper class. For a regular class to become a value class, it must contain only
+  * one parameter and extend `AnyVal`.
   *
   * Basic Syntax:
   * {{{
@@ -32,14 +31,13 @@ import backend.common.*
   *     the wrapper class
   *
   * ==Cons of Value Classes==
-  *   - Limited Validation: Provides some enforcement of order but not much
-  *     more. Cannot prevent invalid values at compile time
-  *   - Restrictions: Can only have one parameter; cannot have auxiliary
-  *     constructors; cannot extend other classes (except for universal traits)
-  *   - Boxing Limitations: Performance benefits can be lost if boxing is
-  *     needed, such as for collections or generic methods
-  *   - Limited Inheritance: Cannot be extended by other classes and has limited
-  *     support for traits
+  *   - Limited Validation: Provides some enforcement of order but not much more. Cannot prevent invalid values at
+  *     compile time
+  *   - Restrictions: Can only have one parameter; cannot have auxiliary constructors; cannot extend other classes
+  *     (except for universal traits)
+  *   - Boxing Limitations: Performance benefits can be lost if boxing is needed, such as for collections or generic
+  *     methods
+  *   - Limited Inheritance: Cannot be extended by other classes and has limited support for traits
   */
 
 object C_ValueClasses:
@@ -55,7 +53,7 @@ object C_ValueClasses:
 
   private [vanilla] final class NieNumber (val value: String) extends AnyVal
   private [vanilla] object NieNumber:
-    def apply(value: String): NieNumber = 
+    def apply(value: String): NieNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 7, s"number $value should contain 7 digits")
       require(value.toInt >= 0, s"'$value' is negative. It must be positive")
@@ -102,12 +100,12 @@ object C_ValueClasses:
       val withoutDash = trimmed.replace("-", "")
       if withoutDash.head.isDigit
       then
-        val (n, l) = withoutDash.splitAt(withoutDash.length-1)
+        val (n, l) = withoutDash.splitAt(withoutDash.length - 1)
         val number = DniNumber(n)
         val letter = Letter(l.toUpperCase())
         DNI(number, letter)
       else
-        val (n, l) = withoutDash.tail.splitAt(withoutDash.length-2)
+        val (n, l) = withoutDash.tail.splitAt(withoutDash.length - 2)
         val nieLetter = NIELetter(withoutDash.head.toString.toUpperCase())
         val number = NieNumber(n)
         val letter = Letter(l.toUpperCase())

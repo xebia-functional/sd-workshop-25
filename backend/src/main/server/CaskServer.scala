@@ -99,12 +99,16 @@ object CaskServer extends cask.MainRoutes {
   def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 
   @cask.post("/vaule_class_error_handling")
-  def valueClassErrorHandling(request: cask.Request) = handleEndpoint(F_ValueClassesWithErrorHandling.ID.either(request.text()))
+  def valueClassErrorHandling(request: cask.Request) = handleEndpoint(
+    F_ValueClassesWithErrorHandling.ID.either(request.text())
+  )
   @cask.options("/vaule_class_error_handling")
   def optionsValueClassErrorHandling() = cask.Response("Options of Value Class Error Handling", headers = corsHeaders)
 
   @cask.post("/opaque_type_error_handling")
-  def opaqueTypeErrorHandling(request: cask.Request) = handleEndpoint(G_OpaqueTypesWithErrorHandling.ID.either(request.text()))
+  def opaqueTypeErrorHandling(request: cask.Request) = handleEndpoint(
+    G_OpaqueTypesWithErrorHandling.ID.either(request.text())
+  )
   @cask.options("/opaque_type_error_handling")
   def optionsOpaqueTypeErrorHandling() = cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)
 
