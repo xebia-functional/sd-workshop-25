@@ -4,9 +4,8 @@ import backend.common.*
 
 /** =Opaque Types with Error Handling=
   *
-  * Opaque types are a Scala 3 feature that provides type abstraction without
-  * runtime overhead. It allows to create new types that are light-weighted and
-  * can incorporate benefits of Value Classes and other structures.
+  * Opaque types are a Scala 3 feature that provides type abstraction without runtime overhead. It allows to create new
+  * types that are light-weighted and can incorporate benefits of Value Classes and other structures.
   *
   * Basic syntax:
   * {{{
@@ -27,24 +26,19 @@ import backend.common.*
   *   - Use of Either for error handling
   *
   * ==Pros of Opaque Types with Error Handling==
-  *   - Performance Benefits: No runtime overhead. Opaque types do not exist
-  *     during runtime.
-  *   - Safety Guarantees: Compile-time type safety; runtime validation
-  *     guarantees; immutable by design
-  *   - Developer Experience: Clear API boundaries; self-documenting code; easy
-  *     to maintain and refactor
+  *   - Performance Benefits: No runtime overhead. Opaque types do not exist during runtime.
+  *   - Safety Guarantees: Compile-time type safety; runtime validation guarantees; immutable by design
+  *   - Developer Experience: Clear API boundaries; self-documenting code; easy to maintain and refactor
   *   - Encapsulation: Prevent invalid states through controlled construction
   *
   * ==Cons of Value Classes with Error Handling==
-  *   - Implementation Complexity: Opaque type's underlying representation is
-  *     only visible in the companion object; can make debugging more
-  *     challenging
-  *   - Usage Restrictions: Cannot extend other classes; Limited to a single
-  *     parameter; Some scenarios force boxing
-  *   - Learning Curve: Requires understanding of Either type; Pattern matching
-  *     knowledge needed; (Basic) Functional programming concepts required
-  *   - Potential Overuse: Can lead to unnecessary abstraction if not used
-  *     judiciously; might complicate simple code if used where not needed
+  *   - Implementation Complexity: Opaque type's underlying representation is only visible in the companion object; can
+  *     make debugging more challenging
+  *   - Usage Restrictions: Cannot extend other classes; Limited to a single parameter; Some scenarios force boxing
+  *   - Learning Curve: Requires understanding of Either type; Pattern matching knowledge needed; (Basic) Functional
+  *     programming concepts required
+  *   - Potential Overuse: Can lead to unnecessary abstraction if not used judiciously; might complicate simple code if
+  *     used where not needed
   */
 
 object G_OpaqueTypesWithErrorHandling:

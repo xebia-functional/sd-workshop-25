@@ -4,10 +4,9 @@ import backend.common.*
 
 /** =Value Classes in Scala=
   *
-  * A value class in Scala is a mechanism to define a wrapper around a single
-  * value without the runtime overhead of creating an actual instance of the
-  * wrapper class. For a regular class to become a value class, it must contain
-  * only one parameter and extend `AnyVal`.
+  * A value class in Scala is a mechanism to define a wrapper around a single value without the runtime overhead of
+  * creating an actual instance of the wrapper class. For a regular class to become a value class, it must contain only
+  * one parameter and extend `AnyVal`.
   *
   * Basic Syntax:
   * {{{
@@ -20,38 +19,34 @@ import backend.common.*
   *   - Zero-Cost Abstraction
   *
   * ==Pros of Value Classes==
-  *   - Type Safety: Provides compile-time type checking by preventing mixing up
-  *     different types that share the same underlying representation
-  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime,
-  *     resulting in no performance overhead compared to using the underlying
-  *     type directly
-  *   - Domain Modeling: Helps create more meaningful domain types and makes the
-  *     code more readable and self-documenting
-  *   - Encapsulation: Allows the addition of methods to primitive types without
-  *     the need for inheritance and keeps related functionality together within
-  *     the wrapper class
+  *   - Type Safety: Provides compile-time type checking by preventing mixing up different types that share the same
+  *     underlying representation
+  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime, resulting in no performance overhead compared to
+  *     using the underlying type directly
+  *   - Domain Modeling: Helps create more meaningful domain types and makes the code more readable and self-documenting
+  *   - Encapsulation: Allows the addition of methods to primitive types without the need for inheritance and keeps
+  *     related functionality together within the wrapper class
   *
   * ==Cons of Value Classes==
-  *   - Limited Validation: Provides some enforcement of order but not much
-  *     more. Cannot prevent invalid values at compile time
-  *   - Restrictions: Can only have one parameter; cannot have auxiliary
-  *     constructors; cannot extend other classes (except for universal traits)
-  *   - Boxing Limitations: Performance benefits can be lost if boxing is
-  *     needed, such as for collections or generic methods
-  *   - Limited Inheritance: Cannot be extended by other classes and has limited
-  *     support for traits
+  *   - Limited Validation: Provides some enforcement of order but not much more. Cannot prevent invalid values at
+  *     compile time
+  *   - Restrictions: Can only have one parameter; cannot have auxiliary constructors; cannot extend other classes
+  *     (except for universal traits)
+  *   - Boxing Limitations: Performance benefits can be lost if boxing is needed, such as for collections or generic
+  *     methods
+  *   - Limited Inheritance: Cannot be extended by other classes and has limited support for traits
   */
 
 object C_ValueClasses:
 
-  private [vanilla] final class NIELetter (val value: String) extends AnyVal
-  private [vanilla] final class NieNumber (val value: String) extends AnyVal
-  private [vanilla] final class DniNumber (val value: String) extends AnyVal
-  private [vanilla] final class Letter (val value: String) extends AnyVal
+  private[vanilla] final class NIELetter(val value: String) extends AnyVal
+  private[vanilla] final class NieNumber(val value: String) extends AnyVal
+  private[vanilla] final class DniNumber(val value: String) extends AnyVal
+  private[vanilla] final class Letter(val value: String) extends AnyVal
 
   sealed trait ID
 
-  private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
+  private[vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
     require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
     require(number.value.length == 8, s"number $number should contain 8 digits")
     val _number: Int = number.value.toInt
@@ -67,7 +62,7 @@ object C_ValueClasses:
     )
     override def toString: String = s"${number.value}-${letter.value}"
 
-  private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
+  private[vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
     require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
     require(number.value.length == 7, s"number ${number.value} should contain 7 digits")
     val _number: Int = number.value.toInt
@@ -82,7 +77,10 @@ object C_ValueClasses:
       s"'$letter' is not a valid ID letter"
     )
     require(
-      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt, ControlLetter.valueOf(letter.value)),
+      ControlLetter.isValidId(
+        s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt,
+        ControlLetter.valueOf(letter.value)
+      ),
       "Number does not match correct control letter"
     )
     override def toString: String = s"${nieLetter.value}-${number.value}-${letter.value}"
@@ -93,12 +91,12 @@ object C_ValueClasses:
       val withoutDash = trimmed.replace("-", "")
       if withoutDash.head.isDigit
       then
-        val (n, l) = withoutDash.splitAt(withoutDash.length-1)
+        val (n, l) = withoutDash.splitAt(withoutDash.length - 1)
         val number = DniNumber(n)
         val letter = Letter(l.toUpperCase())
         DNI(number, letter)
       else
-        val (n, l) = withoutDash.tail.splitAt(withoutDash.length-2)
+        val (n, l) = withoutDash.tail.splitAt(withoutDash.length - 2)
         val nieLetter = NIELetter(withoutDash.head.toString.toUpperCase())
         val number = NieNumber(n)
         val letter = Letter(l.toUpperCase())
