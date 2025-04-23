@@ -4,8 +4,7 @@ import backend.common.*
 
 /** =Type Aliases in Scala=
   *
-  * Type aliases allow you to give alternative names to existing types. They are
-  * declared using the 'type' keyword.
+  * Type aliases allow you to give alternative names to existing types. They are declared using the 'type' keyword.
   *
   * Basic Syntax:
   * {{{
@@ -13,18 +12,16 @@ import backend.common.*
   * }}}
   *
   * ==Pros of Type Aliases==
-  *   - Improved Readability: Makes code more domain-specific and
-  *     self-documenting by adding semantic meaning to primitive types
-  *   - Reduced Verbosity: Shortens complex type signatures; especially useful
-  *     for complex generic types
-  *   - Maintenance Benefits: Centralizes type definitions and makes refactoring
-  *     easier
+  *   - Improved Readability: Makes code more domain-specific and self-documenting by adding semantic meaning to
+  *     primitive types
+  *   - Reduced Verbosity: Shortens complex type signatures; especially useful for complex generic types
+  *   - Maintenance Benefits: Centralizes type definitions and makes refactoring easier
   *
   * ==Cons of Type Aliases==
-  *   - No Type Safety: it does not provide type checking. Hence, it can't
-  *     prevent mixing of semantically different values of the same base type
-  *   - Potential Confusion: May mislead developers into thinking they provide
-  *     type safety; can make code more complex if overused
+  *   - No Type Safety: it does not provide type checking. Hence, it can't prevent mixing of semantically different
+  *     values of the same base type
+  *   - Potential Confusion: May mislead developers into thinking they provide type safety; can make code more complex
+  *     if overused
   */
 
 object B_TypeAliases:
@@ -35,7 +32,7 @@ object B_TypeAliases:
 
   sealed trait ID
 
-  private [vanilla] final class DNI(number: Number, letter: Letter) extends ID:
+  private[vanilla] final class DNI(number: Number, letter: Letter) extends ID:
     require(number.forall(_.isDigit), s"number $number should not contain letters")
     require(number.length == 8, s"number $number should contain 8 digits")
     val _number: Int = number.toInt
@@ -47,7 +44,7 @@ object B_TypeAliases:
     )
     override def toString: String = s"$number-$letter"
 
-  private [vanilla] final class NIE(nieLetter: NIELetter, number: Number, letter: Letter) extends ID:
+  private[vanilla] final class NIE(nieLetter: NIELetter, number: Number, letter: Letter) extends ID:
     require(number.forall(_.isDigit), s"number $number should not contain letters")
     require(number.length == 7, s"number $number should contain 7 digits")
     val _number: Int = number.toInt

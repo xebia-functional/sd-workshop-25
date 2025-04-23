@@ -10,7 +10,7 @@ object B_TypeAliasesTests extends TestSuite:
 
   val tests = Tests {
 
-    test("DNI"){
+    test("DNI") {
 
       test("Compile positives"):
         Seq(
@@ -39,11 +39,11 @@ object B_TypeAliasesTests extends TestSuite:
           DNI("Z", "12345678") // Flipping arguments
     }
 
-    test("NIE"){
+    test("NIE") {
       test("Compile positives"):
         Seq(
           (("X", "0000001", "R"), "X-0000001-R"),
-          (("Y", "2345678", "Z"), "Y-2345678-Z"),
+          (("Y", "2345678", "Z"), "Y-2345678-Z")
         ).foreach { case (input, expected) =>
           val result = NIE(input._1, input._2, input._3)
           assert(result.toString == expected)
@@ -73,7 +73,7 @@ object B_TypeAliasesTests extends TestSuite:
           NIE("0000001", "R", "X") // flipping all
     }
 
-    test("IDs"){
+    test("IDs") {
       test("Compile false positives"):
 
         intercept[IllegalArgumentException]:
