@@ -45,22 +45,44 @@ import backend.common.*
 object C_ValueClasses:
 
   private [vanilla] final class NIELetter (val value: String) extends AnyVal
+  private [vanilla] object NIELetter:
+    def apply(value: String): NIELetter =
+      require(
+        NieLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid NIE letter"
+        )
+      new NIELetter(value)
+
   private [vanilla] final class NieNumber (val value: String) extends AnyVal
+  private [vanilla] object NieNumber:
+    def apply(value: String): NieNumber = 
+      require(value.forall(_.isDigit), s"number $value should not contain letters")
+      require(value.length == 7, s"number $value should contain 7 digits")
+      require(value.toInt >= 0, s"'$value' is negative. It must be positive")
+      require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
+      new NieNumber(value)
+
   private [vanilla] final class DniNumber (val value: String) extends AnyVal
+  private [vanilla] object DniNumber:
+    def apply(value: String): DniNumber =
+      require(value.forall(_.isDigit), s"number $value should not contain letters")
+      require(value.length == 8, s"number $value should contain 8 digits")
+      require(value.toInt >= 0, s"'$value' is negative. It must be positive")
+      require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
+      new DniNumber(value)
+
   private [vanilla] final class Letter (val value: String) extends AnyVal
+  private [vanilla] object Letter:
+    def apply(value: String): Letter =
+      require(
+        ControlLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid ID letter"
+      )
+      new Letter(value)
 
   sealed trait ID
 
   private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
-    require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
-    require(number.value.length == 8, s"number $number should contain 8 digits")
-    val _number: Int = number.value.toInt
-    require(_number >= 0, s"'$number' is negative. It must be positive")
-    require(_number <= 99999999, s"'$number' is too big. Max number is 99999999")
-    require(
-      ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'$letter' is not a valid ID letter"
-    )
     require(
       ControlLetter.isValidId(number.value.toInt, ControlLetter.valueOf(letter.value)),
       "Number does not match correct control letter"
@@ -68,19 +90,6 @@ object C_ValueClasses:
     override def toString: String = s"${number.value}-${letter.value}"
 
   private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
-    require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
-    require(number.value.length == 7, s"number ${number.value} should contain 7 digits")
-    val _number: Int = number.value.toInt
-    require(
-      NieLetter.values.map(_.toString).contains(nieLetter.value),
-      s"'$nieLetter' is not a valid NIE letter"
-    )
-    require(_number >= 0, s"'${number.value}' is negative. It must be positive")
-    require(_number <= 99999999, s"'${number.value}' is too big. Max number is 99999999")
-    require(
-      ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'$letter' is not a valid ID letter"
-    )
     require(
       ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt, ControlLetter.valueOf(letter.value)),
       "Number does not match correct control letter"
