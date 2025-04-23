@@ -44,47 +44,48 @@ import backend.common.*
 
 object C_ValueClasses:
 
-  private final class NIELetter(val value: String) extends AnyVal
-  private final class Number(val value: Int) extends AnyVal
-  private final class Letter(val value: String) extends AnyVal
+  private [vanilla] final class NIELetter (val value: String) extends AnyVal
+  private [vanilla] final class NieNumber (val value: String) extends AnyVal
+  private [vanilla] final class DniNumber (val value: String) extends AnyVal
+  private [vanilla] final class Letter (val value: String) extends AnyVal
 
   sealed trait ID
 
-  private final class DNI(number: Number, letter: Letter) extends ID:
-    require(
-      number.value > 0,
-      s"'${number.value}' is negative. It must be positive"
-    )
-    require(
-      number.value <= 99999999,
-      s"'${number.value}' is too big. Max number is 99999999"
-    )
+  private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
+    require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
+    require(number.value.length == 8, s"number $number should contain 8 digits")
+    val _number: Int = number.value.toInt
+    require(_number >= 0, s"'$number' is negative. It must be positive")
+    require(_number <= 99999999, s"'$number' is too big. Max number is 99999999")
     require(
       ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'${letter.value}' is not a valid ID letter"
+      s"'$letter' is not a valid ID letter"
+    )
+    require(
+      ControlLetter.isValidId(number.value.toInt, ControlLetter.valueOf(letter.value)),
+      "Number does not match correct control letter"
     )
     override def toString: String = s"${number.value}-${letter.value}"
 
-  private final class NIE(nieLetter: NIELetter, number: Number, letter: Letter)
-      extends ID:
+  private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
+    require(number.value.forall(_.isDigit), s"number ${number.value} should not contain letters")
+    require(number.value.length == 7, s"number ${number.value} should contain 7 digits")
+    val _number: Int = number.value.toInt
     require(
       NieLetter.values.map(_.toString).contains(nieLetter.value),
-      s"'${nieLetter.value}' is not a valid NIE letter"
+      s"'$nieLetter' is not a valid NIE letter"
     )
-    require(
-      number.value > 0,
-      s"'${number.value}' is negative. It must be positive"
-    )
-    require(
-      number.value <= 99999999,
-      s"'${number.value}' is too big. Max number is 99999999"
-    )
+    require(_number >= 0, s"'${number.value}' is negative. It must be positive")
+    require(_number <= 99999999, s"'${number.value}' is too big. Max number is 99999999")
     require(
       ControlLetter.values.map(_.toString).contains(letter.value),
-      s"'${letter.value}' is not a valid ID letter"
+      s"'$letter' is not a valid ID letter"
     )
-    override def toString: String =
-      s"${nieLetter.value}-${number.value}-${letter.value}"
+    require(
+      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt, ControlLetter.valueOf(letter.value)),
+      "Number does not match correct control letter"
+    )
+    override def toString: String = s"${nieLetter.value}-${number.value}-${letter.value}"
 
   object ID:
     def apply(input: String): ID =
@@ -92,15 +93,13 @@ object C_ValueClasses:
       val withoutDash = trimmed.replace("-", "")
       if withoutDash.head.isDigit
       then
-        val (number, letter) = withoutDash.splitAt(8)
-        DNI(
-          number = Number(number.toInt),
-          letter = Letter(letter)
-        )
+        val (n, l) = withoutDash.splitAt(withoutDash.length-1)
+        val number = DniNumber(n)
+        val letter = Letter(l.toUpperCase())
+        DNI(number, letter)
       else
-        val (number, letter) = withoutDash.tail.splitAt(7)
-        NIE(
-          nieLetter = NIELetter(withoutDash.head.toString),
-          number = Number(number.toInt),
-          letter = Letter(letter)
-        )
+        val (n, l) = withoutDash.tail.splitAt(withoutDash.length-2)
+        val nieLetter = NIELetter(withoutDash.head.toString.toUpperCase())
+        val number = NieNumber(n)
+        val letter = Letter(l.toUpperCase())
+        NIE(nieLetter, number, letter)
