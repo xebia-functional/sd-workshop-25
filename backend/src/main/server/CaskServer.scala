@@ -7,7 +7,7 @@ import backend.vanilla.A_RawClasses
 import backend.vanilla.B_TypeAliases
 import backend.vanilla.C_ValueClasses
 import backend.vanilla.D_ValueClassesWithErrorHandling
-import backend.vanilla.E_OpaqueTypesWithValidation
+import backend.vanilla.E_OpaqueTypes
 import backend.vanilla.G_OpaqueTypesWithErrorHandling
 
 object CaskServer extends cask.MainRoutes {
@@ -110,7 +110,7 @@ object CaskServer extends cask.MainRoutes {
   def optionsRawClassValidation() = cask.Response("Options of Raw Class Validation", headers = corsHeaders)
 
   @cask.post("/opaque_type_validation")
-  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypesWithValidation.ID(request.text()))
+  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypes.ID(request.text()))
   @cask.options("/opaque_type_validation")
   def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 

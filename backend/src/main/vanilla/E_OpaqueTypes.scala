@@ -40,48 +40,57 @@ import backend.common.*
   *     type.
   */
 
-object E_OpaqueTypesWithValidation:
+object E_OpaqueTypes:
 
-  opaque type NIELetter = String
-  private object NIELetter:
-    def apply(input: String): NIELetter =
-      require(NieLetter.values.map(_.toString).contains(input))
-      input
+  private [vanilla] opaque type NIELetter = String
+  private [vanilla] object NIELetter:
+    def apply(value: String): NIELetter =
+      require(
+        NieLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid NIE letter"
+        )
+      value
 
-  opaque type Number = Int
-  private object Number:
-    def apply(input: Int): Number =
-      require(input > 0)
-      require(input <= 99999999)
-      input
+  private [vanilla] opaque type NieNumber = String
+  private [vanilla] object NieNumber:
+    def apply(value: String): NieNumber =
+      require(value.forall(_.isDigit), s"number $value should not contain letters")
+      require(value.length == 7, s"number $value should contain 7 digits")
+      require(value.toInt >= 0, s"'$value' is negative. It must be positive")
+      require(value.toInt <= 9999999, s"'$value' is too big. Max number is 9999999")
+      value
 
-  opaque type Letter = String
-  private object Letter:
-    def apply(input: String): Letter =
-      require(ControlLetter.values.map(_.toString).contains(input))
-      input
+  private [vanilla] opaque type DniNumber = String
+  private [vanilla] object DniNumber:
+    def apply(value: String): DniNumber =
+      require(value.forall(_.isDigit), s"number $value should not contain letters")
+      require(value.length == 8, s"number $value should contain 8 digits")
+      require(value.toInt >= 0, s"'$value' is negative. It must be positive")
+      require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
+      value    
+
+  private [vanilla] opaque type Letter = String
+  private [vanilla] object Letter:
+    def apply(value: String): Letter =
+      require(
+        ControlLetter.values.map(_.toString).contains(value),
+        s"'$value' is not a valid ID letter"
+      )
+      value
 
   sealed trait ID
 
-  private final class DNI(number: Number, letter: Letter) extends ID:
-    require(number > 0, s"'$number' is negative. It must be positive")
-    require(number <= 99999999, s"'$number' is too big. Max number is 99999999")
+  private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
     require(
-      ControlLetter.values.map(_.toString).contains(letter),
-      s"'$letter' is not a valid ID letter"
+      ControlLetter.isValidId(number.toInt, ControlLetter.valueOf(letter)),
+      "Number does not match correct control letter"
     )
     override def toString: String = s"$number-$letter"
 
-  private final class NIE(nieLetter: NIELetter, number: Number, letter: Letter) extends ID:
+  private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
     require(
-      NieLetter.values.map(_.toString).contains(nieLetter),
-      s"'$nieLetter' is not a valid NIE letter"
-    )
-    require(number > 0, s"'$number' is negative. It must be positive")
-    require(number <= 99999999, s"'$number' is too big. Max number is 99999999")
-    require(
-      ControlLetter.values.map(_.toString).contains(letter),
-      s"'$letter' is not a valid ID letter"
+      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter).ordinal}$number".toInt, ControlLetter.valueOf(letter)),
+      "Number does not match correct control letter"
     )
     override def toString: String = s"$nieLetter-$number-$letter"
 
@@ -93,13 +102,13 @@ object E_OpaqueTypesWithValidation:
       then
         val (number, letter) = withoutDash.splitAt(8)
         DNI(
-          number = Number(number.toInt),
-          letter = Letter(letter)
+          number = DniNumber(number),
+          letter = Letter(letter.toUpperCase)
         )
       else
         val (number, letter) = withoutDash.tail.splitAt(7)
         NIE(
           nieLetter = NIELetter(withoutDash.head.toString),
-          number = Number(number.toInt),
-          letter = Letter(letter)
+          number = NieNumber(number),
+          letter = Letter(letter.toUpperCase)
         )
