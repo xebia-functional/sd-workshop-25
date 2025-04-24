@@ -57,7 +57,7 @@ object C_ValueClasses:
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 7, s"number $value should contain 7 digits")
       require(value.toInt >= 0, s"'$value' is negative. It must be positive")
-      require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
+      require(value.toInt <= 9999999, s"'$value' is too big. Max number is 9999999")
       new NieNumber(value)
 
   private [vanilla] final class DniNumber (val value: String) extends AnyVal
