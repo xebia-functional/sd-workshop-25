@@ -6,9 +6,8 @@ import scala.util.{Try, Success, Failure}
 import backend.vanilla.A_RawClasses
 import backend.vanilla.B_TypeAliases
 import backend.vanilla.C_ValueClasses
-import backend.vanilla.D_RawClassesWithValidation
+import backend.vanilla.D_ValueClassesWithErrorHandling
 import backend.vanilla.E_OpaqueTypesWithValidation
-import backend.vanilla.F_ValueClassesWithErrorHandling
 import backend.vanilla.G_OpaqueTypesWithErrorHandling
 
 object CaskServer extends cask.MainRoutes {
@@ -38,6 +37,23 @@ object CaskServer extends cask.MainRoutes {
       case Failure(error) =>
         cask.Response(
           error.getMessage,
+          statusCode = 400,
+          headers = corsHeaders
+        )
+    }
+  }
+
+  private def mapEndpoint[Error, Succes](block: Either[Error, Succes]): cask.Response[String] = {
+    block match {
+      case Right(result) =>
+        cask.Response(
+          result.toString,
+          statusCode = 200,
+          headers = corsHeaders
+        )
+      case Left(error) =>
+        cask.Response(
+          error.toString,
           statusCode = 400,
           headers = corsHeaders
         )
@@ -89,7 +105,7 @@ object CaskServer extends cask.MainRoutes {
   def optionsValueClass() = cask.Response("Options of Value Class", headers = corsHeaders)
 
   @cask.post("/raw_class_validation")
-  def rawClassValidation(request: cask.Request) = handleEndpoint(D_RawClassesWithValidation.ID(request.text()))
+  def rawClassValidation(request: cask.Request) = mapEndpoint(D_ValueClassesWithErrorHandling.ID(request.text()))
   @cask.options("/raw_class_validation")
   def optionsRawClassValidation() = cask.Response("Options of Raw Class Validation", headers = corsHeaders)
 
@@ -99,8 +115,8 @@ object CaskServer extends cask.MainRoutes {
   def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 
   @cask.post("/vaule_class_error_handling")
-  def valueClassErrorHandling(request: cask.Request) = handleEndpoint(
-    F_ValueClassesWithErrorHandling.ID.either(request.text())
+  def valueClassErrorHandling(request: cask.Request) = mapEndpoint(
+    D_ValueClassesWithErrorHandling.ID(request.text())
   )
   @cask.options("/vaule_class_error_handling")
   def optionsValueClassErrorHandling() = cask.Response("Options of Value Class Error Handling", headers = corsHeaders)
