@@ -200,7 +200,6 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           ID("Y2345678Ñ") match
             case Left(error) => assert(error == "'Ñ' is not a valid ID letter")
             case Right       => assert(false)
-          // assert(ID("Y2345678Ñ").isLeft)
 
       test("edge cases"):
         test("whitespace handling"):
