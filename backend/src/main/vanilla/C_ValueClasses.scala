@@ -19,16 +19,13 @@ import backend.common.*
   *   - Zero-Cost Abstraction
   *
   * ==Pros of Value Classes==
-  *   - Type Safety: Provides compile-time type checking by preventing mixing up
-  *     different types that share the same underlying representation
-  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime,
-  *     resulting in no performance overhead compared to using the underlying
-  *     type directly
-  *   - Domain Modeling: Helps create more meaningful domain types and makes the
-  *     code more readable and self-documenting
-  *   - Encapsulation: Allows the addition of methods to primitive types without
-  *     the need for inheritance and keeps related functionality together within
-  *     the wrapper class
+  *   - Type Safety: Provides compile-time type checking by preventing mixing up different types that share the same
+  *     underlying representation
+  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime, resulting in no performance overhead compared to
+  *     using the underlying type directly
+  *   - Domain Modeling: Helps create more meaningful domain types and makes the code more readable and self-documenting
+  *   - Encapsulation: Allows the addition of methods to primitive types without the need for inheritance and keeps
+  *     related functionality together within the wrapper class
   *
   * ==Cons of Value Classes==
   *   - Limited Validation: Provides some enforcement of order but not much more. Cannot prevent invalid values at
@@ -42,17 +39,17 @@ import backend.common.*
 
 object C_ValueClasses:
 
-  private [vanilla] final class NIELetter (val value: String) extends AnyVal
-  private [vanilla] object NIELetter:
+  private[vanilla] final class NIELetter(val value: String) extends AnyVal
+  private[vanilla] object NIELetter:
     def apply(value: String): NIELetter =
       require(
         NieLetter.values.map(_.toString).contains(value),
         s"'$value' is not a valid NIE letter"
-        )
+      )
       new NIELetter(value)
 
-  private [vanilla] final class NieNumber (val value: String) extends AnyVal
-  private [vanilla] object NieNumber:
+  private[vanilla] final class NieNumber(val value: String) extends AnyVal
+  private[vanilla] object NieNumber:
     def apply(value: String): NieNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 7, s"number $value should contain 7 digits")
@@ -60,8 +57,8 @@ object C_ValueClasses:
       require(value.toInt <= 9999999, s"'$value' is too big. Max number is 9999999")
       new NieNumber(value)
 
-  private [vanilla] final class DniNumber (val value: String) extends AnyVal
-  private [vanilla] object DniNumber:
+  private[vanilla] final class DniNumber(val value: String) extends AnyVal
+  private[vanilla] object DniNumber:
     def apply(value: String): DniNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 8, s"number $value should contain 8 digits")
@@ -69,8 +66,8 @@ object C_ValueClasses:
       require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
       new DniNumber(value)
 
-  private [vanilla] final class Letter (val value: String) extends AnyVal
-  private [vanilla] object Letter:
+  private[vanilla] final class Letter(val value: String) extends AnyVal
+  private[vanilla] object Letter:
     def apply(value: String): Letter =
       require(
         ControlLetter.values.map(_.toString).contains(value),
@@ -80,16 +77,19 @@ object C_ValueClasses:
 
   sealed trait ID
 
-  private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
+  private[vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
     require(
       ControlLetter.isValidId(number.value.toInt, ControlLetter.valueOf(letter.value)),
       "Number does not match correct control letter"
     )
     override def toString: String = s"${number.value}-${letter.value}"
 
-  private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
+  private[vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
     require(
-      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt, ControlLetter.valueOf(letter.value)),
+      ControlLetter.isValidId(
+        s"${NieLetter.valueOf(nieLetter.value).ordinal}${number.value}".toInt,
+        ControlLetter.valueOf(letter.value)
+      ),
       "Number does not match correct control letter"
     )
     override def toString: String = s"${nieLetter.value}-${number.value}-${letter.value}"
