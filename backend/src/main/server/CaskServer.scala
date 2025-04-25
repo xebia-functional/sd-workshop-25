@@ -1,5 +1,3 @@
-//> using dependency com.lihaoyi::cask:0.10.2
-//> using dependencies com.lihaoyi::upickle:4.1.0
 package backend.server
 
 import scala.util.{Try, Success, Failure}
