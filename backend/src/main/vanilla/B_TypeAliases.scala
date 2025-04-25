@@ -75,7 +75,7 @@ object B_TypeAliases:
 
   sealed trait ID
 
-  private[vanilla] final class DNI private(number: DniNumber, letter: ControlLetter) extends ID:
+  private [vanilla] final class DNI private(number: DniNumber, letter: ControlLetter) extends ID:
     val _number = number.toInt
     require(
       ControlLetter.fromOrdinal(_number % 23) == letter,
@@ -83,12 +83,14 @@ object B_TypeAliases:
     )
     override def toString: String = s"$number-$letter"
 
-  private[vanilla] object DNI:
+  private [vanilla] object DNI:
     def apply(number: DniNumber, letter: String): DNI =
+      val _number = DniNumber(number)
       val _letter = ControlLetter.valueOf(letter)
-      new DNI(number, _letter)
+      //new DNI(number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
+      new DNI(_number, _letter)
 
-  private[vanilla] final class NIE private(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
+  private [vanilla] final class NIE private(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
     val ordinalOfNIE = nieLetter.ordinal // Extracts the number representation of the NIE Letter
     val _number = s"$ordinalOfNIE$number".toInt // Appends the number representation from NIE Letter to the number
     require(
@@ -100,8 +102,10 @@ object B_TypeAliases:
   private [vanilla] object NIE:
     def apply(nieLetter: String, number: NieNumber, letter: String): NIE =
       val _nieLetter = NieLetter.valueOf(nieLetter)
+      val _number = NieNumber(number)
       val _letter = ControlLetter.valueOf(letter)
-      new NIE(_nieLetter, number, _letter)  
+      //new NIE(_nieLetter, number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
+      new NIE(_nieLetter, _number, _letter)  
 
   object ID:
     def apply(input: String): ID =
