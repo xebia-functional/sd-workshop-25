@@ -22,20 +22,21 @@ object B_TypeAliasesTests extends TestSuite:
         }
 
       test("Compile false positives"):
-        intercept[IllegalArgumentException]:
-          DNI("1234567", "T") // too short number
 
-        intercept[IllegalArgumentException]:
-          DNI("123456789", "T") // too long number
+        test("Too short number"):
+          intercept[IllegalArgumentException](DNI("1234567", "T"))
 
-        intercept[IllegalArgumentException]:
-          DNI("1234567A", "T") // invalid number
+        test("too long number"):
+          intercept[IllegalArgumentException](DNI("123456789", "T"))
 
-        intercept[IllegalArgumentException]:
-          DNI("12345678", "Ñ") // invalid controll letter
+        test("invalid number"):
+          intercept[IllegalArgumentException](DNI("1234567A", "T"))
 
-        intercept[IllegalArgumentException]:
-          DNI("Z", "12345678") // Flipping arguments
+        test("invalid control letter"):
+          intercept[IllegalArgumentException](DNI("12345678", "Ñ"))
+
+        test("flipping arguments"):
+          intercept[IllegalArgumentException](DNI("Z", "12345678"))
     }
 
     test("NIE") {
@@ -50,45 +51,57 @@ object B_TypeAliasesTests extends TestSuite:
 
       test("Compile false positives"):
 
-        intercept[IllegalArgumentException]:
-          NIE("A", "234567", "T") // invalid nie letter
+        test("invalid nie letter"):
+          intercept[IllegalArgumentException](NIE("A", "1234567", "T"))
 
-        intercept[IllegalArgumentException]:
-          NIE("Y", "234567", "T") // too short number
+        test("too short number"):
+          intercept[IllegalArgumentException](NIE("Y", "234567", "T"))
 
-        intercept[IllegalArgumentException]:
-          NIE("Y", "23456789", "T") // too long number
+        test("too long number"):
+          intercept[IllegalArgumentException](NIE("Y", "23456789", "T"))
 
-        intercept[IllegalArgumentException]:
-          NIE("Y", "234567A", "T") // invalid number
+        test("invalid number"):
+          intercept[IllegalArgumentException](NIE("Y", "234567A", "T"))
 
-        intercept[IllegalArgumentException]:
-          NIE("Y", "2345678", "Ñ") // invalid controll letter
+        test("invalid controll letter"):
+          intercept[IllegalArgumentException](NIE("Y", "2345678", "Ñ"))
 
-        intercept[IllegalArgumentException]:
-          NIE("R", "0000001", "X") // flipping nie letter and control letter
+        test("flipping nie letter and control letter"):
+          intercept[IllegalArgumentException](NIE("R", "0000001", "X"))
 
-        intercept[IllegalArgumentException]:
-          NIE("0000001", "R", "X") // flipping all
+        test("flipping all arguments"):
+          intercept[IllegalArgumentException](NIE("0000001", "R", "X"))
     }
 
     test("IDs") {
       test("Compile false positives"):
 
-        intercept[IllegalArgumentException]:
-          ID("A234567T") // invalid nie letter
+        test("empty"):
+          intercept[NoSuchElementException](ID(""))
 
-        intercept[IllegalArgumentException]:
-          ID("1234567T") // too short number
+        test("invisible characters"):
+          intercept[NoSuchElementException](ID("\n\r\t"))
 
-        intercept[IllegalArgumentException]:
-          ID("123456789T") // too long number
+        test("symbol"):
+          intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
 
-        intercept[IllegalArgumentException]:
-          ID("1234567AT") // invalid number
+        test("absent number and control letter in NIE"):
+          intercept[IllegalArgumentException](ID("Y"))
 
-        intercept[IllegalArgumentException]:
-          ID("Y2345678Ñ") // invalid controll letter
+        test("invalid nie letter"):
+          intercept[IllegalArgumentException](ID("A1234567T"))
+
+        test("too short number"):
+          intercept[IllegalArgumentException](ID("1234567T"))
+
+        test("too long number"):
+          intercept[IllegalArgumentException](ID("123456789T"))
+
+        test("invalid number"):
+          intercept[IllegalArgumentException](ID("1234567AT"))
+
+        test(" invalid controll letter"):
+          intercept[IllegalArgumentException](ID("Y2345678Ñ"))
 
       test("edge cases"):
         test("whitespace handling"):
