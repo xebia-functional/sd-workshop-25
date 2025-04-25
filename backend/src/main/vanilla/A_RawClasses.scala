@@ -39,7 +39,7 @@ object A_RawClasses:
     case Z // 2
 
   // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with the remainder of number divided by 23  
+  // The ordinal value of each letter corresponds with the remainder of number divided by 23
   enum ControlLetter:
     case T // 0
     case R // 1
@@ -63,11 +63,11 @@ object A_RawClasses:
     case L // 19
     case C // 20
     case K // 21
-    case E // 22  
+    case E // 22
 
   sealed trait ID
 
-  private[vanilla] final class DNI private(number: String, letter: ControlLetter) extends ID:
+  private[vanilla] final class DNI private (number: String, letter: ControlLetter) extends ID:
     require(number.forall(_.isDigit), s"DNI number '$number' should not contain letters")
     require(number.length == 8, s"DNI number '$number' should contain 8 digits")
     val _number = number.toInt
@@ -82,7 +82,7 @@ object A_RawClasses:
       val _letter = ControlLetter.valueOf(letter)
       new DNI(number, _letter)
 
-  private[vanilla] final class NIE private(nieLetter: NieLetter, number: String, letter: ControlLetter) extends ID:
+  private[vanilla] final class NIE private (nieLetter: NieLetter, number: String, letter: ControlLetter) extends ID:
     require(number.forall(_.isDigit), s"NIE number '$number' should not contain letters")
     require(number.length == 7, s"NIE number '$number' should contain 7 digits")
     val ordinalOfNIE = nieLetter.ordinal // Extracts the number representation of the NIE Letter
@@ -93,11 +93,11 @@ object A_RawClasses:
     )
     override def toString: String = s"$nieLetter-$number-$letter"
 
-  private [vanilla] object NIE:
+  private[vanilla] object NIE:
     def apply(nieLetter: String, number: String, letter: String): NIE =
       val _nieLetter = NieLetter.valueOf(nieLetter)
       val _letter = ControlLetter.valueOf(letter)
-      new NIE(_nieLetter, number, _letter)  
+      new NIE(_nieLetter, number, _letter)
 
   object ID:
     def apply(input: String): ID =
@@ -107,7 +107,7 @@ object A_RawClasses:
       then
         val (number, letter) = withoutDash.splitAt(withoutDash.length - 1)
         val _letter = letter.toUpperCase // Handeling lowerCase
-        DNI(number, _letter) 
+        DNI(number, _letter)
       else
         val (number, letter) = withoutDash.tail.splitAt(withoutDash.length - 2)
         val nieLetter = withoutDash.head.toString.toUpperCase // Handling lowerCase
