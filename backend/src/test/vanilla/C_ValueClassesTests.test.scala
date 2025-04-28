@@ -1,5 +1,3 @@
-//> using test.dep com.lihaoyi::utest:0.8.5
-
 package backend.vanilla
 
 import backend.common.*
@@ -10,81 +8,78 @@ import utest.*
 object C_ValueClassesTests extends TestSuite:
 
   val tests = Tests {
+
     test("DNI") {
 
       test("Compile positives"):
         Seq(
-          (("12345678", "Z"), "12345678-Z"),
-          (("00000001", "R"), "00000001-R"),
-          (("99999999", "R"), "99999999-R")
-        ).foreach {
-          case (input, expected) =>
-            val result = new DNI(DniNumber(input._1), Letter(input._2))
-            assert(result.toString == expected)
-          case _ => false
-        }
-
-      test("Compile false positives"):
-
-        test("Too short number"):
-          intercept[IllegalArgumentException](DNI(DniNumber("1234567"), Letter("T")))
-
-        test("too long number"):
-          intercept[IllegalArgumentException](DNI(DniNumber("123456789"), Letter("T")))
-
-        test("invalid number"):
-          intercept[IllegalArgumentException](DNI(DniNumber("1234567A"), Letter("T")))
-
-        test("invalid control letter"):
-          intercept[IllegalArgumentException](DNI(DniNumber("12345678"), Letter("Ñ")))
-
-        // test("flipping arguments"):
-        //  intercept[IllegalArgumentException](DNI(Letter("Z"), DniNumber("12345678")))
-
-    }
-
-    test("NIE") {
-      test("Compile positives"):
-        Seq(
-          (("X", "0000001", "R"), "X-0000001-R"),
-          (("Y", "2345678", "Z"), "Y-2345678-Z")
+          (("12345678Z"), "12345678-Z"),
+          (("00000001R"), "00000001-R"),
+          (("99999999R"), "99999999-R")
         ).foreach { case (input, expected) =>
-          val result = NIE(NIELetter(input._1), NieNumber(input._2), Letter(input._3))
+          val result = DNI(input)
           assert(result.toString == expected)
         }
 
       test("Compile false positives"):
 
-        test("invalid nie letter"):
-          intercept[IllegalArgumentException](NIE(NIELetter("A"), NieNumber("1234567"), Letter("T")))
-
-        test("too short number"):
-          intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("234567"), Letter("T")))
+        test("Too short number"):
+          intercept[IllegalArgumentException](DNI("1234567T"))
 
         test("too long number"):
-          intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("23456789"), Letter("T")))
+          intercept[IllegalArgumentException](DNI("123456789T"))
 
         test("invalid number"):
-          intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("234567A"), Letter("T")))
+          intercept[IllegalArgumentException](DNI("1234567AT"))
+
+        test("invalid control letter"):
+          intercept[IllegalArgumentException](DNI("12345678Ñ"))
+
+        test("flipping arguments"):
+          intercept[IllegalArgumentException](DNI("Z12345678"))
+    }
+
+    test("NIE") {
+      test("Compile positives"):
+        Seq(
+          (("X0000001R"), "X-0000001-R"),
+          (("Y2345678Z"), "Y-2345678-Z")
+        ).foreach { case (input, expected) =>
+          val result = NIE(input)
+          assert(result.toString == expected)
+        }
+
+      test("Compile false positives"):
+        test("invalid nie letter"):
+          intercept[IllegalArgumentException](NIE("A1234567T"))
+
+        test("too short number"):
+          intercept[IllegalArgumentException](NIE("Y234567T"))
+
+        test("too long number"):
+          intercept[IllegalArgumentException](NIE("Y23456789T"))
+
+        test("invalid number"):
+          intercept[IllegalArgumentException](NIE("Y234567AT"))
 
         test("invalid controll letter"):
-          intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("2345678"), Letter("Ñ")))
+          intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
 
-        // test("flipping nie letter and control letter"):
-        //  intercept[IllegalArgumentException](NIE(Letter("R"), NieNumber("0000001"), NIELetter("X")))
+        test("flipping nie letter and control letter"):
+          intercept[IllegalArgumentException](NIE("R0000001X"))
 
-        // test("flipping all arguments"):
-        //  intercept[IllegalArgumentException](NIE(NieNumber("0000001"), Letter("R"), NIELetter("X")))
+        test("flipping all arguments"):
+          intercept[IllegalArgumentException](NIE("0000001RX"))
     }
 
     test("IDs") {
       test("Compile false positives"):
 
         test("empty"):
-          intercept[NoSuchElementException](ID(""))
+          intercept[IllegalArgumentException](ID(""))
 
         test("invisible characters"):
-          intercept[NoSuchElementException](ID("\n\r\t"))
+          intercept[IllegalArgumentException](ID("\n\r\t"))
 
         test("symbol"):
           intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))

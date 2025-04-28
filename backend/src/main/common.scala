@@ -4,31 +4,6 @@ import scala.util.control.NoStackTrace
 
 object common:
 
-  val controlLetter: Map[Int, String] = Map(
-    0 -> "T",
-    1 -> "R",
-    2 -> "W",
-    3 -> "A",
-    4 -> "G",
-    5 -> "M",
-    6 -> "Y",
-    7 -> "F",
-    8 -> "P",
-    9 -> "D",
-    10 -> "X",
-    11 -> "B",
-    12 -> "N",
-    13 -> "J",
-    14 -> "Z",
-    15 -> "S",
-    16 -> "Q",
-    17 -> "V",
-    18 -> "H",
-    19 -> "L",
-    20 -> "C",
-    21 -> "K",
-    22 -> "E"
-  )
 
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with the remainder of number divided by 23
@@ -85,22 +60,10 @@ object common:
 
   sealed trait FailedValidation(cause: String) extends Exception with NoStackTrace:
     override def toString: String = cause
-  case class InvalidNieLetter(wrongInput: String) extends FailedValidation(s"'$wrongInput' is not a valid NIE letter")
-  case class InvalidIdLetter(wrongInput: String) extends FailedValidation(s"'$wrongInput' is not a valid ID letter")
-  case class InvalidControlLetter(wrongInput: String)
-      extends FailedValidation(
-        s"'$wrongInput' does not match the associated remainder letter"
-      )
-  case class InvalidNumber(wrongInput: String) extends FailedValidation(s"'$wrongInput' should only contain digits")
-  case class InvalidNegativeNumber(wrongInput: Int)
-      extends FailedValidation(
-        s"'$wrongInput' is negative. It must be positive"
-      )
-  case class InvalidTooBigNumber(wrongInput: Int)
-      extends FailedValidation(
-        s"'$wrongInput' is too big. Max number is 99999999"
-      )
-  case class InvalidIdTooLong(wrongInput: String)
-      extends FailedValidation(
-        s"'$wrongInput' is too long. Max amount of characters is 9"
-      )
+  
+  case class InvalidNieLetter(nieLetter: String) extends FailedValidation(s"'$nieLetter' is not a valid NIE letter")
+  case class InvalidNaN(number: String) extends FailedValidation(s"'$number' should only contain digits")
+  case class InvalidDniNumber(dniNumber: String) extends FailedValidation(s"'$dniNumber' should contains 8 digits.")
+  case class InvalidNieNumber(nieNumber: String) extends FailedValidation(s"'$nieNumber' should contains 7 digits.")
+  case class InvalidControlLetter(controlLetter: String) extends FailedValidation(s"'$controlLetter' is not a valid Control letter")
+  case class InvalidID(id: String) extends FailedValidation(s"'$id' is invalid. Number does not match the associated control letter")

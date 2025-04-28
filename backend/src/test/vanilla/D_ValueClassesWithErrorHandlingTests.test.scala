@@ -1,8 +1,5 @@
-//> using test.dep com.lihaoyi::utest:0.8.5
-
 package backend.vanilla
 
-import backend.common.*
 import backend.vanilla.D_ValueClassesWithErrorHandling.*
 
 import utest.*
@@ -10,215 +7,198 @@ import utest.*
 object D_ValueClassesWithErrorHandlingTests extends TestSuite:
 
   val tests = Tests {
+
     test("DNI") {
 
       test("Compile positives"):
         Seq(
-          (("12345678", "Z"), "12345678-Z"),
-          (("00000001", "R"), "00000001-R"),
-          (("99999999", "R"), "99999999-R")
+          (("12345678Z"), "12345678-Z"),
+          (("00000001R"), "00000001-R"),
+          (("99999999R"), "99999999-R")
         ).foreach { case (input, expected) =>
-          val result = for
-            dniNumber <- DniNumber(input._1)
-            letter <- Letter(input._2)
-          yield DNI(dniNumber, letter)
-          result.foreach(dni => assert(dni.toString == expected))
-        }
+          DNI(input).foreach{ result =>
+            assert(result.toString == expected)
+        }}
 
       test("Compile false positives"):
 
         test("Too short number"):
-          //  intercept[IllegalArgumentException](DNI(DniNumber("1234567"), Letter("T")))
-          val result = for
-            number <- DniNumber("1234567")
-            letter <- Letter("T")
-          yield DNI(number, letter)
-          result match
-            case Left(error) => assert(error == "number 1234567 should contain 8 digits")
-            case Right       => assert(false)
-
+          // intercept[IllegalArgumentException](DNI("1234567T"))
+          assert(DNI("1234567T").isLeft)
+  
         test("too long number"):
-          //  intercept[IllegalArgumentException](DNI(DniNumber("123456789"), Letter("T")))
-          val result = for
-            number <- DniNumber("123456789")
-            letter <- Letter("T")
-          yield DNI(number, letter)
-          result match
-            case Left(error) => assert(error == "number 123456789 should contain 8 digits")
-            case Right       => assert(false)
-
+          //  intercept[IllegalArgumentException](DNI("123456789T"))
+          assert(DNI("123456789T").isLeft)
+        
         test("invalid number"):
-          //  intercept[IllegalArgumentException](DNI(DniNumber("1234567A"), Letter("T")))
-          val result = for
-            number <- DniNumber("1234567A")
-            letter <- Letter("T")
-          yield DNI(number, letter)
-          result match
-            case Left(error) => assert(error == "number 1234567A should not contain letters")
-            case Right       => assert(false)
+          // intercept[IllegalArgumentException](DNI("1234567AT"))
+          assert(DNI("1234567AT").isLeft)
 
         test("invalid control letter"):
-          //  intercept[IllegalArgumentException](DNI(DniNumber("12345678"), Letter("Ñ")))
-          val result = for
-            number <- DniNumber("12345678")
-            letter <- Letter("Ñ")
-          yield DNI(number, letter)
-          result match
-            case Left(error) => assert(error == "'Ñ' is not a valid ID letter")
-            case Right       => assert(false)
-        // test("flipping arguments"):
-        //  intercept[IllegalArgumentException](DNI(Letter("Z"), DniNumber("12345678")))
+          // intercept[IllegalArgumentException](DNI("12345678Ñ"))
+          assert(DNI("12345678Ñ").isLeft)
 
+        test("flipping arguments"):
+          // intercept[IllegalArgumentException](DNI("Z12345678"))
+          assert(DNI("Z12345678").isLeft)
     }
 
     test("NIE") {
       test("Compile positives"):
         Seq(
-          (("X", "0000001", "R"), "X-0000001-R"),
-          (("Y", "2345678", "Z"), "Y-2345678-Z")
+          (("X0000001R"), "X-0000001-R"),
+          (("Y2345678Z"), "Y-2345678-Z")
         ).foreach { case (input, expected) =>
-          val result = for
-            nieLetter <- NIELetter(input._1)
-            number <- NieNumber(input._2)
-            letter <- Letter(input._3)
-          yield NIE(nieLetter, number, letter)
-          result.foreach(nie => assert(nie.toString == expected))
-
+          NIE(input).foreach{ result => 
+          assert(result.toString() == expected)
+          }  
         }
 
       test("Compile false positives"):
-
         test("invalid nie letter"):
-          //  intercept[IllegalArgumentException](NIE(NIELetter("A"), NieNumber("1234567"), Letter("T")))
-          val result = for
-            nieLetter <- NIELetter("A")
-            number <- NieNumber("1234567")
-            letter <- Letter("T")
-          yield NIE(nieLetter, number, letter)
-          result match
-            case Left(error) => assert(error == "'A' is not a valid NIE letter")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](NIE("A1234567T"))
+          assert(
+            NIE("A1234567T") match
+              case Left(error) => error == InvalidNieLetter("A")
+              case Right(_) => false
+          )
+
 
         test("too short number"):
-          //  intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("234567"), Letter("T")))
-          val result = for
-            nieLetter <- NIELetter("Y")
-            number <- NieNumber("234567")
-            letter <- Letter("T")
-          yield NIE(nieLetter, number, letter)
-          result match
-            case Left(error) => assert(error == "number 234567 should contain 7 digits")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](NIE("Y", "234567", "T"))
+          assert(
+            NIE("Y234567T") match
+              case Left(error) => error == InvalidNieNumber("234567")
+              case Right(_) => false
+          )
 
         test("too long number"):
-          //  intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("23456789"), Letter("T")))
-          val result = for
-            nieLetter <- NIELetter("Y")
-            number <- NieNumber("23456789")
-            letter <- Letter("T")
-          yield NIE(nieLetter, number, letter)
-          result match
-            case Left(error) => assert(error == "number 23456789 should contain 7 digits")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](NIE("Y", "23456789", "T"))
+          assert(
+            NIE("Y23456789T") match
+              case Left(error) => error == InvalidNieNumber("23456789")
+              case Right(_) => false
+          )
 
         test("invalid number"):
-          //  intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("234567A"), Letter("T")))
-          val result = for
-            nieLetter <- NIELetter("Y")
-            number <- NieNumber("234567A")
-            letter <- Letter("T")
-          yield NIE(nieLetter, number, letter)
-          result match
-            case Left(error) => assert(error == "number 234567A should not contain letters")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](NIE("Y", "234567A", "T"))
+          assert(
+            NIE("Y234567AT") match
+              case Left(error) => error == InvalidNaN("234567A")
+              case Right(_) => false
+          )
 
         test("invalid controll letter"):
-          //  intercept[IllegalArgumentException](NIE(NIELetter("Y"), NieNumber("2345678"), Letter("Ñ")))
-          val result = for
-            nieLetter <- NIELetter("Y")
-            number <- NieNumber("2345678")
-            letter <- Letter("Ñ")
-          yield NIE(nieLetter, number, letter)
-          result match
-            case Left(error) => assert(error == "'Ñ' is not a valid ID letter")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
+          assert(
+            NIE("Y2345678Ñ") match
+              case Left(error) => error == InvalidControlLetter("Ñ")
+              case Right(_) => false
+          )
 
-        // test("flipping nie letter and control letter"):
-        //  intercept[IllegalArgumentException](NIE(Letter("R"), NieNumber("0000001"), NIELetter("X")))
+        test("flipping nie letter and control letter"):
+          //intercept[IllegalArgumentException](NIE("R0000001X"))
+          assert(
+            NIE("R0000001X") match
+              case Left(error) => error == InvalidNieLetter("R")
+              case Right(_) => false
+          )
 
-        // test("flipping all arguments"):
-        //  intercept[IllegalArgumentException](NIE(NieNumber("0000001"), Letter("R"), NIELetter("X")))
+
+        test("flipping all arguments"):
+          //intercept[IllegalArgumentException](NIE("0000001RX"))
+          assert(
+            NIE("0000001RX") match
+              case Left(error) => error == InvalidNieLetter("0")
+              case Right(_) => false
+          )
+
     }
 
     test("IDs") {
       test("Compile false positives"):
 
         test("empty"):
-          intercept[NoSuchElementException](ID(""))
+          //intercept[NoSuchElementException](ID(""))
+          assert(
+            ID("") match
+              case Left(error) => error  == InvalidInput("")
+              case Right(_) => false
+            )
 
         test("invisible characters"):
-          intercept[NoSuchElementException](ID("\n\r\t"))
+          //intercept[NoSuchElementException](ID("\n\r\t"))
+          assert(
+            ID("\n\r\t") match
+              case Left(error) => error  == InvalidInput("\n\r\t")
+              case Right(_) => false
+            )
 
         test("symbol"):
-          //  intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
-          ID("@#¢∞¬÷“”≠") match
-            case Left(error) => assert(error == "'@' is not a valid NIE letter")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
+          assert(
+            ID("@#¢∞¬÷“”≠") match
+              case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠")
+              case Right(_) => false
+            )
+ 
 
         test("absent number and control letter in NIE"):
-          //  intercept[IllegalArgumentException](ID("Y"))
-          ID("Y") match
-            case Left(error) => assert(error == "number  should contain 7 digits")
-            case Right       => assert(false)
-
+          //intercept[IllegalArgumentException](ID("Y"))
+          assert(
+            ID("Y") match
+              case Left(error) => error  == InvalidNieNumber("")
+              case Right(_) => false
+            )
+ 
         test("invalid nie letter"):
-          //  intercept[IllegalArgumentException](ID("A1234567T"))
-          ID("A1234567T") match
-            case Left(error) => assert(error == "'A' is not a valid NIE letter")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](ID("A1234567T"))
+          assert(
+            ID("A1234567T") match
+              case Left(error) => error == InvalidNieLetter("A")
+              case Right(_) => false
+          )
 
         test("too short number"):
-          //  intercept[IllegalArgumentException](ID("1234567T"))
-          ID("1234567T") match
-            case Left(error) => assert(error == "number 1234567 should contain 8 digits")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](ID("1234567T"))
+          assert(
+            ID("1234567T") match
+              case Left(error) => error == InvalidDniNumber("1234567")
+              case Right(_) => false
+          )
 
         test("too long number"):
-          //  intercept[IllegalArgumentException](ID("123456789T"))
-          ID("123456789T") match
-            case Left(error) => assert(error == "number 123456789 should contain 8 digits")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](ID("123456789T"))
+          assert(
+            ID("123456789T") match
+              case Left(error) => error == InvalidDniNumber("123456789")
+              case Right(_) => false
+          )
 
         test("invalid number"):
-          //  intercept[IllegalArgumentException](ID("1234567AT"))
-          ID("1234567AT") match
-            case Left(error) => assert(error == "number 1234567A should not contain letters")
-            case Right       => assert(false)
+          //intercept[IllegalArgumentException](ID("1234567AT"))
+          assert(
+            ID("1234567AT") match
+              case Left(error) => error == InvalidNaN("1234567A")
+              case Right(_) => false
+          )
 
-        test("invalid controll letter"):
-          //  intercept[IllegalArgumentException](ID("Y2345678Ñ"))
-          ID("Y2345678Ñ") match
-            case Left(error) => assert(error == "'Ñ' is not a valid ID letter")
-            case Right       => assert(false)
+        test(" invalid controll letter"):
+          //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
+          assert(
+            ID("Y2345678Ñ") match
+              case Left(error) => error == InvalidControlLetter("Ñ")
+              case Right(_) => false
+          )
 
       test("edge cases"):
         test("whitespace handling"):
-          Seq(
-            ("  12345678Z  ", "12345678-Z"),
-            ("  X1234567L  ", "X-1234567-L")
-          ).foreach { case (input, expected) =>
-            val result = ID(input)
-            result.foreach(id => assert(id.toString == expected))
-          }
+          assert(ID("  12345678Z  ").map(_.toString) == Right("12345678-Z"))
+          assert(ID("  X1234567L  ").map(_.toString) == Right("X-1234567-L"))
 
         test("dash handling"):
-          Seq(
-            ("12345678-Z", "12345678-Z"),
-            ("X-1234567-L", "X-1234567-L")
-          ).foreach { case (input, expected) =>
-            val result = ID(input)
-            result.foreach(id => assert(id.toString == expected))
-          }
+          assert(ID("12345678-Z").map(_.toString) == Right("12345678-Z"))
+          assert(ID("X-1234567-L").map(_.toString) == Right("X-1234567-L"))
 
         test("lower case handling"):
           Seq(
@@ -229,7 +209,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
             ("Y2345678z", "Y-2345678-Z")
           ).foreach { case (input, expected) =>
             val result = ID(input)
-            result.foreach(id => assert(id.toString == expected))
+            assert(result.map(_.toString) == Right(expected))
           }
     }
   }
