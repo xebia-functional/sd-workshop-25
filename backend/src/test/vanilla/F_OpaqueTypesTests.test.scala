@@ -1,13 +1,11 @@
-//> using test.dep com.lihaoyi::utest:0.8.5
-
 package backend.vanilla
 
 import backend.common.*
-import backend.vanilla.E_OpaqueTypes.*
+import backend.vanilla.F_OpaqueTypes.*
 
 import utest.*
 
-object E_OpaqueTypesTests extends TestSuite:
+object F_OpaqueTypesTests extends TestSuite:
 
   val tests = Tests {
     test("DNI") {

@@ -1,10 +1,10 @@
 package backend.vanilla
 
-import backend.vanilla.D_ValueClassesWithErrorHandling.*
+import backend.vanilla.E_OpaqueTypesWithErrorHandling.*
 
 import utest.*
 
-object D_ValueClassesWithErrorHandlingTests extends TestSuite:
+object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
 
   val tests = Tests {
 

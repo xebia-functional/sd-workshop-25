@@ -40,19 +40,19 @@ import backend.common.*
   *     type.
   */
 
-object E_OpaqueTypes:
+object F_OpaqueTypes:
 
-  private [vanilla] opaque type NIELetter = String
-  private [vanilla] object NIELetter:
+  private[vanilla] opaque type NIELetter = String
+  private[vanilla] object NIELetter:
     def apply(value: String): NIELetter =
       require(
         NieLetter.values.map(_.toString).contains(value),
         s"'$value' is not a valid NIE letter"
-        )
+      )
       value
 
-  private [vanilla] opaque type NieNumber = String
-  private [vanilla] object NieNumber:
+  private[vanilla] opaque type NieNumber = String
+  private[vanilla] object NieNumber:
     def apply(value: String): NieNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 7, s"number $value should contain 7 digits")
@@ -60,17 +60,17 @@ object E_OpaqueTypes:
       require(value.toInt <= 9999999, s"'$value' is too big. Max number is 9999999")
       value
 
-  private [vanilla] opaque type DniNumber = String
-  private [vanilla] object DniNumber:
+  private[vanilla] opaque type DniNumber = String
+  private[vanilla] object DniNumber:
     def apply(value: String): DniNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
       require(value.length == 8, s"number $value should contain 8 digits")
       require(value.toInt >= 0, s"'$value' is negative. It must be positive")
       require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
-      value    
+      value
 
-  private [vanilla] opaque type Letter = String
-  private [vanilla] object Letter:
+  private[vanilla] opaque type Letter = String
+  private[vanilla] object Letter:
     def apply(value: String): Letter =
       require(
         ControlLetter.values.map(_.toString).contains(value),
@@ -80,14 +80,14 @@ object E_OpaqueTypes:
 
   sealed trait ID
 
-  private [vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
+  private[vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
     require(
       ControlLetter.isValidId(number.toInt, ControlLetter.valueOf(letter)),
       "Number does not match correct control letter"
     )
     override def toString: String = s"$number-$letter"
 
-  private [vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
+  private[vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
     require(
       ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter).ordinal}$number".toInt, ControlLetter.valueOf(letter)),
       "Number does not match correct control letter"

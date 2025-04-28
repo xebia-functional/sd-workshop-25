@@ -1,5 +1,3 @@
-//> using dependency com.lihaoyi::cask:0.10.2
-//> using dependencies com.lihaoyi::upickle:4.1.0
 package backend.server
 
 import scala.util.{Try, Success, Failure}
@@ -7,8 +5,7 @@ import backend.vanilla.A_RawClasses
 import backend.vanilla.B_TypeAliases
 import backend.vanilla.C_ValueClasses
 import backend.vanilla.D_ValueClassesWithErrorHandling
-import backend.vanilla.E_OpaqueTypes
-import backend.vanilla.G_OpaqueTypesWithErrorHandling
+import backend.vanilla.E_OpaqueTypesWithErrorHandling
 
 object CaskServer extends cask.MainRoutes {
 
@@ -110,7 +107,7 @@ object CaskServer extends cask.MainRoutes {
   def optionsRawClassValidation() = cask.Response("Options of Raw Class Validation", headers = corsHeaders)
 
   @cask.post("/opaque_type_validation")
-  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypes.ID(request.text()))
+  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypesWithErrorHandling.ID(request.text()))
   @cask.options("/opaque_type_validation")
   def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 
@@ -123,7 +120,7 @@ object CaskServer extends cask.MainRoutes {
 
   @cask.post("/opaque_type_error_handling")
   def opaqueTypeErrorHandling(request: cask.Request) = handleEndpoint(
-    G_OpaqueTypesWithErrorHandling.ID.either(request.text())
+    E_OpaqueTypesWithErrorHandling.ID(request.text())
   )
   @cask.options("/opaque_type_error_handling")
   def optionsOpaqueTypeErrorHandling() = cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)

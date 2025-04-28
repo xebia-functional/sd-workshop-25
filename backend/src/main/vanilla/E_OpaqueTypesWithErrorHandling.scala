@@ -2,24 +2,21 @@ package backend.vanilla
 
 import scala.util.control.NoStackTrace
 
-/** =Value Classes with Error Handling in Scala=
+/** =Opaque Types with Error Handling=
   *
-  * Value Classes provide a way to create type-safe wrappers around primitive types while maintaining runtime
-  * efficiency. When combined with companion objects and error handling, they offer a robust way to validate data at
-  * creation time. They are particularly useful in domains where data validation is crucial. This pattern helps catch
-  * errors early in the development cycle and provides clear feedback about validation failures, making systems more
-  * maintainable and reliable.
+  * Opaque types are a Scala 3 feature that provides type abstraction without runtime overhead. It allows to create new
+  * types that are light-weighted and can incorporate benefits of Value Classes and other structures.
   *
-  * Basic Syntax:
+  * Basic syntax:
   * {{{
-  * class ValueClass private (val value: Type) extends AnyVal
-  *
-  * object ValueClass:
-  *   def apply(value: Type): Either[Error, ValueClassType] =
+  * opaque type MyOpaqueType = UnderlyingType
+  * object MyOpaqueType:
+  *   def apply(underlyingValue: UnderlyingType): MyOpaqueType = underlyingValue
+  *   def parse(input: UnderlyingType): Either[String, MyOpaqueType] =
   *     Either.cond(
-  *       boolean_condition,
-  *       new ValueClass(value),
-  *       Error("Error message")
+  *       // boolean_condition
+  *       MyOpaqueType(input),
+  *       "Error message"
   *     )
   * }}}
   *
@@ -28,20 +25,23 @@ import scala.util.control.NoStackTrace
   *   - Validation control
   *   - Use of Either for error handling
   *
-  * ==Pros of Value Classes with Error Handling==
-  *   - Performance Benefits: No runtime overhead at instantiation; avoids boxing/unboxing in most cases; memory
-  *     efficient compared to regular classes
+  * ==Pros of Opaque Types with Error Handling==
+  *   - Performance Benefits: No runtime overhead. Opaque types do not exist during runtime.
   *   - Safety Guarantees: Compile-time type safety; runtime validation guarantees; immutable by design
   *   - Developer Experience: Clear API boundaries; self-documenting code; easy to maintain and refactor
+  *   - Encapsulation: Prevent invalid states through controlled construction
   *
   * ==Cons of Value Classes with Error Handling==
-  *   - Implementation Complexity: Requires more initial setup code
+  *   - Implementation Complexity: Opaque type's underlying representation is only visible in the companion object; can
+  *     make debugging more challenging
   *   - Usage Restrictions: Cannot extend other classes; Limited to a single parameter; Some scenarios force boxing
   *   - Learning Curve: Requires understanding of Either type; Pattern matching knowledge needed; (Basic) Functional
   *     programming concepts required
+  *   - Potential Overuse: Can lead to unnecessary abstraction if not used judiciously; might complicate simple code if
+  *     used where not needed
   */
 
-object D_ValueClassesWithErrorHandling:
+object E_OpaqueTypesWithErrorHandling:
 
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with number they represent
@@ -104,7 +104,7 @@ object D_ValueClassesWithErrorHandling:
   case class InvalidControlLetter(controlLetter: String) extends FailedValidation(s"'$controlLetter' is not a valid Control letter")
   case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")  
 
-  private[vanilla] final class NieNumber(val value: String) extends AnyVal
+  private[vanilla] opaque type NieNumber = String
   private[vanilla] object NieNumber:
     def apply(number: String): Either[FailedValidation, NieNumber] =
       if !number.forall(_.isDigit) then Left(InvalidNaN(number))
@@ -115,7 +115,7 @@ object D_ValueClassesWithErrorHandling:
         require(number.length == 7, s"NIE number '$number' should contain 7 digits")
         Right(new NieNumber(number))
 
-  private[vanilla] final class DniNumber(val value: String) extends AnyVal
+  private[vanilla] opaque type DniNumber = String
   private[vanilla] object DniNumber:
     def apply(number: String): Either[FailedValidation, DniNumber] =
       if !number.forall(_.isDigit) then Left(InvalidNaN(number))
@@ -129,12 +129,12 @@ object D_ValueClassesWithErrorHandling:
   sealed trait ID
 
   private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
-    val _number = number.value.toInt
+    val _number = number.toInt
     require(
       ControlLetter.fromOrdinal(_number % 23) == letter,
-      s"DNI number '${number.value}' does not match the control letter '$letter'"
+      s"DNI number '$number' does not match the control letter '$letter'"
     )
-    override def toString: String = s"${number.value}-$letter"
+    override def toString: String = s"$number-$letter"
 
   private[vanilla] object DNI:
     def apply(input: String): Either[FailedValidation, DNI] =
@@ -147,12 +147,12 @@ object D_ValueClassesWithErrorHandling:
   private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
     val ordinalOfNIE = nieLetter.ordinal // Extracts the number representation of the NIE Letter
     val _number =
-      s"$ordinalOfNIE${number.value}".toInt // Appends the number representation from NIE Letter to the number
+      s"$ordinalOfNIE$number".toInt // Appends the number representation from NIE Letter to the number
     require(
       ControlLetter.fromOrdinal(_number % 23) == letter,
-      s"NIE number '${number.value}' does not match the control letter '$letter'"
+      s"NIE number '$number' does not match the control letter '$letter'"
     )
-    override def toString: String = s"$nieLetter-${number.value}-$letter"
+    override def toString: String = s"$nieLetter-$number-$letter"
 
   private[vanilla] object NIE:
     def apply(input: String): Either[FailedValidation, NIE] =
@@ -184,3 +184,4 @@ object D_ValueClassesWithErrorHandling:
         if _input.head.isDigit // Splitting between DNI and NIE
         then DNI(_input)
         else NIE(_input)
+        
