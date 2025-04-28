@@ -1,7 +1,5 @@
 package backend.vanilla
 
-import backend.common.*
-
 /** =Value Classes in Scala=
   *
   * A value class in Scala is a mechanism to define a wrapper around a single value without the runtime overhead of
@@ -47,7 +45,7 @@ object C_ValueClasses:
     case Z // 2
 
   // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with the remainder of number divided by 23  
+  // The ordinal value of each letter corresponds with the remainder of number divided by 23
   enum ControlLetter:
     case T // 0
     case R // 1
@@ -71,7 +69,7 @@ object C_ValueClasses:
     case L // 19
     case C // 20
     case K // 21
-    case E // 22  
+    case E // 22
 
   private[vanilla] final class NieNumber(val value: String) extends AnyVal
   private[vanilla] object NieNumber:
@@ -89,7 +87,7 @@ object C_ValueClasses:
 
   sealed trait ID
 
-  private[vanilla] final class DNI private(number: DniNumber, letter: ControlLetter) extends ID:
+  private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
     val _number = number.value.toInt
     require(
       ControlLetter.fromOrdinal(_number % 23) == letter,
@@ -98,40 +96,44 @@ object C_ValueClasses:
     override def toString: String = s"${number.value}-$letter"
 
   private[vanilla] object DNI:
-    def apply(number: String, letter: String): DNI =
+    def apply(input: String): DNI =
+      val (number, letter) = input.splitAt(input.length - 1)
       val _number = DniNumber(number)
       val _letter = ControlLetter.valueOf(letter)
-      new DNI(_number, _letter)  
+      new DNI(_number, _letter)
 
-
-  private[vanilla] final class NIE private(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
-    val ordinalOfNIE = nieLetter.ordinal // Extracts the number representation of the NIE Letter
-    val _number = s"$ordinalOfNIE${number.value}".toInt // Appends the number representation from NIE Letter to the number
+  private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
+    val _number = s"${nieLetter.ordinal}${number.value}".toInt
     require(
       ControlLetter.fromOrdinal(_number % 23) == letter,
       s"NIE number '${number.value}' does not match the control letter '$letter'"
     )
     override def toString: String = s"$nieLetter-${number.value}-$letter"
 
-  private [vanilla] object NIE:
-    def apply(nieLetter: String, number: String, letter: String): NIE =
+  private[vanilla] object NIE:
+    def apply(input: String): NIE =
+      val nieLetter = input.head.toString
+      val (number, letter) = input.tail.splitAt(input.tail.length - 1)
       val _nieLetter = NieLetter.valueOf(nieLetter)
       val _number = NieNumber(number)
       val _letter = ControlLetter.valueOf(letter)
-      new NIE(_nieLetter, _number, _letter)  
-
+      new NIE(_nieLetter, _number, _letter)
 
   object ID:
-    def apply(input: String): ID =
-      val trimmed = input.trim // Handeling empty spaces around
-      val withoutDash = trimmed.replace("-", "") // Removing dashes
-      if withoutDash.head.isDigit // Splitting between DNI and NIE
-      then
-        val (number, letter) = withoutDash.splitAt(withoutDash.length - 1)
-        val _letter = letter.toUpperCase // Handeling lowerCase
-        DNI(number, _letter) 
-      else
-        val (number, letter) = withoutDash.tail.splitAt(withoutDash.length - 2)
-        val nieLetter = withoutDash.head.toString.toUpperCase // Handling lowerCase
-        val _letter = letter.toUpperCase // Handling lowerCase
-        NIE(nieLetter, number, _letter)
+    def apply(input: String): ID = 
+      
+      // Preprocesing the input
+      val _input = 
+        input
+          .trim              // Handeling empty spaces around
+          .replace("-", "")  // Removing dashes
+          .toUpperCase()     // Handling lower case 
+      
+      // Validating the cleaned input
+      require(!_input.isEmpty)
+      require(_input.forall(_.isLetterOrDigit))
+      
+      // Selecting which type of ID base on initial character type - Letter or Digit
+      if _input.head.isDigit // Splitting between DNI and NIE
+      then DNI(_input)
+      else NIE(_input)

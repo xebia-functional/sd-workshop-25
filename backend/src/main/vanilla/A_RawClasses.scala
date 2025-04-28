@@ -70,46 +70,50 @@ object A_RawClasses:
   private[vanilla] final class DNI private (number: String, letter: ControlLetter) extends ID:
     require(number.forall(_.isDigit), s"DNI number '$number' should not contain letters")
     require(number.length == 8, s"DNI number '$number' should contain 8 digits")
-    val _number = number.toInt
     require(
-      ControlLetter.fromOrdinal(_number % 23) == letter,
+      ControlLetter.fromOrdinal(number.toInt % 23) == letter,
       s"DNI number '$number' does not match the control letter '$letter'"
-    )
+      )
     override def toString: String = s"$number-$letter"
 
   private[vanilla] object DNI:
-    def apply(number: String, letter: String): DNI =
+    def apply(input: String): DNI =
+      val (number, letter) = input.splitAt(input.length - 1)
       val _letter = ControlLetter.valueOf(letter)
       new DNI(number, _letter)
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, number: String, letter: ControlLetter) extends ID:
     require(number.forall(_.isDigit), s"NIE number '$number' should not contain letters")
     require(number.length == 7, s"NIE number '$number' should contain 7 digits")
-    val ordinalOfNIE = nieLetter.ordinal // Extracts the number representation of the NIE Letter
-    val _number = s"$ordinalOfNIE$number".toInt // Appends the number representation from NIE Letter to the number
     require(
-      ControlLetter.fromOrdinal(_number % 23) == letter,
+      ControlLetter.fromOrdinal(s"${nieLetter.ordinal}$number".toInt % 23) == letter,
       s"NIE number '$number' does not match the control letter '$letter'"
     )
     override def toString: String = s"$nieLetter-$number-$letter"
 
   private[vanilla] object NIE:
-    def apply(nieLetter: String, number: String, letter: String): NIE =
+    def apply(input: String): NIE =
+      val nieLetter = input.head.toString
+      val (number, letter) = input.tail.splitAt(input.tail.length - 1)
       val _nieLetter = NieLetter.valueOf(nieLetter)
       val _letter = ControlLetter.valueOf(letter)
       new NIE(_nieLetter, number, _letter)
 
   object ID:
-    def apply(input: String): ID =
-      val trimmed = input.trim // Handeling empty spaces around
-      val withoutDash = trimmed.replace("-", "") // Removing dashes
-      if withoutDash.head.isDigit // Splitting between DNI and NIE
-      then
-        val (number, letter) = withoutDash.splitAt(withoutDash.length - 1)
-        val _letter = letter.toUpperCase // Handeling lowerCase
-        DNI(number, _letter)
-      else
-        val (number, letter) = withoutDash.tail.splitAt(withoutDash.length - 2)
-        val nieLetter = withoutDash.head.toString.toUpperCase // Handling lowerCase
-        val _letter = letter.toUpperCase // Handling lowerCase
-        NIE(nieLetter, number, _letter)
+    def apply(input: String): ID = 
+      
+      // Preprocesing the input
+      val _input = 
+        input
+          .trim              // Handeling empty spaces around
+          .replace("-", "")  // Removing dashes
+          .toUpperCase()     // Handling lower case 
+      
+      // Validating the cleaned input
+      require(!_input.isEmpty)
+      require(_input.forall(_.isLetterOrDigit))
+      
+      // Selecting which type of ID base on initial character type - Letter or Digit
+      if _input.head.isDigit // Splitting between DNI and NIE
+      then DNI(_input)
+      else NIE(_input)
