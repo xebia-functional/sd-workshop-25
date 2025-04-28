@@ -1,11 +1,12 @@
 package backend.vanilla
 
-import backend.common.*
-
 import scala.compiletime.constValue
 import scala.compiletime.error
 import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean.&&
+import scala.compiletime.ops.boolean.||
+import scala.compiletime.ops.any.!=
+import scala.compiletime.ops.any.==
 import scala.compiletime.ops.int.<=
 import scala.compiletime.ops.int.>
 import scala.compiletime.ops.int.<
@@ -13,6 +14,8 @@ import scala.compiletime.ops.string.Matches
 import scala.compiletime.ops.string.CharAt
 import scala.compiletime.ops.string.Length
 import scala.compiletime.ops.string.Substring
+
+import scala.util.control.NoStackTrace
 
 /** =Opaque types with Validation in Scala=
   *
@@ -54,62 +57,133 @@ import scala.compiletime.ops.string.Substring
 
 object F_OpaqueTypesRuntime:
 
-  private[vanilla] opaque type NIELetter = String
-  private[vanilla] object NIELetter:
-    inline def apply(value: String): NIELetter =
-      inline if constValue[Matches[value.type, "[XYZ]{1}"]]
-      then value
-      else error("'" + constValue[value.type] + "' is not a valid NIE letter")
+  // Do NOT change the order of the enumeration.
+  // The ordinal value of each letter corresponds with number they represent
+  enum NieLetter:
+    case X // 0
+    case Y // 1
+    case Z // 2
+
+  object NieLetter:
+    inline def apply(letter: String): NieLetter =
+      inline if constValue[Matches[letter.type, "[XYZ]{1}"]]
+      then NieLetter.valueOf(letter)
+      else error("'" + constValue[letter.type] + "' is not a valid NIE letter") 
+
+
+  // Do NOT change the order of the enumeration.
+  // The ordinal value of each letter corresponds with the remainder of number divided by 23
+  enum ControlLetter:
+    case T // 0
+    case R // 1
+    case W // 2
+    case A // 3
+    case G // 4
+    case M // 5
+    case Y // 6
+    case F // 7
+    case P // 8
+    case D // 9
+    case X // 10
+    case B // 11
+    case N // 12
+    case J // 13
+    case Z // 14
+    case S // 15
+    case Q // 16
+    case V // 17
+    case H // 18
+    case L // 19
+    case C // 20
+    case K // 21
+    case E // 22
+
+  object ControlLetter:
+    inline def apply(letter: String): ControlLetter =
+      inline if constValue[Matches[letter.type, "[TRWAGMYFPDXBNJZSQVHLCKE]{1}"]]
+      then ControlLetter.valueOf(letter)
+      else error("'" + constValue[letter.type] + "' is not a valid Control letter")
+
+  // All posible problems
+  sealed trait FailedValidation(cause: String) extends Exception with NoStackTrace:
+    override def toString: String = cause  
+  case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")  
+
 
   private[vanilla] opaque type NieNumber = String
   private[vanilla] object NieNumber:
-    inline def apply(value: String): NieNumber =
-      inline if constValue[Matches[value.type, "[0-9]{7}"]]
-      then value
-      else error("Number '" + constValue[value.type] + "' should contain 7 digits")
+    inline def apply(number: String): NieNumber =
+      inline if constValue[Matches[number.type, "[\\d]*"]]
+      then 
+        if constValue[Matches[number.type, "[0-9]{7}"]]
+        then number 
+        else error("NIE number '" + constValue[number.type] + "' should contain 7 digits")
+      else error("'" + constValue[number.type] + "' should not contain letters") 
 
   private[vanilla] opaque type DniNumber = String
   private[vanilla] object DniNumber:
-    inline def apply(value: String): DniNumber =
-      inline if constValue[Matches[value.type, "[0-9]{8}"]]
-      then value
-      else error("Number '" + constValue[value.type] + "' should contain 8 digits")
-
-  private[vanilla] opaque type Letter = String
-  private[vanilla] object Letter:
-    inline def apply(value: String): Letter =
-      inline if constValue[Matches[value.type, "[ABCDEFGHJKLMNPQRSTVWXYZ]{1}"]]
-      then value
-      else error("'" + constValue[value.type] + "' is not a valid ID letter")
+    inline def apply(number: String): DniNumber =
+      inline if constValue[Matches[number.type, "[0-9]{8}"]]
+      then number
+      else error("Number '" + constValue[number.type] + "' should contain 8 digits")
 
   sealed trait ID
 
-  private[vanilla] final class DNI(number: DniNumber, letter: Letter) extends ID:
+  private[vanilla] final class DNI(number: DniNumber, letter: ControlLetter) extends ID:
     require(
-      ControlLetter.isValidId(number.toInt, ControlLetter.valueOf(letter)),
-      "Number does not match correct control letter"
+      ControlLetter.fromOrdinal(number.toString.toInt % 23) == letter,
+      s"DNI number '$number' does not match the control letter '$letter'"
     )
     override def toString: String = s"$number-$letter"
 
-  private[vanilla] final class NIE(nieLetter: NIELetter, number: NieNumber, letter: Letter) extends ID:
+  private[vanilla] object DNI:
+    inline def apply(input: String): DNI =
+      val number = constValue[ToString[Substring[input.type, 0, 8]]]
+      val letter = constValue[ToString[Substring[input.type, 8, 9]]]
+      val _number = DniNumber(number)
+      val _letter = ControlLetter(letter)
+      new DNI(_number, _letter)
+
+
+  private[vanilla] final class NIE(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
     require(
-      ControlLetter.isValidId(s"${NieLetter.valueOf(nieLetter).ordinal}$number".toInt, ControlLetter.valueOf(letter)),
-      "Number does not match correct control letter"
+      ControlLetter.fromOrdinal(s"${nieLetter.ordinal}$number".toInt % 23) == letter,
+      s"NIE number '$number' does not match the control letter '$letter'"
     )
     override def toString: String = s"$nieLetter-$number-$letter"
 
+  private[vanilla] object NIE:
+    inline def apply(input: String): NIE =
+        val nieLetter = constValue[ToString[Substring[input.type, 0, 1]]]
+        val number = constValue[ToString[Substring[input.type, 1, 8]]]
+        val letter = constValue[ToString[Substring[input.type, 8, 9]]]
+        new NIE(NieLetter(nieLetter), NieNumber(number), ControlLetter(letter))
+
   object ID:
-    inline def apply(input: String): ID =
-      inline if constValue[>[Length[input.type], 9]] then
-        error("ID can't have more than 9 characters. Do not use dashes")
-      else if constValue[<[Length[input.type], 8]] then error("ID can't have less than 8 characters. Do not usedashes")
-      else if constValue[Matches[ToString[CharAt[input.type, 0]], "[0-9]{1}"]]
+    inline def apply(input: String): ID = 
+      
+      // Preprocesing the input
+      //val _input = 
+      //  input
+      //    .trim              // Handeling empty spaces around
+      //    .replace("-", "")  // Removing dashes
+      //    .toUpperCase()     // Handling lower case 
+      inline if constValue[
+        &&[
+          !=[Length[input.type], 0],
+          Matches[input.type, "[\\d\\w]*"]
+          ]
+          ]
       then
-        inline val number = constValue[Substring[input.type, 0, 7]]
-        inline val letter = constValue[Substring[input.type, 7, 8]]
-        DNI(DniNumber(number), Letter(letter.toUpperCase))
-      else
-        inline val nieLetter = constValue[Substring[input.type, 0, 1]]
-        inline val number = constValue[Substring[input.type, 1, 7]]
-        inline val letter = constValue[Substring[input.type, 7, 8]]
-        NIE(NIELetter(nieLetter), NieNumber(number), Letter(letter))
+        // Selecting which type of ID base on initial character type - Letter or Digit
+        inline if constValue[Matches[ToString[Substring[input.type, 0, 1]], "[0-9]{1}"]] // Splitting between DNI and NIE
+        then 
+          inline if constValue[==[Length[input.type], 9]] 
+          then DNI(input)
+          else error("'" + constValue[input.type] + "' must have lenght of 9")
+        else 
+          inline if constValue[==[Length[input.type], 8]]
+          then NIE(input)
+          else error("'" + constValue[input.type] + "' must have lenght of 8")
+      else error("'" + constValue[input.type] + "' should be AlphaNumeric and non empty")  
+
