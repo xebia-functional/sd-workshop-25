@@ -40,7 +40,7 @@ import backend.common.*
   *     type.
   */
 
-object E_OpaqueTypes:
+object F_OpaqueTypes:
 
   private[vanilla] opaque type NIELetter = String
   private[vanilla] object NIELetter:
