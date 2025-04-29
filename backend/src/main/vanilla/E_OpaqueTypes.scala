@@ -64,7 +64,7 @@ object E_OpaqueTypes:
   private[vanilla] object DniNumber:
     def apply(value: String): DniNumber =
       require(value.forall(_.isDigit), s"number $value should not contain letters")
-          require(value.length == 8, s"number $value should contain 8 digits")
+      require(value.length == 8, s"number $value should contain 8 digits")
       require(value.toInt >= 0, s"'$value' is negative. It must be positive")
       require(value.toInt <= 99999999, s"'$value' is too big. Max number is 99999999")
       value
@@ -73,7 +73,7 @@ object E_OpaqueTypes:
   private[vanilla] object Letter:
     def apply(value: String): Letter =
       require(
-             ControlLetter.values.map(_.toString).contains(value),
+        ControlLetter.values.map(_.toString).contains(value),
         s"'$value' is not a valid ID letter"
       )
       value
