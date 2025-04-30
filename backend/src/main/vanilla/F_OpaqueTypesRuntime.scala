@@ -138,11 +138,14 @@ object F_OpaqueTypesRuntime:
 
   private[vanilla] object DNI:
     inline def apply(input: String): DNI =
-      val number = constValue[ToString[Substring[input.type, 0, 8]]]
-      val letter = constValue[ToString[Substring[input.type, 8, 9]]]
-      val _number = DniNumber(number)
-      val _letter = ControlLetter(letter)
-      new DNI(_number, _letter)
+      inline if constValue[!=[Length[input.type], 9]]
+      then error("'" + constValue[input.type] + "' must have lenght of 9")
+      else
+        val number = constValue[ToString[Substring[input.type, 0, 8]]]
+        val letter = constValue[ToString[Substring[input.type, 8, 9]]]
+        val _number = DniNumber(number)
+        val _letter = ControlLetter(letter)
+        new DNI(_number, _letter)
 
 
   private[vanilla] final class NIE(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
@@ -154,6 +157,9 @@ object F_OpaqueTypesRuntime:
 
   private[vanilla] object NIE:
     inline def apply(input: String): NIE =
+      inline if constValue[!=[Length[input.type], 9]]
+      then error("'" + constValue[input.type] + "' must have lenght of 9")
+      else
         val nieLetter = constValue[ToString[Substring[input.type, 0, 1]]]
         val number = constValue[ToString[Substring[input.type, 1, 8]]]
         val letter = constValue[ToString[Substring[input.type, 8, 9]]]
@@ -168,22 +174,11 @@ object F_OpaqueTypesRuntime:
       //    .trim              // Handeling empty spaces around
       //    .replace("-", "")  // Removing dashes
       //    .toUpperCase()     // Handling lower case 
-      inline if constValue[
-        &&[
-          !=[Length[input.type], 0],
-          Matches[input.type, "[\\d\\w]*"]
-          ]
-          ]
+      inline if constValue[Matches[input.type, "[\\d\\w]{9}"]]
       then
         // Selecting which type of ID base on initial character type - Letter or Digit
         inline if constValue[Matches[ToString[Substring[input.type, 0, 1]], "[0-9]{1}"]] // Splitting between DNI and NIE
-        then 
-          inline if constValue[==[Length[input.type], 9]] 
-          then DNI(input)
-          else error("'" + constValue[input.type] + "' must have lenght of 9")
-        else 
-          inline if constValue[==[Length[input.type], 8]]
-          then NIE(input)
-          else error("'" + constValue[input.type] + "' must have lenght of 8")
-      else error("'" + constValue[input.type] + "' should be AlphaNumeric and non empty")  
+        then DNI(input)
+        else NIE(input)
+      else error("'" + constValue[input.type] + "' should be AlphaNumeric and contains 9 characters")  
 
