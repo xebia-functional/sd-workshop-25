@@ -102,25 +102,25 @@ object CaskServer extends cask.MainRoutes {
   def optionsValueClass() = cask.Response("Options of Value Class", headers = corsHeaders)
 
   @cask.post("/raw_class_validation")
-  def rawClassValidation(request: cask.Request) = mapEndpoint(D_ValueClassesWithErrorHandling.ID(request.text()))
+  def rawClassValidation(request: cask.Request) = mapEndpoint(D_ValueClassesWithErrorHandling.ID.either(request.text()))
   @cask.options("/raw_class_validation")
   def optionsRawClassValidation() = cask.Response("Options of Raw Class Validation", headers = corsHeaders)
 
   @cask.post("/opaque_type_validation")
-  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypesWithErrorHandling.ID(request.text()))
+  def opaqueTypeValidation(request: cask.Request) = handleEndpoint(E_OpaqueTypesWithErrorHandling.ID.either(request.text()))
   @cask.options("/opaque_type_validation")
   def optionsOpaqueTypeValidation() = cask.Response("Options of Opaque Type Validation", headers = corsHeaders)
 
   @cask.post("/vaule_class_error_handling")
   def valueClassErrorHandling(request: cask.Request) = mapEndpoint(
-    D_ValueClassesWithErrorHandling.ID(request.text())
+    D_ValueClassesWithErrorHandling.ID.either(request.text())
   )
   @cask.options("/vaule_class_error_handling")
   def optionsValueClassErrorHandling() = cask.Response("Options of Value Class Error Handling", headers = corsHeaders)
 
   @cask.post("/opaque_type_error_handling")
   def opaqueTypeErrorHandling(request: cask.Request) = handleEndpoint(
-    E_OpaqueTypesWithErrorHandling.ID(request.text())
+    E_OpaqueTypesWithErrorHandling.ID.either(request.text())
   )
   @cask.options("/opaque_type_error_handling")
   def optionsOpaqueTypeErrorHandling() = cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)

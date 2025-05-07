@@ -1,5 +1,7 @@
 package backend.vanilla
 
+import backend.common.*
+
 import scala.compiletime.constValue
 import scala.compiletime.error
 import scala.compiletime.ops.any.ToString
@@ -14,8 +16,6 @@ import scala.compiletime.ops.string.Matches
 import scala.compiletime.ops.string.CharAt
 import scala.compiletime.ops.string.Length
 import scala.compiletime.ops.string.Substring
-
-import scala.util.control.NoStackTrace
 
 /** =Opaque types with Validation in Scala=
   *
@@ -57,59 +57,6 @@ import scala.util.control.NoStackTrace
 
 object F_OpaqueTypesRuntime:
 
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with number they represent
-  enum NieLetter:
-    case X // 0
-    case Y // 1
-    case Z // 2
-
-  object NieLetter:
-    inline def apply(letter: String): NieLetter =
-      inline if constValue[Matches[letter.type, "[XYZ]{1}"]]
-      then NieLetter.valueOf(letter)
-      else error("'" + constValue[letter.type] + "' is not a valid NIE letter") 
-
-
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with the remainder of number divided by 23
-  enum ControlLetter:
-    case T // 0
-    case R // 1
-    case W // 2
-    case A // 3
-    case G // 4
-    case M // 5
-    case Y // 6
-    case F // 7
-    case P // 8
-    case D // 9
-    case X // 10
-    case B // 11
-    case N // 12
-    case J // 13
-    case Z // 14
-    case S // 15
-    case Q // 16
-    case V // 17
-    case H // 18
-    case L // 19
-    case C // 20
-    case K // 21
-    case E // 22
-
-  object ControlLetter:
-    inline def apply(letter: String): ControlLetter =
-      inline if constValue[Matches[letter.type, "[TRWAGMYFPDXBNJZSQVHLCKE]{1}"]]
-      then ControlLetter.valueOf(letter)
-      else error("'" + constValue[letter.type] + "' is not a valid Control letter")
-
-  // All posible problems
-  sealed trait FailedValidation(cause: String) extends Exception with NoStackTrace:
-    override def toString: String = cause  
-  case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")  
-
-
   private[vanilla] opaque type NieNumber = String
   private[vanilla] object NieNumber:
     inline def apply(number: String): NieNumber =
@@ -127,14 +74,12 @@ object F_OpaqueTypesRuntime:
       then number
       else error("Number '" + constValue[number.type] + "' should contain 8 digits")
 
-  sealed trait ID
-
   private[vanilla] final class DNI(number: DniNumber, letter: ControlLetter) extends ID:
     require(
-      ControlLetter.fromOrdinal(number.toString.toInt % 23) == letter,
+      number.toString.toInt % 23 == letter.ordinal,
       s"DNI number '$number' does not match the control letter '$letter'"
     )
-    override def toString: String = s"$number-$letter"
+    override def pretty: String = s"$number-$letter"
 
   private[vanilla] object DNI:
     inline def apply(input: String): DNI =
@@ -150,10 +95,10 @@ object F_OpaqueTypesRuntime:
 
   private[vanilla] final class NIE(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
     require(
-      ControlLetter.fromOrdinal(s"${nieLetter.ordinal}$number".toInt % 23) == letter,
+      s"${nieLetter.ordinal}$number".toInt % 23 == letter.ordinal,
       s"NIE number '$number' does not match the control letter '$letter'"
     )
-    override def toString: String = s"$nieLetter-$number-$letter"
+    override def pretty: String = s"$nieLetter-$number-$letter"
 
   private[vanilla] object NIE:
     inline def apply(input: String): NIE =

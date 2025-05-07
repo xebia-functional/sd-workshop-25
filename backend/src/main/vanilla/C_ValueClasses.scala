@@ -1,5 +1,7 @@
 package backend.vanilla
 
+import backend.common.*
+
 /** =Value Classes in Scala=
   *
   * A value class in Scala is a mechanism to define a wrapper around a single value without the runtime overhead of
@@ -37,40 +39,6 @@ package backend.vanilla
 
 object C_ValueClasses:
 
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with number they represent
-  enum NieLetter:
-    case X // 0
-    case Y // 1
-    case Z // 2
-
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with the remainder of number divided by 23
-  enum ControlLetter:
-    case T // 0
-    case R // 1
-    case W // 2
-    case A // 3
-    case G // 4
-    case M // 5
-    case Y // 6
-    case F // 7
-    case P // 8
-    case D // 9
-    case X // 10
-    case B // 11
-    case N // 12
-    case J // 13
-    case Z // 14
-    case S // 15
-    case Q // 16
-    case V // 17
-    case H // 18
-    case L // 19
-    case C // 20
-    case K // 21
-    case E // 22
-
   private[vanilla] final class NieNumber(val value: String) extends AnyVal
   private[vanilla] object NieNumber:
     def apply(number: String): NieNumber =
@@ -85,37 +53,35 @@ object C_ValueClasses:
       require(number.length == 8, s"DNI number '$number' should contain 8 digits")
       new DniNumber(number)
 
-  sealed trait ID
-
   private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
-    val _number = number.value.toInt
     require(
-      ControlLetter.fromOrdinal(_number % 23) == letter,
+      number.value.toInt % 23 == letter.ordinal,
       s"DNI number '${number.value}' does not match the control letter '$letter'"
     )
-    override def toString: String = s"${number.value}-$letter"
+    override def pretty: String = s"${number.value}-$letter"
 
   private[vanilla] object DNI:
     def apply(input: String): DNI =
-      val (number, letter) = input.splitAt(input.length - 1)
+      val number = input.dropRight(1)
       val _number = DniNumber(number)
+      val letter = input.last.toString
       val _letter = ControlLetter.valueOf(letter)
       new DNI(_number, _letter)
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
-    val _number = s"${nieLetter.ordinal}${number.value}".toInt
     require(
-      ControlLetter.fromOrdinal(_number % 23) == letter,
+      s"${nieLetter.ordinal}${number.value}".toInt % 23 == letter.ordinal,
       s"NIE number '${number.value}' does not match the control letter '$letter'"
     )
-    override def toString: String = s"$nieLetter-${number.value}-$letter"
+    override def pretty: String = s"$nieLetter-${number.value}-$letter"
 
   private[vanilla] object NIE:
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
-      val (number, letter) = input.tail.splitAt(input.tail.length - 1)
       val _nieLetter = NieLetter.valueOf(nieLetter)
+      val number = input.tail.dropRight(1)
       val _number = NieNumber(number)
+      val letter = input.last.toString
       val _letter = ControlLetter.valueOf(letter)
       new NIE(_nieLetter, _number, _letter)
 

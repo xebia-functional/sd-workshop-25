@@ -1,5 +1,6 @@
 package backend.vanilla
 
+import backend.common.*
 import backend.vanilla.D_ValueClassesWithErrorHandling.*
 
 import utest.*
@@ -10,80 +11,79 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
 
     test("DNI") {
 
-      test("Compile positives"):
+      test("Runtime positives"):
         Seq(
-          (("12345678Z"), "12345678-Z"),
-          (("00000001R"), "00000001-R"),
-          (("99999999R"), "99999999-R")
+          ("12345678Z", "12345678-Z"),
+          ("00000001R", "00000001-R"),
+          ("99999999R", "99999999-R")
         ).foreach { case (input, expected) =>
-          DNI(input).foreach{ result =>
-            assert(result.toString == expected)
-        }}
+          DNI.either(input).foreach: result =>
+            assert(result.pretty == expected)
+        }
 
-      test("Compile false positives"):
+      test("Runtime negatives"):
 
         test("Too short number"):
-          // intercept[IllegalArgumentException](DNI("1234567T"))
-          assert(DNI("1234567T").isLeft)
-  
+          //intercept[IllegalArgumentException](DNI("1234567T"))
+          assert(DNI.either("1234567T").isLeft)
+
         test("too long number"):
-          //  intercept[IllegalArgumentException](DNI("123456789T"))
-          assert(DNI("123456789T").isLeft)
-        
+          //intercept[IllegalArgumentException](DNI("123456789T"))
+          assert(DNI.either("123456789T").isLeft)
+
         test("invalid number"):
-          // intercept[IllegalArgumentException](DNI("1234567AT"))
-          assert(DNI("1234567AT").isLeft)
+          //intercept[IllegalArgumentException](DNI("1234567AT"))
+          assert(DNI.either("1234567AT").isLeft)
 
         test("invalid control letter"):
-          // intercept[IllegalArgumentException](DNI("12345678Ñ"))
-          assert(DNI("12345678Ñ").isLeft)
+          //intercept[IllegalArgumentException](DNI("12345678Ñ"))
+          assert(DNI.either("12345678Ñ").isLeft)
 
         test("flipping arguments"):
-          // intercept[IllegalArgumentException](DNI("Z12345678"))
-          assert(DNI("Z12345678").isLeft)
+          //intercept[IllegalArgumentException](DNI("Z12345678"))
+          assert(DNI.either("Z12345678").isLeft)
     }
 
     test("NIE") {
-      test("Compile positives"):
+      test("Runtime positives"):
         Seq(
-          (("X0000001R"), "X-0000001-R"),
-          (("Y2345678Z"), "Y-2345678-Z")
+          ("X0000001R", "X-0000001-R"),
+          ("Y2345678Z", "Y-2345678-Z")
         ).foreach { case (input, expected) =>
-          NIE(input).foreach{ result => 
-          assert(result.toString() == expected)
-          }  
+          NIE.either(input).foreach: result =>
+            assert(result.pretty == expected)
         }
 
-      test("Compile false positives"):
+      test("Runtime negatives"):
+
         test("invalid nie letter"):
           //intercept[IllegalArgumentException](NIE("A1234567T"))
           assert(
-            NIE("A1234567T") match
+            NIE.either("A1234567T") match
               case Left(error) => error == InvalidNieLetter("A")
               case Right(_) => false
           )
 
-
         test("too short number"):
-          //intercept[IllegalArgumentException](NIE("Y", "234567", "T"))
+          //intercept[IllegalArgumentException](NIE("Y234567T"))
           assert(
-            NIE("Y234567T") match
+            NIE.either("Y234567T") match
               case Left(error) => error == InvalidNieNumber("234567")
               case Right(_) => false
           )
 
         test("too long number"):
-          //intercept[IllegalArgumentException](NIE("Y", "23456789", "T"))
+          //intercept[IllegalArgumentException](NIE("Y23456789T"))
           assert(
-            NIE("Y23456789T") match
+            NIE.either("Y23456789T") match
               case Left(error) => error == InvalidNieNumber("23456789")
               case Right(_) => false
           )
 
         test("invalid number"):
-          //intercept[IllegalArgumentException](NIE("Y", "234567A", "T"))
+          //intercept[IllegalArgumentException](NIE("Y234567AT"))
           assert(
-            NIE("Y234567AT") match
+            NIE.either("Y234567AT") match
               case Left(error) => error == InvalidNaN("234567A")
               case Right(_) => false
           )
@@ -91,7 +91,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("invalid controll letter"):
           //intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
           assert(
-            NIE("Y2345678Ñ") match
+            NIE.either("Y2345678Ñ") match
               case Left(error) => error == InvalidControlLetter("Ñ")
               case Right(_) => false
           )
@@ -99,7 +99,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("flipping nie letter and control letter"):
           //intercept[IllegalArgumentException](NIE("R0000001X"))
           assert(
-            NIE("R0000001X") match
+            NIE.either("R0000001X") match
               case Left(error) => error == InvalidNieLetter("R")
               case Right(_) => false
           )
@@ -108,20 +108,50 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("flipping all arguments"):
           //intercept[IllegalArgumentException](NIE("0000001RX"))
           assert(
-            NIE("0000001RX") match
+            NIE.either("0000001RX") match
               case Left(error) => error == InvalidNieLetter("0")
               case Right(_) => false
           )
-
     }
 
     test("IDs") {
-      test("Compile false positives"):
 
+     test("Runtime positives"):
+      test("whitespace handling"):
+        Seq(
+          ("  12345678Z  ", "12345678-Z"),
+          ("  X1234567L  ", "X-1234567-L")
+        ).foreach{ case (input, expected) =>
+          ID.either(input).foreach: result =>
+            assert(result.pretty == expected)  
+        }
+
+      test("dash handling"):
+        Seq(
+          ("12345678-Z", "12345678-Z"),
+          ("X-1234567-L", "X-1234567-L")
+        ).foreach{ case (input, expected) =>
+          ID.either(input).foreach: result =>
+            assert(result.pretty == expected)  
+        }
+
+      test("lower case handling"):
+        Seq(
+          ("12345678z", "12345678-Z"),
+          ("00000001r", "00000001-R"),
+          ("99999999r", "99999999-R"),
+          ("X0000001r", "X-0000001-R"),
+          ("Y2345678z", "Y-2345678-Z")
+        ).foreach { case (input, expected) =>
+          ID.either(input).foreach: result => 
+            assert(result.pretty == expected)
+        }
+
+      test("Runtime negatives"):
         test("empty"):
           //intercept[NoSuchElementException](ID(""))
           assert(
-            ID("") match
+            ID.either("") match
               case Left(error) => error  == InvalidInput("")
               case Right(_) => false
             )
@@ -129,7 +159,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("invisible characters"):
           //intercept[NoSuchElementException](ID("\n\r\t"))
           assert(
-            ID("\n\r\t") match
+            ID.either("\n\r\t") match
               case Left(error) => error  == InvalidInput("\n\r\t")
               case Right(_) => false
             )
@@ -137,7 +167,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("symbol"):
           //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
           assert(
-            ID("@#¢∞¬÷“”≠") match
+            ID.either("@#¢∞¬÷“”≠") match
               case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠")
               case Right(_) => false
             )
@@ -146,7 +176,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("absent number and control letter in NIE"):
           //intercept[IllegalArgumentException](ID("Y"))
           assert(
-            ID("Y") match
+            ID.either("Y") match
               case Left(error) => error  == InvalidNieNumber("")
               case Right(_) => false
             )
@@ -154,7 +184,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("invalid nie letter"):
           //intercept[IllegalArgumentException](ID("A1234567T"))
           assert(
-            ID("A1234567T") match
+            ID.either("A1234567T") match
               case Left(error) => error == InvalidNieLetter("A")
               case Right(_) => false
           )
@@ -162,7 +192,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("too short number"):
           //intercept[IllegalArgumentException](ID("1234567T"))
           assert(
-            ID("1234567T") match
+            ID.either("1234567T") match
               case Left(error) => error == InvalidDniNumber("1234567")
               case Right(_) => false
           )
@@ -170,7 +200,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("too long number"):
           //intercept[IllegalArgumentException](ID("123456789T"))
           assert(
-            ID("123456789T") match
+            ID.either("123456789T") match
               case Left(error) => error == InvalidDniNumber("123456789")
               case Right(_) => false
           )
@@ -178,7 +208,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test("invalid number"):
           //intercept[IllegalArgumentException](ID("1234567AT"))
           assert(
-            ID("1234567AT") match
+            ID.either("1234567AT") match
               case Left(error) => error == InvalidNaN("1234567A")
               case Right(_) => false
           )
@@ -186,30 +216,9 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
         test(" invalid controll letter"):
           //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
           assert(
-            ID("Y2345678Ñ") match
+            ID.either("Y2345678Ñ") match
               case Left(error) => error == InvalidControlLetter("Ñ")
               case Right(_) => false
           )
-
-      test("edge cases"):
-        test("whitespace handling"):
-          assert(ID("  12345678Z  ").map(_.toString) == Right("12345678-Z"))
-          assert(ID("  X1234567L  ").map(_.toString) == Right("X-1234567-L"))
-
-        test("dash handling"):
-          assert(ID("12345678-Z").map(_.toString) == Right("12345678-Z"))
-          assert(ID("X-1234567-L").map(_.toString) == Right("X-1234567-L"))
-
-        test("lower case handling"):
-          Seq(
-            ("12345678z", "12345678-Z"),
-            ("00000001r", "00000001-R"),
-            ("99999999r", "99999999-R"),
-            ("X0000001r", "X-0000001-R"),
-            ("Y2345678z", "Y-2345678-Z")
-          ).foreach { case (input, expected) =>
-            val result = ID(input)
-            assert(result.map(_.toString) == Right(expected))
-          }
     }
   }

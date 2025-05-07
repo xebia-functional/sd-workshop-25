@@ -19,7 +19,7 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
           (DNI("12345678Z"), "12345678-Z"),
           (DNI("00000001R"), "00000001-R"),
           (DNI("99999999R"), "99999999-R")
-        ).foreach { case (input, expected) => assert(input.toString == expected)}
+        ).foreach { case (input, expected) => assert(input.pretty == expected)}
 
       test("Compile false positives"):
 
@@ -49,7 +49,7 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
         Seq(
           (NIE("X0000001R"), "X-0000001-R"),
           (NIE("Y2345678Z"), "Y-2345678-Z")
-        ).foreach { case (input, expected) => assert(input.toString == expected)
+        ).foreach { case (input, expected) => assert(input.pretty == expected)
         }
 
       test("Compile false positives"):
@@ -109,11 +109,10 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
 
         test("too short number"):
           // intercept[IllegalArgumentException](ID("1234567T"))
-          assert(typeCheckErrors("""ID("1234567T")""").head.message == "'1234567T' must have lenght of 9")
+          assert(typeCheckErrors("""ID("1234567T")""").head.message == "'1234567T' should be AlphaNumeric and contains 9 characters")
 
         test("too long number"):
           // intercept[IllegalArgumentException](ID("123456789T"))
-          println(typeCheckErrors("""ID("123456789T")""").head.message)
           assert(typeCheckErrors("""ID("123456789T")""").head.message == "'123456789T' should be AlphaNumeric and contains 9 characters")
 
         test("invalid number"):
@@ -122,8 +121,7 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
 
         test(" invalid controll letter"):
           // intercept[IllegalArgumentException](ID("Y2345678Ñ"))
-          println(typeCheckErrors("""ID("Y2345678Ñ")""").head.message)
-          assert(typeCheckErrors("""ID("Y2345678Ñ")""").head.message == "'Ñ' is not a valid Control letter")
+          assert(typeCheckErrors("""ID("Y2345678I")""").head.message == "'I' is not a valid Control letter")
 
       /*    
       test("edge cases"):

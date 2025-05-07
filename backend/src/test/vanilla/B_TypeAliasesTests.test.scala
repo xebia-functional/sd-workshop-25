@@ -11,17 +11,17 @@ object B_TypeAliasesTests extends TestSuite:
 
     test("DNI") {
 
-      test("Compile positives"):
+      test("Runtime positives"):
         Seq(
-          (("12345678Z"), "12345678-Z"),
-          (("00000001R"), "00000001-R"),
-          (("99999999R"), "99999999-R")
+          ("12345678Z", "12345678-Z"),
+          ("00000001R", "00000001-R"),
+          ("99999999R", "99999999-R")
         ).foreach { case (input, expected) =>
           val result = DNI(input)
-          assert(result.toString == expected)
+          assert(result.pretty == expected)
         }
 
-      test("Compile false positives"):
+      test("Runtime negatives"):
 
         test("Too short number"):
           intercept[IllegalArgumentException](DNI("1234567T"))
@@ -40,16 +40,16 @@ object B_TypeAliasesTests extends TestSuite:
     }
 
     test("NIE") {
-      test("Compile positives"):
+      test("Runtime positives"):
         Seq(
-          (("X0000001R"), "X-0000001-R"),
-          (("Y2345678Z"), "Y-2345678-Z")
+          ("X0000001R", "X-0000001-R"),
+          ("Y2345678Z", "Y-2345678-Z")
         ).foreach { case (input, expected) =>
           val result = NIE(input)
-          assert(result.toString == expected)
+          assert(result.pretty == expected)
         }
 
-      test("Compile false positives"):
+      test("Runtime negatives"):
 
         test("invalid nie letter"):
           intercept[IllegalArgumentException](NIE("A1234567T"))
@@ -74,14 +74,46 @@ object B_TypeAliasesTests extends TestSuite:
     }
 
     test("IDs") {
-      test("Compile false positives"):
+
+     test("Runtime positives"):
+      test("whitespace handling"):
+        Seq(
+          ("  12345678Z  ", "12345678-Z"),
+          ("  X1234567L  ", "X-1234567-L")
+        ).foreach{ case (input, expected) =>
+          val result = ID(input)
+          assert(result.pretty == expected)  
+        }
+
+      test("dash handling"):
+        Seq(
+          ("12345678-Z", "12345678-Z"),
+          ("X-1234567-L", "X-1234567-L")
+        ).foreach{ case (input, expected) =>
+          val result = ID(input)
+          assert(result.pretty == expected)  
+        }
+
+      test("lower case handling"):
+        Seq(
+          ("12345678z", "12345678-Z"),
+          ("00000001r", "00000001-R"),
+          ("99999999r", "99999999-R"),
+          ("X0000001r", "X-0000001-R"),
+          ("Y2345678z", "Y-2345678-Z")
+        ).foreach { case (input, expected) =>
+          val result = ID(input)
+          assert(result.pretty == expected)
+        }
+
+      test("Runtime negatives"):
 
         test("empty"):
           intercept[IllegalArgumentException](ID(""))
 
         test("invisible characters"):
           intercept[IllegalArgumentException](ID("\n\r\t"))
-
+        
         test("symbol"):
           intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
 
@@ -103,25 +135,5 @@ object B_TypeAliasesTests extends TestSuite:
         test(" invalid controll letter"):
           intercept[IllegalArgumentException](ID("Y2345678Ñ"))
 
-      test("edge cases"):
-        test("whitespace handling"):
-          assert(ID("  12345678Z  ").toString == "12345678-Z")
-          assert(ID("  X1234567L  ").toString == "X-1234567-L")
-
-        test("dash handling"):
-          assert(ID("12345678-Z").toString == "12345678-Z")
-          assert(ID("X-1234567-L").toString == "X-1234567-L")
-
-        test("lower case handling"):
-          Seq(
-            ("12345678z", "12345678-Z"),
-            ("00000001r", "00000001-R"),
-            ("99999999r", "99999999-R"),
-            ("X0000001r", "X-0000001-R"),
-            ("Y2345678z", "Y-2345678-Z")
-          ).foreach { case (input, expected) =>
-            val result = ID(input)
-            assert(result.toString == expected)
-          }
     }
   }
