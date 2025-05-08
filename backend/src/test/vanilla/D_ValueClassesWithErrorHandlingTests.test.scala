@@ -84,7 +84,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y234567AT"))
           assert(
             NIE.either("Y234567AT") match
-              case Left(error) => error == InvalidNaN("234567A")
+              case Left(error) => error == InvalidNumber("234567A")
               case Right(_) => false
           )
 
@@ -177,7 +177,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("Y"))
           assert(
             ID.either("Y") match
-              case Left(error) => error  == InvalidNieNumber("")
+              case Left(error) => error  == InvalidInput("Y")
               case Right(_) => false
             )
  
@@ -193,7 +193,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("1234567T"))
           assert(
             ID.either("1234567T") match
-              case Left(error) => error == InvalidDniNumber("1234567")
+              case Left(error) => error == InvalidInput("1234567T")
               case Right(_) => false
           )
 
@@ -201,7 +201,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("123456789T"))
           assert(
             ID.either("123456789T") match
-              case Left(error) => error == InvalidDniNumber("123456789")
+              case Left(error) => error == InvalidInput("123456789T")
               case Right(_) => false
           )
 
@@ -209,7 +209,7 @@ object D_ValueClassesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("1234567AT"))
           assert(
             ID.either("1234567AT") match
-              case Left(error) => error == InvalidNaN("1234567A")
+              case Left(error) => error == InvalidNumber("1234567A")
               case Right(_) => false
           )
 

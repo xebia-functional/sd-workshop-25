@@ -43,22 +43,37 @@ import backend.common.*
 
 object E_OpaqueTypesWithErrorHandling:
 
+  private[vanilla] opaque type Number = String
+  private[vanilla] object Number:
+    def either(number: String): Either[InvalidNumber, Number] =
+      Either.cond(
+        number.forall(_.isDigit),
+        new Number(number),
+        InvalidNumber(number)
+      )
+
   private[vanilla] opaque type NieNumber = String
   private[vanilla] object NieNumber:
-    def either(number: String): Either[FailedValidation, NieNumber] =
-      if !number.forall(_.isDigit) then Left(InvalidNaN(number))
-      else if number.length != 7 then Left(InvalidNieNumber(number))
-      else Right(new NieNumber(number))
+    def either(nieNumber: String): Either[FailedValidation, NieNumber] =
+      Number.either(nieNumber).flatMap: number =>
+        Either.cond(
+          number.toString.length == 7,
+          new NieNumber(number.toString),
+          InvalidNieNumber(number.toString)
+        )
 
   private[vanilla] opaque type DniNumber = String
   private[vanilla] object DniNumber:
-    def either(number: String): Either[FailedValidation, DniNumber] =
-      if !number.forall(_.isDigit) then Left(InvalidNaN(number))
-      else if number.length != 8 then Left(InvalidDniNumber(number))
-      else Right(new DniNumber(number))
+    def either(dniNumber: String): Either[FailedValidation, DniNumber] =
+      Number.either(dniNumber).flatMap: number =>
+        Either.cond(
+          number.toString.length == 8,
+          new DniNumber(number.toString),
+          InvalidDniNumber(number.toString)
+        )
 
-  private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
-    override def pretty: String = s"$number-$letter"
+  private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
     def either(input: String): Either[FailedValidation, DNI] =
@@ -68,14 +83,14 @@ object E_OpaqueTypesWithErrorHandling:
         _number <- DniNumber.either(number)
         _letter <- ControlLetter.either(letter)
         result <- Either.cond(
-          number.toInt % 23 == _letter.ordinal,
+          _number.toString.toInt % 23 == _letter.ordinal,
           new DNI(_number, _letter),
-          InvalidDni(number, letter)
+          InvalidDni(_number.toString, _letter)
         )
       yield result
 
-  private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
-    override def pretty: String = s"$nieLetter-$number-$letter"
+  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
     def either(input: String): Either[FailedValidation, NIE] =
@@ -87,9 +102,9 @@ object E_OpaqueTypesWithErrorHandling:
         _number <- NieNumber.either(number)
         _letter <- ControlLetter.either(letter)
         result <- Either.cond(
-          s"${_nieLetter.ordinal}$number".toInt % 23 == _letter.ordinal,
+         ((_nieLetter.ordinal*10000000) + _number.toString.toInt) % 23 == _letter.ordinal,
           new NIE(_nieLetter, _number, _letter),
-          InvalidNie(nieLetter, number, letter)
+          InvalidNie(_nieLetter, _number.toString, _letter)
         )
       yield result
 
@@ -102,13 +117,9 @@ object E_OpaqueTypesWithErrorHandling:
           .trim              // Handeling empty spaces around
           .replace("-", "")  // Removing dashes
           .toUpperCase()     // Handling lower case 
-      if _input.isEmpty || _input.forall(!_.isLetterOrDigit)
+      if !(_input.length == 9 && _input.forall(_.isLetterOrDigit))
       then Left(InvalidInput(input))
-      else
-        // Validating the cleaned input
-        require(!_input.isEmpty)
-        require(_input.forall(_.isLetterOrDigit))
-      
+      else    
         // Selecting which type of ID base on initial character type - Letter or Digit
         if _input.head.isDigit // Splitting between DNI and NIE
         then DNI.either(_input)

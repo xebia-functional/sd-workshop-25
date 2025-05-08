@@ -84,7 +84,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y234567AT"))
           assert(
             NIE.either("Y234567AT") match
-              case Left(error) => error == InvalidNaN("234567A")
+              case Left(error) => error == InvalidNumber("234567A")
               case Right(_) => false
           )
 
@@ -116,36 +116,36 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
 
     test("IDs") {
 
-     test("Runtime positives"):
-      test("whitespace handling"):
-        Seq(
-          ("  12345678Z  ", "12345678-Z"),
-          ("  X1234567L  ", "X-1234567-L")
-        ).foreach{ case (input, expected) =>
-          ID.either(input).foreach: result =>
-            assert(result.pretty == expected)  
-        }
+      test("Runtime positives"):
+        test("whitespace handling"):
+          Seq(
+            ("  12345678Z  ", "12345678-Z"),
+            ("  X1234567L  ", "X-1234567-L")
+          ).foreach{ case (input, expected) =>
+            ID.either(input).foreach: result =>
+              assert(result.pretty == expected)  
+          }
 
-      test("dash handling"):
-        Seq(
-          ("12345678-Z", "12345678-Z"),
-          ("X-1234567-L", "X-1234567-L")
-        ).foreach{ case (input, expected) =>
-          ID.either(input).foreach: result =>
-            assert(result.pretty == expected)  
-        }
+        test("dash handling"):
+          Seq(
+            ("12345678-Z", "12345678-Z"),
+            ("X-1234567-L", "X-1234567-L")
+          ).foreach{ case (input, expected) =>
+            ID.either(input).foreach: result =>
+              assert(result.pretty == expected)  
+          }
 
-      test("lower case handling"):
-        Seq(
-          ("12345678z", "12345678-Z"),
-          ("00000001r", "00000001-R"),
-          ("99999999r", "99999999-R"),
-          ("X0000001r", "X-0000001-R"),
-          ("Y2345678z", "Y-2345678-Z")
-        ).foreach { case (input, expected) =>
-          ID.either(input).foreach: result => 
-            assert(result.pretty == expected)
-        }
+        test("lower case handling"):
+          Seq(
+            ("12345678z", "12345678-Z"),
+            ("00000001r", "00000001-R"),
+            ("99999999r", "99999999-R"),
+            ("X0000001r", "X-0000001-R"),
+            ("Y2345678z", "Y-2345678-Z")
+          ).foreach { case (input, expected) =>
+            ID.either(input).foreach: result => 
+              assert(result.pretty == expected)
+          }
 
       test("Runtime negatives"):
         test("empty"):
@@ -156,69 +156,69 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
               case Right(_) => false
             )
 
-        test("invisible characters"):
-          //intercept[NoSuchElementException](ID("\n\r\t"))
-          assert(
-            ID.either("\n\r\t") match
-              case Left(error) => error  == InvalidInput("\n\r\t")
-              case Right(_) => false
-            )
+      test("invisible characters"):
+        //intercept[NoSuchElementException](ID("\n\r\t"))
+        assert(
+          ID.either("\n\r\t") match
+            case Left(error) => error  == InvalidInput("\n\r\t")
+            case Right(_) => false
+          )
 
-        test("symbol"):
-          //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
-          assert(
-            ID.either("@#¢∞¬÷“”≠") match
-              case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠")
-              case Right(_) => false
-            )
+      test("symbol"):
+        //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
+        assert(
+          ID.either("@#¢∞¬÷“”≠") match
+            case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠")
+            case Right(_) => false
+          )
  
 
-        test("absent number and control letter in NIE"):
-          //intercept[IllegalArgumentException](ID("Y"))
-          assert(
-            ID.either("Y") match
-              case Left(error) => error  == InvalidNieNumber("")
-              case Right(_) => false
-            )
+      test("absent number and control letter in NIE"):
+        //intercept[IllegalArgumentException](ID("Y"))
+        assert(
+          ID.either("Y") match
+            case Left(error) => error  == InvalidInput("Y")
+            case Right(_) => false
+          )
  
-        test("invalid nie letter"):
-          //intercept[IllegalArgumentException](ID("A1234567T"))
-          assert(
-            ID.either("A1234567T") match
-              case Left(error) => error == InvalidNieLetter("A")
-              case Right(_) => false
+      test("invalid nie letter"):
+        //intercept[IllegalArgumentException](ID("A1234567T"))
+        assert(
+          ID.either("A1234567T") match
+            case Left(error) => error == InvalidNieLetter("A")
+            case Right(_) => false
           )
 
-        test("too short number"):
-          //intercept[IllegalArgumentException](ID("1234567T"))
-          assert(
-            ID.either("1234567T") match
-              case Left(error) => error == InvalidDniNumber("1234567")
-              case Right(_) => false
-          )
+      test("too short number"):
+        //intercept[IllegalArgumentException](ID("1234567T"))
+        assert(
+          ID.either("1234567T") match
+            case Left(error) => error == InvalidInput("1234567T")
+            case Right(_) => false
+        )
 
-        test("too long number"):
-          //intercept[IllegalArgumentException](ID("123456789T"))
-          assert(
-            ID.either("123456789T") match
-              case Left(error) => error == InvalidDniNumber("123456789")
-              case Right(_) => false
-          )
+      test("too long number"):
+        //intercept[IllegalArgumentException](ID("123456789T"))
+        assert(
+          ID.either("123456789T") match
+            case Left(error) => error == InvalidInput("123456789T")
+            case Right(_) => false
+        )
 
-        test("invalid number"):
-          //intercept[IllegalArgumentException](ID("1234567AT"))
-          assert(
-            ID.either("1234567AT") match
-              case Left(error) => error == InvalidNaN("1234567A")
-              case Right(_) => false
-          )
+      test("invalid number"):
+        //intercept[IllegalArgumentException](ID("1234567AT"))
+        assert(
+          ID.either("1234567AT") match
+            case Left(error) => error == InvalidNumber("1234567A")
+            case Right(_) => false
+        )
 
-        test(" invalid controll letter"):
-          //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
-          assert(
-            ID.either("Y2345678Ñ") match
-              case Left(error) => error == InvalidControlLetter("Ñ")
-              case Right(_) => false
-          )
+      test(" invalid controll letter"):
+        //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
+        assert(
+          ID.either("Y2345678Ñ") match
+            case Left(error) => error == InvalidControlLetter("Ñ")
+            case Right(_) => false
+        )
     }
   }

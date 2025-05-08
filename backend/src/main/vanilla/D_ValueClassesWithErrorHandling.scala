@@ -42,40 +42,55 @@ import backend.common.*
   */
 
 object D_ValueClassesWithErrorHandling:
+
+  private[vanilla] final class Number(val value: String) extends AnyVal
+  private[vanilla] object Number:
+    def either(number: String): Either[InvalidNumber, Number] =
+      Either.cond(
+        number.forall(_.isDigit),
+        new Number(number),
+        InvalidNumber(number)
+      )
  
   private[vanilla] final class NieNumber(val value: String) extends AnyVal
   private[vanilla] object NieNumber:
-    def either(number: String): Either[FailedValidation, NieNumber] =
-      if !number.forall(_.isDigit) then Left(InvalidNaN(number))
-      else if number.length != 7 then Left(InvalidNieNumber(number))
-      else Right(new NieNumber(number))
+    def either(nieNumber: String): Either[FailedValidation, NieNumber] =
+      Number.either(nieNumber).flatMap: number =>
+        Either.cond(
+          number.value.length == 7,
+          new NieNumber(number.value),
+          InvalidNieNumber(number.value)
+        )
 
   private[vanilla] final class DniNumber(val value: String) extends AnyVal
   private[vanilla] object DniNumber:
-    def either(number: String): Either[FailedValidation, DniNumber] =
-      if !number.forall(_.isDigit) then Left(InvalidNaN(number))
-      else if number.length != 8 then Left(InvalidDniNumber(number))
-      else Right(new DniNumber(number))
+    def either(dniNumber: String): Either[FailedValidation, DniNumber] =
+      Number.either(dniNumber).flatMap: number =>
+        Either.cond(
+          number.value.length == 8,
+          new DniNumber(number.value),
+          InvalidDniNumber(number.value)
+        )
 
-  private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
-    override def pretty: String = s"${number.value}-$letter"
+  private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"${dniNumber.value}-$letter"
 
   private[vanilla] object DNI:
     def either(input: String): Either[FailedValidation, DNI] =
       val number = input.dropRight(1)
       val letter = input.last.toString
       for
-        _number <- DniNumber.either(number)
+        dniNumber <- DniNumber.either(number)
         _letter <- ControlLetter.either(letter)
         result <- Either.cond(
-          _number.value.toInt % 23 == _letter.ordinal,
-          new DNI(_number, _letter),
-          InvalidDni(number, letter)
+          dniNumber.value.toInt % 23 == _letter.ordinal,
+          new DNI(dniNumber, _letter),
+          InvalidDni(dniNumber.value, _letter)
         )
       yield result
 
-  private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
-    override def pretty: String = s"$nieLetter-${number.value}-$letter"
+  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[vanilla] object NIE:
     def either(input: String): Either[FailedValidation, NIE] =
@@ -84,12 +99,12 @@ object D_ValueClassesWithErrorHandling:
       val letter = input.last.toString
       for
         _nieLetter <- NieLetter.either(nieLetter)
-        _number <- NieNumber.either(number)
+        nieNumber <- NieNumber.either(number)
         _letter <- ControlLetter.either(letter)
         result <- Either.cond(
-           s"${_nieLetter.ordinal}$number".toInt % 23 == _letter.ordinal,
-           new NIE(_nieLetter, _number, _letter),
-           InvalidNie(nieLetter, number, letter)
+           ((_nieLetter.ordinal * 10000000) + nieNumber.value.toInt) % 23 == _letter.ordinal,
+           new NIE(_nieLetter, nieNumber, _letter),
+           InvalidNie(_nieLetter, nieNumber.value.toString, _letter)
         )
       yield result
 
@@ -102,12 +117,10 @@ object D_ValueClassesWithErrorHandling:
           .trim              // Handeling empty spaces around
           .replace("-", "")  // Removing dashes
           .toUpperCase()     // Handling lower case 
-      if _input.isEmpty || _input.forall(!_.isLetterOrDigit)
+
+      if _input.length != 9 || _input.forall(!_.isLetterOrDigit)
       then Left(InvalidInput(input))
       else
-        // Validating the cleaned input
-        require(!_input.isEmpty)
-        require(_input.forall(_.isLetterOrDigit))
       
         // Selecting which type of ID base on initial character type - Letter or Digit
         if _input.head.isDigit // Splitting between DNI and NIE

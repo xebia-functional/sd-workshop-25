@@ -74,12 +74,12 @@ object F_OpaqueTypesRuntime:
       then number
       else error("Number '" + constValue[number.type] + "' should contain 8 digits")
 
-  private[vanilla] final class DNI(number: DniNumber, letter: ControlLetter) extends ID:
+  private[vanilla] final class DNI(dniNumber: DniNumber, letter: ControlLetter) extends ID:
     require(
-      number.toString.toInt % 23 == letter.ordinal,
-      s"DNI number '$number' does not match the control letter '$letter'"
+      dniNumber.toString.toInt % 23 == letter.ordinal,
+      s"DNI number '$dniNumber' does not match the control letter '$letter'"
     )
-    override def pretty: String = s"$number-$letter"
+    override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
     inline def apply(input: String): DNI =
@@ -93,12 +93,12 @@ object F_OpaqueTypesRuntime:
         new DNI(_number, _letter)
 
 
-  private[vanilla] final class NIE(nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
+  private[vanilla] final class NIE(nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
     require(
-      s"${nieLetter.ordinal}$number".toInt % 23 == letter.ordinal,
-      s"NIE number '$number' does not match the control letter '$letter'"
+      s"${nieLetter.ordinal}$nieNumber".toInt % 23 == letter.ordinal,
+      s"NIE number '$nieNumber' does not match the control letter '$letter'"
     )
-    override def pretty: String = s"$nieLetter-$number-$letter"
+    override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
     inline def apply(input: String): NIE =

@@ -25,54 +25,57 @@ import backend.common.*
   */
 
 object B_TypeAliases:
-
+  
+  private[vanilla] type Number = String
+  private[vanilla] object Number:
+    def apply(number: String): Number =
+      requireValidNumber(number)
+      number
+  
   private[vanilla] type DniNumber = String
   private[vanilla] object DniNumber:
     def apply(number: String): DniNumber =
-      require(number.forall(_.isDigit), s"DNI number '$number' should not contain letters")
-      require(number.length == 8, s"DNI number '$number' should contain 8 digits")
-      number
+      val _number = Number.apply(number)
+      requireValidDniNumber(_number.toString)
+      _number
 
   private[vanilla] type NieNumber = String
   private[vanilla] object NieNumber:
     def apply(number: String): NieNumber =
-      require(number.forall(_.isDigit), s"NIE number '$number' should not contain letters")
-      require(number.length == 7, s"NIE number '$number' should contain 7 digits")
-      number
+      val _number = Number(number)
+      requireValidNieNumber(_number.toString)
+      _number
 
-  private[vanilla] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
-    require(
-      number.toInt % 23 == letter.ordinal,
-      s"DNI number '$number' does not match the control letter '$letter'"
-    )
-    override def pretty: String = s"$number-$letter"
+  private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
     def apply(input: String): DNI =
       val number = input.dropRight(1)
-      val _number = DniNumber(number)
+      val dniNumber = DniNumber(number)
       val letter = input.last.toString
+      requireValidControlLetter(letter)
       val _letter = ControlLetter.valueOf(letter)
+      requireValidDni(number, _letter)
       // new DNI(number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
-      new DNI(_number, _letter)
+      new DNI(dniNumber, _letter)
 
-  private[vanilla] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
-    require(
-      s"${nieLetter.ordinal}$number".toInt % 23 == letter.ordinal,
-      s"NIE number '$number' does not match the control letter '$letter'"
-    )
-    override def pretty: String = s"$nieLetter-$number-$letter"
+  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
+      requireValidNieLetter(nieLetter)
       val _nieLetter = NieLetter.valueOf(nieLetter)
       val number = input.tail.dropRight(1)
-      val _number = NieNumber(number)
+      val nieNumber = NieNumber(number)
       val letter = input.last.toString
+      requireValidControlLetter(letter)
       val _letter = ControlLetter.valueOf(letter)
+      requireValidNie(_nieLetter, number, _letter)
       // new NIE(_nieLetter, number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
-      new NIE(_nieLetter, _number, _letter)
+      new NIE(_nieLetter, nieNumber, _letter)
 
   object ID:
     def apply(input: String): ID = 
@@ -85,8 +88,7 @@ object B_TypeAliases:
           .toUpperCase()     // Handling lower case 
       
       // Validating the cleaned input
-      require(!_input.isEmpty)
-      require(_input.forall(_.isLetterOrDigit))
+      requireValidInput(_input)
       
       // Selecting which type of ID base on initial character type - Letter or Digit
       if _input.head.isDigit // Splitting between DNI and NIE

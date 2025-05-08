@@ -33,38 +33,35 @@ import backend.common.*
 
 object A_RawClasses:
 
-  private[vanilla] final class DNI private (number: String, letter: ControlLetter) extends ID:
-    require(number.forall(_.isDigit), s"DNI number '$number' should not contain letters")
-    require(number.length == 8, s"DNI number '$number' should contain 8 digits")
-    require(
-      number.toInt % 23 == letter.ordinal,
-      s"DNI number '$number' does not match the control letter '$letter'"
-      )
-    override def pretty: String = s"$number-$letter"
+  private[vanilla] final class DNI private (dniNumber: String, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
     def apply(input: String): DNI =
       val number = input.dropRight(1)
+      requireValidNumber(number)
+      requireValidDniNumber(number)
       val letter = input.last.toString
+      requireValidControlLetter(letter)
       val _letter = ControlLetter.valueOf(letter)
+      requireValidDni(number, _letter)
       new DNI(number, _letter)
 
-  private[vanilla] final class NIE private (nieLetter: NieLetter, number: String, letter: ControlLetter) extends ID:
-    require(number.forall(_.isDigit), s"NIE number '$number' should not contain letters")
-    require(number.length == 7, s"NIE number '$number' should contain 7 digits")
-    require(
-      s"${nieLetter.ordinal}$number".toInt % 23 == letter.ordinal,
-      s"NIE number '$number' does not match the control letter '$letter'"
-    )
-    override def pretty: String = s"$nieLetter-$number-$letter"
+  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: String, letter: ControlLetter) extends ID:
+    override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
+      requireValidNieLetter(nieLetter)
       val _nieLetter = NieLetter.valueOf(nieLetter)
       val number = input.tail.dropRight(1)
+      requireValidNumber(number)
+      requireValidNieNumber(number)
       val letter = input.last.toString
+      requireValidControlLetter(letter)
       val _letter = ControlLetter.valueOf(letter)
+      requireValidNie(_nieLetter, number, _letter)
       new NIE(_nieLetter, number, _letter)
 
   object ID:
@@ -78,8 +75,7 @@ object A_RawClasses:
           .toUpperCase()     // Handling lower case 
       
       // Validating the cleaned input
-      require(!_input.isEmpty)
-      require(_input.forall(_.isLetterOrDigit))
+      requireValidInput(_input)
       
       // Selecting which type of ID base on initial character type - Letter or Digit
       if _input.head.isDigit // Splitting between DNI and NIE
