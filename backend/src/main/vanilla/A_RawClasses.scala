@@ -34,9 +34,11 @@ import backend.common.*
 object A_RawClasses:
 
   private[vanilla] final class DNI private (dniNumber: String, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
+    
     def apply(input: String): DNI =
       val number = input.dropRight(1)
       requireValidNumber(number)
@@ -48,9 +50,11 @@ object A_RawClasses:
       new DNI(number, _letter)
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: String, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
+    
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
       requireValidNieLetter(nieLetter)
@@ -65,6 +69,7 @@ object A_RawClasses:
       new NIE(_nieLetter, number, _letter)
 
   object ID:
+    
     def apply(input: String): ID = 
       
       // Preprocesing the input

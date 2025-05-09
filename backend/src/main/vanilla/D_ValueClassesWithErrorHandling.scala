@@ -44,7 +44,13 @@ import backend.common.*
 object D_ValueClassesWithErrorHandling:
 
   private[vanilla] final class Number(val value: String) extends AnyVal
+  
   private[vanilla] object Number:
+    
+    def apply(number: String): Number =
+      requireValidNumber(number)
+      new Number(number)
+    
     def either(number: String): Either[InvalidNumber, Number] =
       Either.cond(
         number.forall(_.isDigit),
@@ -53,7 +59,14 @@ object D_ValueClassesWithErrorHandling:
       )
  
   private[vanilla] final class NieNumber(val value: String) extends AnyVal
+  
   private[vanilla] object NieNumber:
+
+    def apply(nieNumber: String): NieNumber =
+      val number = Number(nieNumber)
+      requireValidNieNumber(number.value)
+      new NieNumber(number.value)
+    
     def either(nieNumber: String): Either[FailedValidation, NieNumber] =
       Number.either(nieNumber).flatMap: number =>
         Either.cond(
@@ -63,7 +76,14 @@ object D_ValueClassesWithErrorHandling:
         )
 
   private[vanilla] final class DniNumber(val value: String) extends AnyVal
+  
   private[vanilla] object DniNumber:
+
+    def apply(dniNumber: String): DniNumber =
+      val number = Number(dniNumber)
+      requireValidDniNumber(number.value)
+      new DniNumber(number.value)
+    
     def either(dniNumber: String): Either[FailedValidation, DniNumber] =
       Number.either(dniNumber).flatMap: number =>
         Either.cond(
@@ -73,26 +93,51 @@ object D_ValueClassesWithErrorHandling:
         )
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"${dniNumber.value}-$letter"
 
   private[vanilla] object DNI:
+
+    def apply(input: String): DNI =
+      val number = input.dropRight(1)
+      val dniNumber = DniNumber(number)
+      val letter = input.last.toString
+      requireValidControlLetter(letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidDni(dniNumber.value, controlLetter)
+      new DNI(dniNumber, controlLetter)
+    
     def either(input: String): Either[FailedValidation, DNI] =
       val number = input.dropRight(1)
       val letter = input.last.toString
       for
         dniNumber <- DniNumber.either(number)
-        _letter <- ControlLetter.either(letter)
+        controlLetter <- ControlLetter.either(letter)
         result <- Either.cond(
-          dniNumber.value.toInt % 23 == _letter.ordinal,
-          new DNI(dniNumber, _letter),
-          InvalidDni(dniNumber.value, _letter)
+          dniNumber.value.toInt % 23 == controlLetter.ordinal,
+          new DNI(dniNumber, controlLetter),
+          InvalidDni(dniNumber.value, controlLetter)
         )
       yield result
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[vanilla] object NIE:
+
+    def apply(input: String): NIE =
+      val nieLetter = input.head.toString
+      requireValidNieLetter(nieLetter)
+      val _nieLetter = NieLetter.valueOf(nieLetter)
+      val number = input.tail.dropRight(1)
+      val nieNumber = NieNumber(number)
+      val letter = input.last.toString
+      requireValidControlLetter(letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidNie(_nieLetter, nieNumber.value, controlLetter)
+      new NIE(_nieLetter, nieNumber, controlLetter)
+    
     def either(input: String): Either[FailedValidation, NIE] =
       val nieLetter = input.head.toString
       val number = input.tail.dropRight(1)
@@ -100,15 +145,33 @@ object D_ValueClassesWithErrorHandling:
       for
         _nieLetter <- NieLetter.either(nieLetter)
         nieNumber <- NieNumber.either(number)
-        _letter <- ControlLetter.either(letter)
+        controlLetter <- ControlLetter.either(letter)
         result <- Either.cond(
-           ((_nieLetter.ordinal * 10000000) + nieNumber.value.toInt) % 23 == _letter.ordinal,
-           new NIE(_nieLetter, nieNumber, _letter),
-           InvalidNie(_nieLetter, nieNumber.value.toString, _letter)
+           ((_nieLetter.ordinal * 10000000) + nieNumber.value.toInt) % 23 == controlLetter.ordinal,
+           new NIE(_nieLetter, nieNumber, controlLetter),
+           InvalidNie(_nieLetter, nieNumber.value.toString, controlLetter)
         )
       yield result
 
   object ID:
+
+    def apply(input: String): ID = 
+      
+      // Preprocesing the input
+      val _input = 
+        input
+          .trim              // Handeling empty spaces around
+          .replace("-", "")  // Removing dashes
+          .toUpperCase()     // Handling lower case 
+      
+      // Validating the cleaned input
+      requireValidInput(_input)
+      
+      // Selecting which type of ID base on initial character type - Letter or Digit
+      if _input.head.isDigit // Splitting between DNI and NIE
+      then DNI(_input)
+      else NIE(_input)
+
     def either(input: String): Either[FailedValidation, ID] = 
       
       // Preprocesing the input
@@ -118,7 +181,7 @@ object D_ValueClassesWithErrorHandling:
           .replace("-", "")  // Removing dashes
           .toUpperCase()     // Handling lower case 
 
-      if _input.length != 9 || _input.forall(!_.isLetterOrDigit)
+      if !(_input.length == 9 && _input.forall(_.isLetterOrDigit))
       then Left(InvalidInput(input))
       else
       

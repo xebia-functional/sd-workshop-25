@@ -27,43 +27,53 @@ import backend.common.*
 object B_TypeAliases:
   
   private[vanilla] type Number = String
+  
   private[vanilla] object Number:
+    
     def apply(number: String): Number =
       requireValidNumber(number)
       number
   
   private[vanilla] type DniNumber = String
+  
   private[vanilla] object DniNumber:
-    def apply(number: String): DniNumber =
-      val _number = Number.apply(number)
-      requireValidDniNumber(_number.toString)
-      _number
+    
+    def apply(dniNumber: String): DniNumber =
+      val number = Number.apply(dniNumber)
+      requireValidDniNumber(number.toString)
+      number
 
   private[vanilla] type NieNumber = String
+  
   private[vanilla] object NieNumber:
-    def apply(number: String): NieNumber =
-      val _number = Number(number)
-      requireValidNieNumber(_number.toString)
-      _number
+    
+    def apply(nieNumber: String): NieNumber =
+      val number = Number(nieNumber)
+      requireValidNieNumber(number.toString)
+      number
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
+    
     def apply(input: String): DNI =
       val number = input.dropRight(1)
       val dniNumber = DniNumber(number)
       val letter = input.last.toString
       requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidDni(number, _letter)
-      // new DNI(number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
-      new DNI(dniNumber, _letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidDni(dniNumber, controlLetter)
+      // new DNI(number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
+      new DNI(dniNumber, controlLetter)
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
+    
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
       requireValidNieLetter(nieLetter)
@@ -72,12 +82,13 @@ object B_TypeAliases:
       val nieNumber = NieNumber(number)
       val letter = input.last.toString
       requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, number, _letter)
-      // new NIE(_nieLetter, number, _letter) // Compiles, passes tests... but it is actually wrong. Check it out!
-      new NIE(_nieLetter, nieNumber, _letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidNie(_nieLetter, nieNumber, controlLetter)
+      // new NIE(_nieLetter, number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
+      new NIE(_nieLetter, nieNumber, controlLetter)
 
   object ID:
+    
     def apply(input: String): ID = 
       
       // Preprocesing the input

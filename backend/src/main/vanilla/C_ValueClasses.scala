@@ -40,42 +40,52 @@ import backend.common.*
 object C_ValueClasses:
 
   private[vanilla] final class Number(val value: String) extends AnyVal
+  
   private[vanilla] object Number:
+    
     def apply(number: String): Number =
       requireValidNumber(number)
       new Number(number)
 
   private[vanilla] final class NieNumber(val value: String) extends AnyVal
+  
   private[vanilla] object NieNumber:
+    
     def apply(nieNumber: String): NieNumber =
       val number = Number(nieNumber)
       requireValidNieNumber(number.value)
       new NieNumber(number.value)
 
   private[vanilla] final class DniNumber(val value: String) extends AnyVal
+  
   private[vanilla] object DniNumber:
+    
     def apply(dniNumber: String): DniNumber =
       val number = Number(dniNumber)
       requireValidDniNumber(number.value)
       new DniNumber(number.value)
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"${dniNumber.value}-$letter"
 
   private[vanilla] object DNI:
+    
     def apply(input: String): DNI =
       val number = input.dropRight(1)
       val dniNumber = DniNumber(number)
       val letter = input.last.toString
       requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidDni(number, _letter)
-      new DNI(dniNumber, _letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidDni(dniNumber.value, controlLetter)
+      new DNI(dniNumber, controlLetter)
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
+    
     override def pretty: String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[vanilla] object NIE:
+    
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
       requireValidNieLetter(nieLetter)
@@ -84,11 +94,12 @@ object C_ValueClasses:
       val nieNumber = NieNumber(number)
       val letter = input.last.toString
       requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, number, _letter)
-      new NIE(_nieLetter, nieNumber, _letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidNie(_nieLetter, nieNumber.value, controlLetter)
+      new NIE(_nieLetter, nieNumber, controlLetter)
 
   object ID:
+    
     def apply(input: String): ID = 
       
       // Preprocesing the input

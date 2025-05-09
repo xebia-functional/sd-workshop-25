@@ -22,7 +22,7 @@ object common:
     inline def apply(letter: String): NieLetter =
       inline if constValue[Matches[letter.type, "[XYZ]{1}"]]
       then NieLetter.valueOf(letter)
-      else error("'" + constValue[letter.type] + "' is not a valid NIE letter") 
+      else error("Invalid NIE Letter: '" + constValue[letter.type] + "' is not a valid NIE letter") 
     
     def either(letter: String): Either[InvalidNieLetter, NieLetter] =
       Either.cond(
@@ -63,7 +63,7 @@ object common:
     inline def apply(letter: String): ControlLetter =
       inline if constValue[Matches[letter.type, "[TRWAGMYFPDXBNJZSQVHLCKE]{1}"]]
       then ControlLetter.valueOf(letter)
-      else error("'" + constValue[letter.type] + "' is not a valid Control letter")
+      else error("Invalid ControlLetter: '" + constValue[letter.type] + "' is not a valid Control letter")
 
     def either(letter: String): Either[InvalidControlLetter, ControlLetter] =
       Either.cond(
