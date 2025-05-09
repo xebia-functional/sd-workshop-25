@@ -5,17 +5,14 @@ import backend.common.*
 import scala.compiletime.constValue
 import scala.compiletime.error
 import scala.compiletime.ops.any.ToString
-import scala.compiletime.ops.boolean.&&
+import scala.compiletime.ops.boolean.!
 import scala.compiletime.ops.boolean.||
-import scala.compiletime.ops.any.!=
 import scala.compiletime.ops.any.==
 import scala.compiletime.ops.int.<=
 import scala.compiletime.ops.int.>
-import scala.compiletime.ops.int.<
+import scala.compiletime.ops.int.+
+import scala.compiletime.ops.int.%
 import scala.compiletime.ops.string.Matches
-import scala.compiletime.ops.string.CharAt
-import scala.compiletime.ops.string.Length
-import scala.compiletime.ops.string.Substring
 
 /** =Opaque types with Validation in Scala=
   *
@@ -57,73 +54,140 @@ import scala.compiletime.ops.string.Substring
 
 object F_OpaqueTypesRuntime:
 
-  private[vanilla] opaque type NieNumber = String
-  private[vanilla] object NieNumber:
-    inline def apply(number: String): NieNumber =
-      inline if constValue[Matches[number.type, "[\\d]*"]]
-      then 
-        if constValue[Matches[number.type, "[0-9]{7}"]]
-        then number 
-        else error("NIE number '" + constValue[number.type] + "' should contain 7 digits")
-      else error("'" + constValue[number.type] + "' should not contain letters") 
+  private[vanilla] opaque type DNI = (Int, String)
 
-  private[vanilla] opaque type DniNumber = String
-  private[vanilla] object DniNumber:
-    inline def apply(number: String): DniNumber =
-      inline if constValue[Matches[number.type, "[0-9]{8}"]]
-      then number
-      else error("Number '" + constValue[number.type] + "' should contain 8 digits")
-
-  private[vanilla] final class DNI(dniNumber: DniNumber, letter: ControlLetter) extends ID:
-    require(
-      dniNumber.toString.toInt % 23 == letter.ordinal,
-      s"DNI number '$dniNumber' does not match the control letter '$letter'"
-    )
-    override def pretty: String = s"$dniNumber-$letter"
+  extension(dni: DNI)
+    def pretty: String = s"${s"%0${8}d".format(dni._1)}-${dni._2}"
 
   private[vanilla] object DNI:
-    inline def apply(input: String): DNI =
-      inline if constValue[!=[Length[input.type], 9]]
-      then error("'" + constValue[input.type] + "' must have lenght of 9")
-      else
-        val number = constValue[ToString[Substring[input.type, 0, 8]]]
-        val letter = constValue[ToString[Substring[input.type, 8, 9]]]
-        val _number = DniNumber(number)
-        val _letter = ControlLetter(letter)
-        new DNI(_number, _letter)
 
+    private inline def isValidDNI(number: Int, letter: String, expected: String): DNI =
+      inline if letter == expected 
+      then new DNI(number, letter)
+      else error("DNI number '" + constValue[ToString[number.type]] + "' does not match the control letter '" + letter + "', expected '" + expected + "'")  
 
-  private[vanilla] final class NIE(nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
-    require(
-      s"${nieLetter.ordinal}$nieNumber".toInt % 23 == letter.ordinal,
-      s"NIE number '$nieNumber' does not match the control letter '$letter'"
-    )
-    override def pretty: String = s"$nieLetter-$nieNumber-$letter"
+    inline def apply(dniNumber: Int, controlLetter: String): DNI =
+      inline if dniNumber <= 0 || dniNumber > 99999999
+      then error("Invalid DNI number '" + constValue[ToString[dniNumber.type]] + "' should be positive and contain 8 digits") 
+      else inline if constValue[![Matches[controlLetter.type, "[[TRWAGMYFPDXBNJZSQVHLCKE]{1}]"]]]
+      then error("Invalid ControlLetter: '" + controlLetter + "' is not a valid Control letter")
+      else inline (dniNumber % 23) match
+        case 0 => isValidDNI(dniNumber, controlLetter, "T")
+        case 1 => isValidDNI(dniNumber, controlLetter, "R")
+        case 2 => isValidDNI(dniNumber, controlLetter, "W")
+        case 3 => isValidDNI(dniNumber, controlLetter, "A")
+        case 4 => isValidDNI(dniNumber, controlLetter, "G")
+        case 5 => isValidDNI(dniNumber, controlLetter, "M")
+        case 6 => isValidDNI(dniNumber, controlLetter, "Y")
+        case 7 => isValidDNI(dniNumber, controlLetter, "F")
+        case 8 => isValidDNI(dniNumber, controlLetter, "P")
+        case 9 => isValidDNI(dniNumber, controlLetter, "D")
+        case 10 => isValidDNI(dniNumber, controlLetter, "X")
+        case 11 => isValidDNI(dniNumber, controlLetter, "B")
+        case 12 => isValidDNI(dniNumber, controlLetter, "N")
+        case 13 => isValidDNI(dniNumber, controlLetter, "J")
+        case 14 => isValidDNI(dniNumber, controlLetter, "Z")
+        case 15 => isValidDNI(dniNumber, controlLetter, "S")
+        case 16 => isValidDNI(dniNumber, controlLetter, "Q")
+        case 17 => isValidDNI(dniNumber, controlLetter, "V")
+        case 18 => isValidDNI(dniNumber, controlLetter, "H")
+        case 19 => isValidDNI(dniNumber, controlLetter, "L")
+        case 20 => isValidDNI(dniNumber, controlLetter, "C")
+        case 21 => isValidDNI(dniNumber, controlLetter, "K")
+        case 22 => isValidDNI(dniNumber, controlLetter, "E")
+    
+  private[vanilla] opaque type NIE = (String, Int, String)
+
+  extension(nie: NIE)
+    def pretty: String = s"${nie._1}-${s"%0${7}d".format(nie._2)}-${nie._3}"
 
   private[vanilla] object NIE:
-    inline def apply(input: String): NIE =
-      inline if constValue[!=[Length[input.type], 9]]
-      then error("'" + constValue[input.type] + "' must have lenght of 9")
-      else
-        val nieLetter = constValue[ToString[Substring[input.type, 0, 1]]]
-        val number = constValue[ToString[Substring[input.type, 1, 8]]]
-        val letter = constValue[ToString[Substring[input.type, 8, 9]]]
-        new NIE(NieLetter(nieLetter), NieNumber(number), ControlLetter(letter))
 
-  object ID:
-    inline def apply(input: String): ID = 
-      
-      // Preprocesing the input
-      //val _input = 
-      //  input
-      //    .trim              // Handeling empty spaces around
-      //    .replace("-", "")  // Removing dashes
-      //    .toUpperCase()     // Handling lower case 
-      inline if constValue[Matches[input.type, "[\\d\\w]{9}"]]
-      then
-        // Selecting which type of ID base on initial character type - Letter or Digit
-        inline if constValue[Matches[ToString[Substring[input.type, 0, 1]], "[0-9]{1}"]] // Splitting between DNI and NIE
-        then DNI(input)
-        else NIE(input)
-      else error("'" + constValue[input.type] + "' should be AlphaNumeric and contains 9 characters")  
+    private inline def isValidNIE(nieLetter: String, nieNumber: Int, controlLetter: String, expectedLetter: String, fullNumber: Int): NIE =
+      inline if controlLetter == expectedLetter
+      then new NIE(nieLetter, nieNumber, controlLetter)
+      else error("NIE number '" + constValue[ToString[fullNumber.type]] + "' does not match the control letter '" + controlLetter + "', expected '" + expectedLetter + "'")  
 
+
+    inline def apply(nieLetter: String, nieNumber: Int, controlLetter: String): NIE =
+      inline if constValue[![Matches[nieLetter.type, "[XYZ]{1}"]]]
+      then error("Invalid NIE Letter: '" + nieLetter + "' is not a valid NIE letter")
+      else inline if nieNumber <= 0 || nieNumber > 9999999
+      then error("Invalid NIE Number: '" + constValue[ToString[nieNumber.type]] + "' should be positive and contain 7 digits")
+      else inline if constValue[![Matches[controlLetter.type, "[TRWAGMYFPDXBNJZSQVHLCKE]{1}"]]]
+      then error("Invalid ControlLetter: '" + controlLetter + "' is not a valid Control letter")
+      else inline nieLetter match
+        case "X" => inline (nieNumber % 23) match
+          case 0 => isValidNIE(nieLetter, nieNumber, controlLetter, "T", nieNumber)
+          case 1 => isValidNIE(nieLetter, nieNumber, controlLetter, "R", nieNumber)
+          case 2 => isValidNIE(nieLetter, nieNumber, controlLetter, "W", nieNumber)
+          case 3 => isValidNIE(nieLetter, nieNumber, controlLetter, "A", nieNumber)
+          case 4 => isValidNIE(nieLetter, nieNumber, controlLetter, "G", nieNumber)
+          case 5 => isValidNIE(nieLetter, nieNumber, controlLetter, "M", nieNumber)
+          case 6 => isValidNIE(nieLetter, nieNumber, controlLetter, "Y", nieNumber)
+          case 7 => isValidNIE(nieLetter, nieNumber, controlLetter, "F", nieNumber)
+          case 8 => isValidNIE(nieLetter, nieNumber, controlLetter, "P", nieNumber)
+          case 9 => isValidNIE(nieLetter, nieNumber, controlLetter, "D", nieNumber)
+          case 10 => isValidNIE(nieLetter, nieNumber, controlLetter, "X", nieNumber)
+          case 11 => isValidNIE(nieLetter, nieNumber, controlLetter, "B", nieNumber)
+          case 12 => isValidNIE(nieLetter, nieNumber, controlLetter, "N", nieNumber)
+          case 13 => isValidNIE(nieLetter, nieNumber, controlLetter, "J", nieNumber)
+          case 14 => isValidNIE(nieLetter, nieNumber, controlLetter, "Z", nieNumber)
+          case 15 => isValidNIE(nieLetter, nieNumber, controlLetter, "S", nieNumber)
+          case 16 => isValidNIE(nieLetter, nieNumber, controlLetter, "Q", nieNumber)
+          case 17 => isValidNIE(nieLetter, nieNumber, controlLetter, "V", nieNumber)
+          case 18 => isValidNIE(nieLetter, nieNumber, controlLetter, "H", nieNumber)
+          case 19 => isValidNIE(nieLetter, nieNumber, controlLetter, "L", nieNumber)
+          case 20 => isValidNIE(nieLetter, nieNumber, controlLetter, "C", nieNumber)
+          case 21 => isValidNIE(nieLetter, nieNumber, controlLetter, "K", nieNumber)
+          case 22 => isValidNIE(nieLetter, nieNumber, controlLetter, "E", nieNumber)
+  
+        case "Y" => inline ((10000000 + nieNumber) % 23)  match
+          case 0 => isValidNIE(nieLetter, nieNumber, controlLetter, "T", 10000000 + nieNumber)
+          case 1 => isValidNIE(nieLetter, nieNumber, controlLetter, "R", 10000000 + nieNumber)
+          case 2 => isValidNIE(nieLetter, nieNumber, controlLetter, "W", 10000000 + nieNumber)
+          case 3 => isValidNIE(nieLetter, nieNumber, controlLetter, "A", 10000000 + nieNumber)
+          case 4 => isValidNIE(nieLetter, nieNumber, controlLetter, "G", 10000000 + nieNumber)
+          case 5 => isValidNIE(nieLetter, nieNumber, controlLetter, "M", 10000000 + nieNumber)
+          case 6 => isValidNIE(nieLetter, nieNumber, controlLetter, "Y", 10000000 + nieNumber)
+          case 7 => isValidNIE(nieLetter, nieNumber, controlLetter, "F", 10000000 + nieNumber)
+          case 8 => isValidNIE(nieLetter, nieNumber, controlLetter, "P", 10000000 + nieNumber)
+          case 9 => isValidNIE(nieLetter, nieNumber, controlLetter, "D", 10000000 + nieNumber)
+          case 10 => isValidNIE(nieLetter, nieNumber, controlLetter, "X", 10000000 + nieNumber)
+          case 11 => isValidNIE(nieLetter, nieNumber, controlLetter, "B", 10000000 + nieNumber)
+          case 12 => isValidNIE(nieLetter, nieNumber, controlLetter, "N", 10000000 + nieNumber)
+          case 13 => isValidNIE(nieLetter, nieNumber, controlLetter, "J", 10000000 + nieNumber)
+          case 14 => isValidNIE(nieLetter, nieNumber, controlLetter, "Z", 10000000 + nieNumber)
+          case 15 => isValidNIE(nieLetter, nieNumber, controlLetter, "S", 10000000 + nieNumber)
+          case 16 => isValidNIE(nieLetter, nieNumber, controlLetter, "Q", 10000000 + nieNumber)
+          case 17 => isValidNIE(nieLetter, nieNumber, controlLetter, "V", 10000000 + nieNumber)
+          case 18 => isValidNIE(nieLetter, nieNumber, controlLetter, "H", 10000000 + nieNumber)
+          case 19 => isValidNIE(nieLetter, nieNumber, controlLetter, "L", 10000000 + nieNumber)
+          case 20 => isValidNIE(nieLetter, nieNumber, controlLetter, "C", 10000000 + nieNumber)
+          case 21 => isValidNIE(nieLetter, nieNumber, controlLetter, "K", 10000000 + nieNumber)
+          case 22 => isValidNIE(nieLetter, nieNumber, controlLetter, "E", 10000000 + nieNumber)
+
+        case "Z" => inline ((20000000 + nieNumber) % 23)  match
+          case 0 => isValidNIE(nieLetter, nieNumber, controlLetter, "T", 20000000 + nieNumber)
+          case 1 => isValidNIE(nieLetter, nieNumber, controlLetter, "R", 20000000 + nieNumber)
+          case 2 => isValidNIE(nieLetter, nieNumber, controlLetter, "W", 20000000 + nieNumber)
+          case 3 => isValidNIE(nieLetter, nieNumber, controlLetter, "A", 20000000 + nieNumber)
+          case 4 => isValidNIE(nieLetter, nieNumber, controlLetter, "G", 20000000 + nieNumber)
+          case 5 => isValidNIE(nieLetter, nieNumber, controlLetter, "M", 20000000 + nieNumber)
+          case 6 => isValidNIE(nieLetter, nieNumber, controlLetter, "Y", 20000000 + nieNumber)
+          case 7 => isValidNIE(nieLetter, nieNumber, controlLetter, "F", 20000000 + nieNumber)
+          case 8 => isValidNIE(nieLetter, nieNumber, controlLetter, "P", 20000000 + nieNumber)
+          case 9 => isValidNIE(nieLetter, nieNumber, controlLetter, "D", 20000000 + nieNumber)
+          case 10 => isValidNIE(nieLetter, nieNumber, controlLetter, "X", 20000000 + nieNumber)
+          case 11 => isValidNIE(nieLetter, nieNumber, controlLetter, "B", 20000000 + nieNumber)
+          case 12 => isValidNIE(nieLetter, nieNumber, controlLetter, "N", 20000000 + nieNumber)
+          case 13 => isValidNIE(nieLetter, nieNumber, controlLetter, "J", 20000000 + nieNumber)
+          case 14 => isValidNIE(nieLetter, nieNumber, controlLetter, "Z", 20000000 + nieNumber)
+          case 15 => isValidNIE(nieLetter, nieNumber, controlLetter, "S", 20000000 + nieNumber)
+          case 16 => isValidNIE(nieLetter, nieNumber, controlLetter, "Q", 20000000 + nieNumber)
+          case 17 => isValidNIE(nieLetter, nieNumber, controlLetter, "V", 20000000 + nieNumber)
+          case 18 => isValidNIE(nieLetter, nieNumber, controlLetter, "H", 20000000 + nieNumber)
+          case 19 => isValidNIE(nieLetter, nieNumber, controlLetter, "L", 20000000 + nieNumber)
+          case 20 => isValidNIE(nieLetter, nieNumber, controlLetter, "C", 20000000 + nieNumber)
+          case 21 => isValidNIE(nieLetter, nieNumber, controlLetter, "K", 20000000 + nieNumber)
+          case 22 => isValidNIE(nieLetter, nieNumber, controlLetter, "E", 20000000 + nieNumber)
