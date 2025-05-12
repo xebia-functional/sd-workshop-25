@@ -57,7 +57,7 @@ object F_OpaqueTypesRuntime:
   private[vanilla] opaque type DNI = (Int, String)
 
   extension(dni: DNI)
-    def pretty: String = s"${s"%0${8}d".format(dni._1)}-${dni._2}"
+    def toString(): String = s"${s"%0${8}d".format(dni._1)}-${dni._2}"
 
   private[vanilla] object DNI:
 
@@ -99,7 +99,7 @@ object F_OpaqueTypesRuntime:
   private[vanilla] opaque type NIE = (String, Int, String)
 
   extension(nie: NIE)
-    def pretty: String = s"${nie._1}-${s"%0${7}d".format(nie._2)}-${nie._3}"
+    def toString(): String = s"${nie._1}-${s"%0${7}d".format(nie._2)}-${nie._3}"
 
   private[vanilla] object NIE:
 

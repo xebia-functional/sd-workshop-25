@@ -94,7 +94,7 @@ object D_ValueClassesWithErrorHandling:
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     
-    override def pretty: String = s"${dniNumber.value}-$letter"
+    override def toString(): String = s"${dniNumber.value}-$letter"
 
   private[vanilla] object DNI:
 
@@ -122,7 +122,7 @@ object D_ValueClassesWithErrorHandling:
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
     
-    override def pretty: String = s"$nieLetter-${nieNumber.value}-$letter"
+    override def toString(): String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[vanilla] object NIE:
 

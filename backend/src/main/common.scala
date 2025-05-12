@@ -8,7 +8,7 @@ import scala.compiletime.ops.string.Matches
 object common:
   
   trait ID:
-    def pretty: String
+    override def toString(): String
 
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with number they represent
