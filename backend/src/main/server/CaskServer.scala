@@ -21,9 +21,9 @@ object CaskServer extends cask.MainRoutes {
     "Access-Control-Max-Age" -> "86400"
   )
 
-  private def successResponse(value: String): cask.Response[String] = 
+  private def successResponse(formattedId: String): cask.Response[String] =
     cask.Response(
-      value,
+      formattedId,
       statusCode = 200,
       headers = corsHeaders
       )
@@ -58,7 +58,7 @@ object CaskServer extends cask.MainRoutes {
   @cask.post("/raw_class")
   def rawClass(request: cask.Request): cask.Response[String] = 
     Try(A_RawClasses.ID(request.text())) match
-      case Success(result) => successResponse(result.toString)
+      case Success(result) => successResponse(result.formatted)
       case Failure(error) => errorResponse(error.getMessage)
     
   @cask.options("/raw_class")
@@ -70,7 +70,7 @@ object CaskServer extends cask.MainRoutes {
   @cask.post("/type_alias")
   def typeAlias(request: cask.Request): cask.Response[String] = 
     Try(B_TypeAliases.ID(request.text())) match
-      case Success(result) => successResponse(result.toString)
+      case Success(result) => successResponse(result.formatted)
       case Failure(error) => errorResponse(error.getMessage)
 
   @cask.options("/type_alias")
@@ -82,7 +82,7 @@ object CaskServer extends cask.MainRoutes {
   @cask.post("/value_class")
   def valueClass(request: cask.Request): cask.Response[String] = 
     Try(C_ValueClasses.ID(request.text())) match
-      case Success(result) => successResponse(result.toString)
+      case Success(result) => successResponse(result.formatted)
       case Failure(error) => errorResponse(error.getMessage)
 
   @cask.options("/value_class")
@@ -94,8 +94,8 @@ object CaskServer extends cask.MainRoutes {
   @cask.post("/value_class_error_handling")
   def valueClassErrorHandling(request: cask.Request): cask.Response[String] = 
     D_ValueClassesWithErrorHandling.ID.either(request.text()) match 
-      case Right(result) => successResponse(result.toString())
-      case Left(error) => errorResponse(error.toString())
+      case Right(result) => successResponse(result.formatted)
+      case Left(error) => errorResponse(error.cause)
 
   @cask.options("/value_class_error_handling")
   def optionsValueClassErrorHandling(): cask.Response[String] = 
@@ -106,8 +106,8 @@ object CaskServer extends cask.MainRoutes {
   @cask.post("/opaque_type_error_handling")
   def opaqueTypeErrorHandling(request: cask.Request): cask.Response[String] = 
     E_OpaqueTypesWithErrorHandling.ID.either(request.text()) match 
-      case Right(result) => successResponse(result.toString())
-      case Left(error) => errorResponse(error.toString())
+      case Right(result) => successResponse(result.formatted)
+      case Left(error) => errorResponse(error.cause)
 
   @cask.options("/opaque_type_error_handling")
   def optionsOpaqueTypeErrorHandling(): cask.Response[String] = 

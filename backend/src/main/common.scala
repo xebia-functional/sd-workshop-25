@@ -8,7 +8,7 @@ import scala.compiletime.ops.string.Matches
 object common:
   
   trait ID:
-    override def toString(): String
+    def formatted: String
 
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with number they represent
@@ -86,8 +86,7 @@ object common:
     )
 
   // All posible failed validations
-  sealed trait FailedValidation(cause: String) extends Exception with NoStackTrace:
-    override def toString: String = cause  
+  sealed trait FailedValidation(val cause: String) extends Exception with NoStackTrace
   case class InvalidInput(input: String) extends FailedValidation(invalidInput(input))
   case class InvalidNumber(number: String) extends FailedValidation(invalidNumber(number))
   case class InvalidDniNumber(dniNumber: String) extends FailedValidation(invalidDniNumber(dniNumber))

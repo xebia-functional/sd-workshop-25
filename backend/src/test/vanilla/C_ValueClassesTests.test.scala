@@ -17,7 +17,7 @@ object C_ValueClassesTests extends TestSuite:
           ("00000001R", "00000001-R"),
           ("99999999R", "99999999-R")
         ).foreach:
-          case (input, expected) => assert(DNI(input).pretty == expected)
+          case (input, expected) => assert(DNI(input).formatted == expected)
 
       test("Runtime unhappy path"):
 
@@ -43,7 +43,7 @@ object C_ValueClassesTests extends TestSuite:
           ("X0000001R", "X-0000001-R"),
           ("Y2345678Z", "Y-2345678-Z")
         ).foreach:
-          case (input, expected) => assert(NIE(input).pretty == expected)
+          case (input, expected) => assert(NIE(input).formatted == expected)
 
       test("Runtime unhappy path"):
 
@@ -77,7 +77,7 @@ object C_ValueClassesTests extends TestSuite:
             ("X0000001R", "X-0000001-R"),
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
-            case (input, expected) => assert(ID(input).pretty == expected)
+            case (input, expected) => assert(ID(input).formatted == expected)
 
       test("Handling"):
 
@@ -86,14 +86,14 @@ object C_ValueClassesTests extends TestSuite:
               ("  12345678Z  ", "12345678-Z"),
               ("  X1234567L  ", "X-1234567-L")
             ).foreach:
-              case (input, expected) => assert(ID(input).pretty == expected)
+              case (input, expected) => assert(ID(input).formatted == expected)
 
           test("Dash"):
             Seq(
               ("12345678-Z", "12345678-Z"),
               ("X-1234567-L", "X-1234567-L")
             ).foreach:
-              case (input, expected) => assert(ID(input).pretty == expected)
+              case (input, expected) => assert(ID(input).formatted == expected)
 
           test("Lower case"):
             Seq(
@@ -103,7 +103,7 @@ object C_ValueClassesTests extends TestSuite:
               ("X0000001r", "X-0000001-R"),
               ("Y2345678z", "Y-2345678-Z")
             ).foreach:
-              case (input, expected) => assert(ID(input).pretty == expected)
+              case (input, expected) => assert(ID(input).formatted == expected)
 
 
       test("Runtime unhappy path"):

@@ -20,7 +20,7 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
           (DNI(1, "R"), "00000001-R"),
           (DNI(99999999, "R"), "99999999-R")
         ).foreach:
-          case (input, expected) => assert(input.pretty == expected)
+          case (input, expected) => assert(input.formatted == expected)
 
       test("Compiletime unhappy path"):
 
@@ -43,7 +43,7 @@ object F_OpaqueTypesRuntimeTests extends TestSuite:
           (NIE("X", 1, "R"), "X-0000001-R"),
           (NIE("Y", 2345678, "Z"), "Y-2345678-Z")
         ).foreach:
-          case (input, expected) => assert(input.pretty == expected)
+          case (input, expected) => assert(input.formatted == expected)
 
       test("Compiletime unhappy path"):
         test("Invalid Nie Letter"):

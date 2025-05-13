@@ -19,7 +19,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("00000001R", "00000001-R"),
             ("99999999R", "99999999-R")
           ).foreach:
-            case (input, expected) => assert(DNI(input).pretty == expected)
+            case (input, expected) => assert(DNI(input).formatted == expected)
 
         test("Either"):
           Seq(
@@ -28,7 +28,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("99999999R", "99999999-R")
           ).foreach:
             case (input, expected) => DNI.either(input).foreach: 
-              dni => assert(dni.pretty == expected) 
+              dni => assert(dni.formatted == expected) 
 
       test("Runtime unhappy path"):
 
@@ -85,7 +85,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("X0000001R", "X-0000001-R"),
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
-            case (input, expected) => assert(NIE(input).pretty == expected)
+            case (input, expected) => assert(NIE(input).formatted == expected)
 
         test("Either"):
           Seq(
@@ -93,7 +93,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
             case (input, expected) => NIE.either(input).foreach: 
-              nie => assert(nie.pretty == expected)
+              nie => assert(nie.formatted == expected)
 
       test("Runtime unhappy path"):
 
@@ -164,7 +164,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("X0000001R", "X-0000001-R"),
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
-            case (input, expected) => assert(ID(input).pretty == expected)
+            case (input, expected) => assert(ID(input).formatted == expected)
         
         test("Either"):
           Seq(
@@ -175,7 +175,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
             case (input, expected) => ID.either(input).foreach:
-              id => id.pretty == expected
+              id => id.formatted == expected
 
       test("Handling"):
 
@@ -186,7 +186,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("  12345678Z  ", "12345678-Z"),
                 ("  X1234567L  ", "X-1234567-L")
               ).foreach:
-                case (input, expected) => assert(ID(input).pretty == expected)
+                case (input, expected) => assert(ID(input).formatted == expected)
             
             test("Either"):
               Seq(
@@ -194,7 +194,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("  X1234567L  ", "X-1234567-L")
               ).foreach:
                 case (input, expected) => ID.either(input).foreach:
-                  id => assert(id.pretty == expected)
+                  id => assert(id.formatted == expected)
 
           test("Dash"):
             
@@ -203,7 +203,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("12345678-Z", "12345678-Z"),
                 ("X-1234567-L", "X-1234567-L")
               ).foreach:
-                case (input, expected) => assert(ID(input).pretty == expected)
+                case (input, expected) => assert(ID(input).formatted == expected)
 
             test("Either"):
               Seq(
@@ -211,7 +211,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("X-1234567-L", "X-1234567-L")
               ).foreach:
                 case (input, expected) => ID.either(input).foreach:
-                  id => assert(id.pretty == expected)    
+                  id => assert(id.formatted == expected)    
 
           test("Lower case"):
             
@@ -223,7 +223,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("X0000001r", "X-0000001-R"),
                 ("Y2345678z", "Y-2345678-Z")
               ).foreach:
-                case (input, expected) => assert(ID(input).pretty == expected)
+                case (input, expected) => assert(ID(input).formatted == expected)
             
             test("Either"):
               Seq(
@@ -234,7 +234,7 @@ object E_OpaqueTypesWithErrorHandlingTests extends TestSuite:
                 ("Y2345678z", "Y-2345678-Z")
               ).foreach:
                 case (input, expected) => ID.either(input).foreach:
-                  id => assert(id.pretty == expected)
+                  id => assert(id.formatted == expected)
 
       test("Runtime unhappy path"):
         

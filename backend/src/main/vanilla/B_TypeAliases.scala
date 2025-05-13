@@ -54,7 +54,7 @@ object B_TypeAliases:
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     
-    override def toString(): String = s"$dniNumber-$letter"
+    override def formatted: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
     
@@ -70,7 +70,7 @@ object B_TypeAliases:
 
   private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
     
-    override def toString(): String = s"$nieLetter-$nieNumber-$letter"
+    override def formatted: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
     
