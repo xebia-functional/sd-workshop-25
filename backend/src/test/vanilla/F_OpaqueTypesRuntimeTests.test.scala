@@ -1,12 +1,9 @@
 package backend.vanilla
 
 import backend.vanilla.F_OpaqueTypesRuntime.*
-import scala.compiletime.testing.typeChecks
 import scala.compiletime.testing.typeCheckErrors
-import scala.compiletime.testing.Error
 
 import utest.*
-import scala.compiletime.testing.ErrorKind
 
 object F_OpaqueTypesRuntimeTests extends TestSuite:
 

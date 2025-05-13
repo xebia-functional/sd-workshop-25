@@ -1,6 +1,5 @@
 package backend.vanilla
 
-import backend.common.*
 import backend.vanilla.C_ValueClasses.*
 
 import utest.*

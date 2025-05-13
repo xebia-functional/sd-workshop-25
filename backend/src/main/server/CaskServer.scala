@@ -1,9 +1,5 @@
 package backend.server
 
-
-import backend.common.ID
-import backend.common.FailedValidation
-
 import scala.util.{Try, Success, Failure}
 import backend.vanilla.{
   A_RawClasses,
@@ -13,7 +9,8 @@ import backend.vanilla.{
   E_OpaqueTypesWithErrorHandling
 }
 
-object CaskServer extends cask.MainRoutes {
+object CaskServer extends cask.MainRoutes:
+  
   private val corsHeaders = Seq(
     "Access-Control-Allow-Origin" -> "*",
     "Access-Control-Allow-Methods" -> "POST, OPTIONS",
@@ -130,4 +127,3 @@ object CaskServer extends cask.MainRoutes {
     cask.Response("Options of Iron", headers = corsHeaders)
 
   initialize()
-}
