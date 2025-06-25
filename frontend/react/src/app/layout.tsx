@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sd-workshop-25-react",
+  title: "sd-workshop-2025-react",
   description: "ScalaDays Scala-CLI Workshop 2025 - React frontend",
 };
 

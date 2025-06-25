@@ -10,15 +10,13 @@ import scala.scalajs.js.annotation.*
 object sdtyrian extends TyrianIOApp[Msg, Model]:
 
   private val validatorEndpoints: List[(String, String)] = List(
-    ("Raw Class", "raw_class"),
+    ("Class", "class"),
     ("Type Alias", "type_alias"),
-    ("Raw Value Class", "value_class"),
-    ("Class", "raw_class_validation"),
-    ("Value Class Error Handling", "value_class_error_handling"),
-    ("Neo Type", "neo_type"),
-    ("Opaque Type Validation", "opaque_type_validation"),
-    ("Opaque Type Error Handling", "opaque_type_error_handling"),
-    ("Iron", "iron")
+    ("Value Class", "value_class"),
+    ("Value Class + Error Handling", "value_class_error_handling"),
+    ("Opaque Type + Error Handling", "opaque_type_error_handling"),
+    //("Neo Type", "neo_type"),
+    //("Iron", "iron")
   )
 
   def router: Location => Msg =
@@ -68,7 +66,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
         "padding"         -> "1rem"
       )
     )(
-      h1(text("Welcome to ScalaDays 25 ID validator")),
+      h1(text("Welcome to ScalaDays 2025 ID validator")),
       div(
         styles(
           "display"         -> "flex",
