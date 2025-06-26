@@ -67,7 +67,7 @@ object A_NeoType:
       yield result
 
   // Entry point    
-  private[libraries] object ID:
+  object ID:
     def either(input: String): Either[String, ID] = 
       
       // Preprocesing the input
