@@ -31,7 +31,7 @@ import backend.common.*
   *   - No automatic pattern matching support
   */
 
-object A_RawClasses:
+object A_Classes:
 
   private[vanilla] final class DNI private (dniNumber: String, letter: ControlLetter) extends ID:
     
