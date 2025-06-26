@@ -2,7 +2,7 @@ package backend.server
 
 import scala.util.{Try, Success, Failure}
 import backend.vanilla.{
-  A_RawClasses,
+  A_Classes,
   B_TypeAliases,
   C_ValueClasses,
   D_ValueClassesWithErrorHandling,
@@ -51,16 +51,16 @@ object CaskServer extends cask.MainRoutes:
     )
 
 
-  // Raw Class endpoints
-  @cask.post("/raw_class")
+  //Class endpoints
+  @cask.post("/class")
   def rawClass(request: cask.Request): cask.Response[String] = 
-    Try(A_RawClasses.ID(request.text())) match
+    Try(A_Classes.ID(request.text())) match
       case Success(result) => successResponse(result.formatted)
       case Failure(error) => errorResponse(error.getMessage)
     
-  @cask.options("/raw_class")
+  @cask.options("/class")
   def optionsRawClass(): cask.Response[String] = 
-    cask.Response("Options of Raw Class", headers = corsHeaders)
+    cask.Response("Options of Class", headers = corsHeaders)
 
 
   // Type Alias endpoints
