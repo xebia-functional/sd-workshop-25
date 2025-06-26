@@ -111,8 +111,7 @@ object CaskServer extends cask.MainRoutes:
   def optionsOpaqueTypeErrorHandling(): cask.Response[String] = 
     cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)
 
-
-  // Unimplemented endpoints
+  // NeoType with Error Handling endpoints
   @cask.post("/neo_type")
   def neoType(request: cask.Request): cask.Response[String] =
     A_NeoType.ID.either(request.text()) match
@@ -122,7 +121,8 @@ object CaskServer extends cask.MainRoutes:
   @cask.options("/neo_type")
   def optionsNeoType(): cask.Response[String] = 
     cask.Response("Options of NeoType", headers = corsHeaders)
-
+  
+  // Unimplemented endpoints
   @cask.post("/iron")
   def iron(request: cask.Request): Nothing = ??? // Iron.ID(request.text())
 
