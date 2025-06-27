@@ -4,17 +4,7 @@ import backend.libraries.B_FullNeoType.*
 
 import utest.*
 import neotype.*
-import backend.common.{
-  FailedValidation,
-  InvalidControlLetter,
-  InvalidDni,
-  InvalidDniNumber,
-  InvalidInput,
-  InvalidNie,
-  InvalidNieLetter,
-  InvalidNieNumber,
-  InvalidNumber
-}
+import backend.common.*
 import scala.compiletime.testing.typeCheckErrors
 
 object B_FullNeoTypeTests extends TestSuite:

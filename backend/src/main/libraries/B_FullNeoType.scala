@@ -1,60 +1,18 @@
 package backend.libraries
 
 import scala.util.control.NoStackTrace
-import backend.common.{
-  FailedValidation,
-  InvalidControlLetter,
-  InvalidDni,
-  InvalidDniNumber,
-  InvalidInput,
-  InvalidNie,
-  InvalidNieLetter,
-  InvalidNieNumber,
-  InvalidNumber
-}
+import backend.common.*
 import neotype.*
 
 object B_FullNeoType:
 
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with number they represent
-  private[libraries] enum NieLetter:
-    case X // 0
-    case Y // 1
-    case Z // 2
-  private[libraries] object NieLetter extends Newtype[String]:
+  private[libraries] object NieLetterNT extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
       if NieLetter.values.map(_.toString).contains(input)
       then true
       else InvalidNieLetter(input).cause
 
-  // Do NOT change the order of the enumeration.
-  // The ordinal value of each letter corresponds with the remainder of number divided by 23
-  private[libraries] enum ControlLetter:
-    case T // 0
-    case R // 1
-    case W // 2
-    case A // 3
-    case G // 4
-    case M // 5
-    case Y // 6
-    case F // 7
-    case P // 8
-    case D // 9
-    case X // 10
-    case B // 11
-    case N // 12
-    case J // 13
-    case Z // 14
-    case S // 15
-    case Q // 16
-    case V // 17
-    case H // 18
-    case L // 19
-    case C // 20
-    case K // 21
-    case E // 22
-  private[libraries] object ControlLetter extends Newtype[String]:
+  private[libraries] object ControlLetterNT extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
       if ControlLetter.values.map(_.toString).contains(input)
       then true
@@ -123,7 +81,7 @@ object B_FullNeoType:
       val validDNI = for
         validNumber <- ValidNumber.make(input.dropRight(1))
         validDniNumber <- ValidDniNumber.make(validNumber)
-        validControlLetter <- ControlLetter.make(input.last.toString)
+        validControlLetter <- ControlLetterNT.make(input.last.toString)
       yield ValidDNI.make((validDniNumber, ControlLetter.valueOf(validControlLetter.unwrap)))
       validDNI match
         case Left(value) => value
@@ -137,10 +95,10 @@ object B_FullNeoType:
   private[libraries] object NIE extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
       val validNIE = for
-        validNieLetter <- NieLetter.make(input.head.toString)
+        validNieLetter <- NieLetterNT.make(input.head.toString)
         validNumber <- ValidNumber.make(input.tail.dropRight(1))
         validNieNumber <- ValidNieNumber.make(validNumber)
-        validControlLetter <- ControlLetter.make(input.last.toString)
+        validControlLetter <- ControlLetterNT.make(input.last.toString)
       yield ValidNIE.make(NieLetter.valueOf(validNieLetter.unwrap), validNieNumber, ControlLetter.valueOf(validControlLetter.unwrap))
       validNIE match
         case Left(value) => value
