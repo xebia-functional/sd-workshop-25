@@ -4,36 +4,36 @@ import backend.libraries.B_FullNeoType.*
 
 import utest.*
 import neotype.*
+import backend.common.{
+  FailedValidation,
+  InvalidControlLetter,
+  InvalidDni,
+  InvalidDniNumber,
+  InvalidInput,
+  InvalidNie,
+  InvalidNieLetter,
+  InvalidNieNumber,
+  InvalidNumber
+}
 import scala.compiletime.testing.typeCheckErrors
 
 object B_FullNeoTypeTests extends TestSuite:
 
   val tests = Tests {
-    test("dummy") {
-      assert(true)
-    }
-  }
-/*
+
     test("DNI") {
-
-      test("Compiletime KO"):
-          assert(typeCheckErrors("""DNI("1234567T")""").head.message == "'1234567T' must have lenght of 9")
-
-        test("12345678Z"):
-          assert(DNI("12345678Z").toString() == "12345678-Z")
-      //  test("00000001R"):
-      //    assert(DNI("00000001R").toString == "00000001-R")
-      //  test("99999999R"):
-      //    assert(DNI("99999999R").toString == "99999999-R")
-
+      
+      import DNI.formatted
 
       test("Compile positives"):
         Seq(
-          (DNI.make("12345678Z"), "12345678-Z"),
-          (DNI.make("00000001R"), "00000001-R"),
-          (DNI.make("99999999R"), "99999999-R")
-        ).foreach { case (input, expected) => input.foreach(result => assert(result.toString == expected))
-        }    
+          (("12345678Z"), "12345678-Z"),
+          (("00000001R"), "00000001-R"),
+          (("99999999R"), "99999999-R")
+        ).foreach { case (input, expected) =>
+          DNI.make(input).foreach{ result =>
+            assert(result.formatted == expected)
+        }}
 
       test("Compile false positives"):
 
@@ -59,11 +59,17 @@ object B_FullNeoTypeTests extends TestSuite:
     }
 
     test("NIE") {
+      
+      import NIE.formatted
+
       test("Compile positives"):
         Seq(
-          (NIE.make("X0000001R"), "X-0000001-R"),
-          (NIE.make("Y2345678Z"), "Y-2345678-Z")
-        ).foreach { case (input, expected) => input.foreach(result => assert(result.toString == expected))
+          (("X0000001R"), "X-0000001-R"),
+          (("Y2345678Z"), "Y-2345678-Z")
+        ).foreach { case (input, expected) =>
+          NIE.make(input).foreach{ result => 
+          assert(result.formatted == expected)
+          }  
         }
 
       test("Compile false positives"):
@@ -71,7 +77,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("A1234567T"))
           assert(
             NIE.make("A1234567T") match
-              case Left(error) => error == InvalidNieLetter("A").toString
+              case Left(error) => error == InvalidNieLetter("A").cause
               case Right(_) => false
           )
 
@@ -80,7 +86,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y", "234567", "T"))
           assert(
             NIE.make("Y234567T") match
-              case Left(error) => error == InvalidNieNumber("234567").toString
+              case Left(error) => error == InvalidNieNumber("234567").cause
               case Right(_) => false
           )
 
@@ -88,7 +94,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y", "23456789", "T"))
           assert(
             NIE.make("Y23456789T") match
-              case Left(error) => error == InvalidNieNumber("23456789").toString
+              case Left(error) => error == InvalidNieNumber("23456789").cause
               case Right(_) => false
           )
 
@@ -96,7 +102,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y", "234567A", "T"))
           assert(
             NIE.make("Y234567AT") match
-              case Left(error) => error == InvalidNaN("234567A").toString
+              case Left(error) => error == InvalidNumber("234567A").cause
               case Right(_) => false
           )
 
@@ -104,7 +110,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
           assert(
             NIE.make("Y2345678Ñ") match
-              case Left(error) => error == InvalidControlLetter("Ñ").toString
+              case Left(error) => error == InvalidControlLetter("Ñ").cause
               case Right(_) => false
           )
 
@@ -112,7 +118,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("R0000001X"))
           assert(
             NIE.make("R0000001X") match
-              case Left(error) => error == InvalidNieLetter("R").toString
+              case Left(error) => error == InvalidNieLetter("R").cause
               case Right(_) => false
           )
 
@@ -121,20 +127,23 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](NIE("0000001RX"))
           assert(
             NIE.make("0000001RX") match
-              case Left(error) => error == InvalidNieLetter("0").toString
+              case Left(error) => error == InvalidNieLetter("0").cause
               case Right(_) => false
           )
 
     }
 
     test("IDs") {
+
+      import ID.formatted
+
       test("Compile false positives"):
 
         test("empty"):
           //intercept[NoSuchElementException](ID(""))
           assert(
             ID.make("") match
-              case Left(error) => error  == InvalidInput("").toString
+              case Left(error) => error  == InvalidInput("").cause
               case Right(_) => false
             )
 
@@ -142,9 +151,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[NoSuchElementException](ID("\n\r\t"))
           assert(
             ID.make("\n\r\t") match
-              //case Left(error) => error  == InvalidInput("\n\r\t").toString
-              // The validation now happens after the pre processing so the information is lost.
-              case Left(error) => error  == InvalidInput("").toString
+              case Left(error) => error  == InvalidInput("\n\r\t").cause
               case Right(_) => false
             )
 
@@ -152,7 +159,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
           assert(
             ID.make("@#¢∞¬÷“”≠") match
-              case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠").toString
+              case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠").cause
               case Right(_) => false
             )
  
@@ -161,7 +168,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("Y"))
           assert(
             ID.make("Y") match
-              case Left(error) => error  == InvalidNieNumber("").toString
+              case Left(error) => error  == InvalidNieNumber("").cause
               case Right(_) => false
             )
  
@@ -169,7 +176,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("A1234567T"))
           assert(
             ID.make("A1234567T") match
-              case Left(error) => error == InvalidNieLetter("A").toString
+              case Left(error) => error == InvalidNieLetter("A").cause
               case Right(_) => false
           )
 
@@ -177,7 +184,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("1234567T"))
           assert(
             ID.make("1234567T") match
-              case Left(error) => error == InvalidDniNumber("1234567").toString
+              case Left(error) => error == InvalidDniNumber("1234567").cause
               case Right(_) => false
           )
 
@@ -185,7 +192,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("123456789T"))
           assert(
             ID.make("123456789T") match
-              case Left(error) => error == InvalidDniNumber("123456789").toString
+              case Left(error) => error == InvalidDniNumber("123456789").cause
               case Right(_) => false
           )
 
@@ -193,7 +200,7 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("1234567AT"))
           assert(
             ID.make("1234567AT") match
-              case Left(error) => error == InvalidNaN("1234567A").toString
+              case Left(error) => error == InvalidNumber("1234567A").cause
               case Right(_) => false
           )
 
@@ -201,29 +208,32 @@ object B_FullNeoTypeTests extends TestSuite:
           //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
           assert(
             ID.make("Y2345678Ñ") match
-              case Left(error) => error == InvalidControlLetter("Ñ").toString
+              case Left(error) => error == InvalidControlLetter("Ñ").cause
               case Right(_) => false
           )
 
       test("edge cases"):
-        test("whitespace handling"):
-          assert(ID.make("  12345678Z  ").map(_.toString) == Right("12345678-Z"))
-          assert(ID.make("  X1234567L  ").map(_.toString) == Right("X-1234567-L"))
+        // Taks for que brave
+        // Modify the code to make the following tests pass
+        //test("whitespace handling"):
+        //  assert(ID.make("  12345678Z  ").map(_.formatted) == Right("12345678-Z"))
+        //  assert(ID.make("  12345678Z  ").map(_.formatted) == Right("12345678-Z"))
 
-        test("dash handling"):
-          assert(ID.make("12345678-Z").map(_.toString) == Right("12345678-Z"))
-          assert(ID.make("X-1234567-L").map(_.toString) == Right("X-1234567-L"))
+        //test("dash handling"):
+        //  assert(ID.make("12345678-Z").map(_.formatted) == Right("12345678-Z"))
+        //  assert(ID.make("X-1234567-L").map(_.formatted) == Right("X-1234567-L"))
 
         test("lower case handling"):
           Seq(
-            (ID.make("12345678z"), "12345678-Z"),
-            (ID.make("00000001r"), "00000001-R"),
-            (ID.make("99999999r"), "99999999-R"),
-            (ID.make("X0000001r"), "X-0000001-R"),
-            (ID.make("Y2345678z"), "Y-2345678-Z")
-          ).foreach { case (input, expected) => input.foreach{result =>
-            assert(result.toString == expected)
-          }
+            ("12345678z", "12345678-Z"),
+            ("00000001r", "00000001-R"),
+            ("99999999r", "99999999-R"),
+            ("X0000001r", "X-0000001-R"),
+            ("Y2345678z", "Y-2345678-Z")
+          ).foreach { case (input, expected) =>
+            ID.make(input).foreach { result => 
+            assert(result.formatted == expected)
+            }
           }
     }
-  }*/
+  }

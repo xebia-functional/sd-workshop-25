@@ -1,7 +1,17 @@
 package backend.libraries
 
 import scala.util.control.NoStackTrace
-
+import backend.common.{
+  FailedValidation,
+  InvalidControlLetter,
+  InvalidDni,
+  InvalidDniNumber,
+  InvalidInput,
+  InvalidNie,
+  InvalidNieLetter,
+  InvalidNieNumber,
+  InvalidNumber
+}
 import neotype.*
 
 object B_FullNeoType:
@@ -16,7 +26,7 @@ object B_FullNeoType:
     override inline def validate(input: String): Boolean | String = 
       if NieLetter.values.map(_.toString).contains(input)
       then true
-      else InvalidNieLetter(input).toString
+      else InvalidNieLetter(input).cause
 
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with the remainder of number divided by 23
@@ -49,16 +59,9 @@ object B_FullNeoType:
       if ControlLetter.values.map(_.toString).contains(input)
       then true
       else InvalidControlLetter(input).cause
-      
-  // All posible problems
-  private[libraries] sealed trait FailedValidation(val cause: String) extends Exception with NoStackTrace
-  private[libraries] case class InvalidInput(input: String) extends FailedValidation(s"'$input' should be AlphaNumeric and non empty")
-  private[libraries] case class InvalidNieLetter(nieLetter: String) extends FailedValidation(s"'$nieLetter' is not a valid NIE letter")
-  private[libraries] case class InvalidNaN(number: String) extends FailedValidation(s"'$number' should not contain letters")
-  private[libraries] case class InvalidDniNumber(number: String) extends FailedValidation(s"DNI number '$number' should contain 8 digits")
-  private[libraries] case class InvalidNieNumber(number: String) extends FailedValidation(s"NIE number '$number' should contain 7 digits")
-  private[libraries] case class InvalidControlLetter(controlLetter: String) extends FailedValidation(s"'$controlLetter' is not a valid Control letter")
-  private[libraries] case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")
+
+  // Additional Invalidation
+  private[libraries] case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")    
 
   // Validated Fields
 
@@ -74,7 +77,7 @@ object B_FullNeoType:
     override def validate(input: String): Boolean | String =
       if input.forall(_.isDigit)
       then true
-      else InvalidNaN(input).cause  
+      else InvalidNumber(input).cause  
 
   private[libraries] type ValidDniNumber = ValidDniNumber.Type
   private[libraries] object ValidDniNumber extends Newtype[ValidNumber]:
@@ -115,8 +118,6 @@ object B_FullNeoType:
         case Left(error) => error
         case Right(value) => true  
 
-  private[libraries] final class DNI private(dniNumber: String, controlLetter: String):
-    override def toString(): String = s"$dniNumber-$controlLetter"
   private[libraries] object DNI extends Newtype[String]:
     override inline def validate(input: String): Boolean | String =
       val validDNI = for
@@ -127,9 +128,12 @@ object B_FullNeoType:
       validDNI match
         case Left(value) => value
         case Right(value) => true
-        
-  private[libraries] final class NIE private(nieLetter: String, nieNumber: String, controlLetter: String):
-    override def toString(): String = s"$nieLetter-$nieNumber-$controlLetter"
+
+    extension (dni: DNI.Type) def formatted: String = {
+      val (number, letter) = dni.unwrap.splitAt(8)
+      s"$number-$letter"
+    }    
+
   private[libraries] object NIE extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
       val validNIE = for
@@ -142,20 +146,14 @@ object B_FullNeoType:
         case Left(value) => value
         case Right(_) => true
       
+    extension (nie: NIE.Type) def formatted: String = {
+      val (number, letter) = nie.unwrap.splitAt(8)
+      s"${number.head}-${number.tail}-$letter"
+    }     
   // Entry point  
   object ID extends Newtype[String]:
     override inline def validate(input: String): Boolean | String =
-      // Preprocesing the input
-      val _input = 
-        input
-          .trim              // Handeling empty spaces around
-          .replace("-", "")  // Removing dashes
-          .toUpperCase()     // Handling lower case
-
-      // Here we lose the track of the original input for the error handling trace    
-      val validInput = ValidInput.make(_input)
-      
-      validInput.flatMap{ vi => {
+      ValidInput.make(input).flatMap { vi => {
         val input = vi.unwrap
         if input.head.isDigit
         then DNI.make(input)
@@ -163,3 +161,16 @@ object B_FullNeoType:
       }} match
         case Left(error) => error
         case Right(_) => true
+
+    extension (id: ID.Type) def formatted: String = {
+      
+      if id.unwrap.head.isLetter
+      then {
+        val (number, letter) = id.unwrap.splitAt(8)
+        s"${number.head}-${number.tail}-$letter"
+      }
+      else {
+        val (number, letter) = id.unwrap.splitAt(8)
+        s"$number-$letter"
+      }
+    }
