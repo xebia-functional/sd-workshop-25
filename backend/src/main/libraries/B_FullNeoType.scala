@@ -49,20 +49,24 @@ object B_FullNeoType:
       then true
       else InvalidNieNumber(input.unwrap).cause
 
+  private type DniTuple = (number: ValidDniNumber, letter: ControlLetter)
   private type ValidDNI = ValidDNI.Type  
-  private object ValidDNI extends Newtype[(ValidDniNumber, ControlLetter)]:
-    override inline def validate(input: (ValidDniNumber, ControlLetter)): Boolean | String =
-      if ControlLetter.fromOrdinal(input._1.unwrap.unwrap.toInt % 23) == input._2
+  private object ValidDNI extends Newtype[DniTuple]:
+    override inline def validate(input: DniTuple): Boolean | String =
+      val (number, letter) = (input.number.unwrap.unwrap.toInt, input.letter)
+      if ControlLetter.fromOrdinal(number % 23) == letter
       then true
-      else InvalidDni(input._1.unwrap.unwrap, input._2).cause
+      else InvalidDni(number.toString, letter).cause
 
+  private type NieTuple = (nieLetter: NieLetter, number: ValidNieNumber, letter: ControlLetter)
   private type ValidNIE = ValidNIE.Type
-  private object ValidNIE extends Newtype[(NieLetter, ValidNieNumber, ControlLetter)]:
-    override inline def validate(input: (NieLetter, ValidNieNumber, ControlLetter)): Boolean | String =
-      val fullNumber = s"${input._1.ordinal}${input._2.unwrap}".toInt
-      if ControlLetter.fromOrdinal(fullNumber % 23) == input._3
+  private object ValidNIE extends Newtype[NieTuple]:
+    override inline def validate(input: NieTuple): Boolean | String =
+      val (nieLetter, number, letter) = (input.nieLetter, input.number.unwrap.unwrap, input.letter)
+      val fullNumber = s"${nieLetter.ordinal}${number}".toInt
+      if ControlLetter.fromOrdinal(fullNumber % 23) == letter
       then true
-      else InvalidNie(input._1, input._2.unwrap.unwrap, input._3).cause
+      else InvalidNie(nieLetter, number, letter).cause
 
   // Our model
   //private [libraries] object DNI extends Newtype[String]:
