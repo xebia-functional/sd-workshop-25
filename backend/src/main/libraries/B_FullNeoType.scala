@@ -6,6 +6,8 @@ import neotype.*
 
 object B_FullNeoType:
 
+  // Define additional objects for NieLetter and ControlLetter.
+  // Companion objects already exists for the enums at common.scala
   private object NieLetterNT extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
       if NieLetter.values.map(_.toString).contains(input)
@@ -108,7 +110,7 @@ object B_FullNeoType:
       val (number, letter) = nie.unwrap.splitAt(8)
       s"${number.head}-${number.tail}-$letter"
     }   
-      
+
   // Entry point  
   object ID extends Newtype[String]:
     override inline def validate(input: String): Boolean | String =
