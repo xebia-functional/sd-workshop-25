@@ -83,7 +83,7 @@ object common:
     )
 
   // All posible failed validations
-  trait FailedValidation(val cause: String) extends Exception with NoStackTrace
+  sealed trait FailedValidation(val cause: String) extends Exception with NoStackTrace
   case class InvalidInput(input: String) extends FailedValidation(invalidInput(input))
   case class InvalidNumber(number: String) extends FailedValidation(invalidNumber(number))
   case class InvalidDniNumber(dniNumber: String) extends FailedValidation(invalidDniNumber(dniNumber))
