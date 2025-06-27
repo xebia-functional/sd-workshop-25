@@ -20,74 +20,69 @@ object B_FullNeoType:
       then true
       else InvalidControlLetter(input).cause
 
-  // Additional Invalidation
-  private [libraries] case class InvalidID(number: String, letter: String) extends FailedValidation(s"ID number '$number' does not match the control letter '$letter'")    
-
   // Validated Fields
   private type ValidInput = ValidInput.Type
   private object ValidInput extends Newtype[String]:
-    override def validate(input: String): Boolean | String = 
-      if input.forall(_.isLetterOrDigit) && !input.isEmpty()
+    override inline def validate(input: String): Boolean | String = 
+      if input.forall(_.isLetterOrDigit) && !input.isEmpty() && input.length >= 9
       then true
       else InvalidInput(input).cause
 
   private type ValidNumber = ValidNumber.Type
   private object ValidNumber extends Newtype[String]:
-    override def validate(input: String): Boolean | String =
+    override inline def validate(input: String): Boolean | String =
       if input.forall(_.isDigit)
       then true
       else InvalidNumber(input).cause  
 
   private type ValidDniNumber = ValidDniNumber.Type
   private object ValidDniNumber extends Newtype[ValidNumber]:
-    override def validate(input: ValidNumber): Boolean | String = 
+    override inline def validate(input: ValidNumber): Boolean | String = 
       if input.unwrap.length() == 8
       then true
       else InvalidDniNumber(input.unwrap).cause
 
   private type ValidNieNumber = ValidNieNumber.Type
   private object ValidNieNumber extends Newtype[ValidNumber]:
-    override def validate(input: ValidNumber): Boolean | String =
+    override inline def validate(input: ValidNumber): Boolean | String =
       if input.unwrap.length() == 7
       then true
       else InvalidNieNumber(input.unwrap).cause
 
-  private type ValidId = ValidId.Type
-  private object ValidId extends Newtype[(ValidNumber, ControlLetter)]:
-    override def validate(input: (ValidNumber, ControlLetter)): Boolean | String =
-      if ControlLetter.fromOrdinal(input._1.unwrap.toInt % 23) == input._2
-      then true
-      else InvalidID(input._1.unwrap, input._2.toString).cause
-
   private type ValidDNI = ValidDNI.Type  
   private object ValidDNI extends Newtype[(ValidDniNumber, ControlLetter)]:
     override inline def validate(input: (ValidDniNumber, ControlLetter)): Boolean | String =
-      val idCandidate = (input._1.unwrap, input._2)
-      ValidId.make(idCandidate) match
-        case Left(error) => error
-        case Right(value) => true    
+      if ControlLetter.fromOrdinal(input._1.unwrap.unwrap.toInt % 23) == input._2
+      then true
+      else InvalidDni(input._1.unwrap.unwrap, input._2).cause
 
   private type ValidNIE = ValidNIE.Type
   private object ValidNIE extends Newtype[(NieLetter, ValidNieNumber, ControlLetter)]:
     override inline def validate(input: (NieLetter, ValidNieNumber, ControlLetter)): Boolean | String =
-      val letterOrdinal = input._1.ordinal
-      val validNumber = ValidNumber.unsafeMake(s"$letterOrdinal${input._2.unwrap}")
-      val idCandidate = (validNumber, input._3)
-      ValidId.make(idCandidate) match
-        case Left(error) => error
-        case Right(value) => true  
+      val fullNumber = s"${input._1.ordinal}${input._2.unwrap}".toInt
+      if ControlLetter.fromOrdinal(fullNumber % 23) == input._3
+      then true
+      else InvalidNie(input._1, input._2.unwrap.unwrap, input._3).cause
 
   // Our model
+  //private [libraries] object DNI extends Newtype[String]:
   private [libraries] object DNI extends Newtype[String]:
     override inline def validate(input: String): Boolean | String =
-      val validDNI = for
-        validNumber <- ValidNumber.make(input.dropRight(1))
-        validDniNumber <- ValidDniNumber.make(validNumber)
-        validControlLetter <- ControlLetterNT.make(input.last.toString)
-      yield ValidDNI.make((validDniNumber, ControlLetter.valueOf(validControlLetter.unwrap)))
-      validDNI match
-        case Left(value) => value
-        case Right(value) => true
+      (
+        for
+          validNumber <- ValidNumber.make(input.dropRight(1))
+          validDniNumber <- ValidDniNumber.make(validNumber)
+          validControlLetter <- ControlLetterNT.make(input.last.toString)
+          controlLetter = ControlLetter.valueOf(validControlLetter.unwrap)
+          result <- Either.cond(
+            ControlLetter.fromOrdinal(validDniNumber.unwrap.unwrap.toInt % 23) == controlLetter,
+            true,
+            InvalidDni(validDniNumber.unwrap.unwrap, controlLetter).cause
+          )
+        yield result
+        ) match
+          case Right(value) => value
+          case Left(error) => error
 
     extension (dni: DNI.Type) def formatted: String = {
       val (number, letter) = dni.unwrap.splitAt(8)
@@ -96,16 +91,25 @@ object B_FullNeoType:
 
   private [libraries] object NIE extends Newtype[String]:
     override inline def validate(input: String): Boolean | String = 
-      val validNIE = for
-        validNieLetter <- NieLetterNT.make(input.head.toString)
-        validNumber <- ValidNumber.make(input.tail.dropRight(1))
-        validNieNumber <- ValidNieNumber.make(validNumber)
-        validControlLetter <- ControlLetterNT.make(input.last.toString)
-      yield ValidNIE.make(NieLetter.valueOf(validNieLetter.unwrap), validNieNumber, ControlLetter.valueOf(validControlLetter.unwrap))
-      validNIE match
-        case Left(value) => value
-        case Right(_) => true
-      
+      (
+        for
+          validNieLetter <- NieLetterNT.make(input.head.toString)
+          validNumber <- ValidNumber.make(input.tail.dropRight(1))
+          validNieNumber <- ValidNieNumber.make(validNumber)
+          validControlLetter <- ControlLetterNT.make(input.last.toString)
+          nieLetter = NieLetter.valueOf(validNieLetter.unwrap)
+          controlLetter = ControlLetter.valueOf(validControlLetter.unwrap)
+          fullNumber = s"${nieLetter.ordinal}${validNieNumber}".toInt
+          result <- Either.cond(
+            ControlLetter.fromOrdinal(fullNumber % 23) == controlLetter,
+            true,
+            InvalidNie(nieLetter, validNieNumber.unwrap.unwrap, controlLetter).cause
+          )
+        yield result
+        ) match
+          case Right(value) => value
+          case Left(error) => error
+        
     extension (nie: NIE.Type) def formatted: String = {
       val (number, letter) = nie.unwrap.splitAt(8)
       s"${number.head}-${number.tail}-$letter"

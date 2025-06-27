@@ -11,219 +11,171 @@ object B_FullNeoTypeTests extends TestSuite:
 
   val tests = Tests {
 
-    test("DNI") {
-      
+    test("DNI"):
+
       import DNI.formatted
 
-      test("Compile positives"):
+      test("Runtime happy path"):
         Seq(
-          (("12345678Z"), "12345678-Z"),
-          (("00000001R"), "00000001-R"),
-          (("99999999R"), "99999999-R")
-        ).foreach { case (input, expected) =>
-          DNI.make(input).foreach{ result =>
-            assert(result.formatted == expected)
-        }}
+          ("12345678Z", "12345678-Z"),
+          ("00000001R", "00000001-R"),
+          ("99999999R", "99999999-R")
+        ).foreach:
+          case (input, expected) => DNI.make(input).foreach: 
+            dni => assert(dni.formatted == expected) 
 
-      test("Compile false positives"):
+      test("Runtime unhappy path"):
 
-        test("Too short number"):
-          // intercept[IllegalArgumentException](DNI("1234567T"))
-          assert(DNI.make("1234567T").isLeft)
+        test("Invalid Dni Number: Too short"):
+          DNI.make("1234567T") match
+            case Left(error) => assert(error == InvalidDniNumber("1234567").cause)
+            case Right(_) => assert(false)  
+
+        test("Invalid Dni Number: Too long"):
+          DNI.make("123456789T") match
+            case Left(error) => assert(error == InvalidDniNumber("123456789").cause)
+            case Right(_) => assert(false)  
+
+        test("Invalid Number"):
+          DNI.make("1234567AT") match
+            case Left(error) => assert(error == InvalidNumber("1234567A").cause)
+            case Right(_) => assert(false)
+
+        test("Invalid ControlLetter"):
+          DNI.make("12345678Ñ") match
+            case Left(error) => assert(error == InvalidControlLetter("Ñ").cause)
+            case Right(_) => assert(false)
   
-        test("too long number"):
-          //  intercept[IllegalArgumentException](DNI("123456789T"))
-          assert(DNI.make("123456789T").isLeft)
-        
-        test("invalid number"):
-          // intercept[IllegalArgumentException](DNI("1234567AT"))
-          assert(DNI.make("1234567AT").isLeft)
+        test("Invalid Dni"):
+          DNI.make("00000001Z") match
+            case Left(error) =>  assert(error.toString == InvalidDni("00000001", ControlLetter.Z).cause)
+            case Right(_) => assert(false)
+  
+    test("NIE"):
 
-        test("invalid control letter"):
-          // intercept[IllegalArgumentException](DNI("12345678Ñ"))
-          assert(DNI.make("12345678Ñ").isLeft)
-
-        test("flipping arguments"):
-          // intercept[IllegalArgumentException](DNI("Z12345678"))
-          assert(DNI.make("Z12345678").isLeft)
-    }
-
-    test("NIE") {
-      
       import NIE.formatted
-
-      test("Compile positives"):
+      
+      test("Runtime happy path"):
         Seq(
-          (("X0000001R"), "X-0000001-R"),
-          (("Y2345678Z"), "Y-2345678-Z")
-        ).foreach { case (input, expected) =>
-          NIE.make(input).foreach{ result => 
-          assert(result.formatted == expected)
-          }  
-        }
+          ("X0000001R", "X-0000001-R"),
+          ("Y2345678Z", "Y-2345678-Z")
+        ).foreach:
+          case (input, expected) => NIE.make(input).foreach: 
+            nie => assert(nie.formatted == expected)
 
-      test("Compile false positives"):
-        test("invalid nie letter"):
-          //intercept[IllegalArgumentException](NIE("A1234567T"))
-          assert(
-            NIE.make("A1234567T") match
-              case Left(error) => error == InvalidNieLetter("A").cause
-              case Right(_) => false
-          )
+      test("Runtime unhappy path"):
+          
+        test("Invalid Nie Letter"):
+          NIE.make("A1234567T") match
+            case Left(error) => assert(error == InvalidNieLetter("A").cause)
+            case Right(_) => assert(false)
 
+        test("Invalid Nie Number: Too short"):
+          NIE.make("Y234567T") match
+            case Left(error) => assert(error == InvalidNieNumber("234567").cause)
+            case Right(_) => assert(false)
+  
+        test("Invalid Nie Number: Too long"):
+          NIE.make("Y23456789T") match
+            case Left(error) => assert(error == InvalidNieNumber("23456789").cause)
+            case Right(_) => assert(false)
+  
+        test("Invalid Number"):
+          NIE.make("Y234567AT") match
+            case Left(error) => assert(error == InvalidNumber("234567A").cause)
+            case Right(_) => assert(false)
+  
+        test("Invalid Control Letter"):
+          NIE.make("Y2345678Ñ") match
+            case Left(error) => assert(error == InvalidControlLetter("Ñ").cause)
+            case Right(_) => assert(false)
+  
+        test("Invalid Nie"):
+          NIE.make("X0000001Z") match
+            case Left(error) => assert(error == InvalidNie(NieLetter.X, "0000001", ControlLetter.Z).cause)
+            case Right(_) => assert(false)
+              
 
-        test("too short number"):
-          //intercept[IllegalArgumentException](NIE("Y", "234567", "T"))
-          assert(
-            NIE.make("Y234567T") match
-              case Left(error) => error == InvalidNieNumber("234567").cause
-              case Right(_) => false
-          )
-
-        test("too long number"):
-          //intercept[IllegalArgumentException](NIE("Y", "23456789", "T"))
-          assert(
-            NIE.make("Y23456789T") match
-              case Left(error) => error == InvalidNieNumber("23456789").cause
-              case Right(_) => false
-          )
-
-        test("invalid number"):
-          //intercept[IllegalArgumentException](NIE("Y", "234567A", "T"))
-          assert(
-            NIE.make("Y234567AT") match
-              case Left(error) => error == InvalidNumber("234567A").cause
-              case Right(_) => false
-          )
-
-        test("invalid controll letter"):
-          //intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
-          assert(
-            NIE.make("Y2345678Ñ") match
-              case Left(error) => error == InvalidControlLetter("Ñ").cause
-              case Right(_) => false
-          )
-
-        test("flipping nie letter and control letter"):
-          //intercept[IllegalArgumentException](NIE("R0000001X"))
-          assert(
-            NIE.make("R0000001X") match
-              case Left(error) => error == InvalidNieLetter("R").cause
-              case Right(_) => false
-          )
-
-
-        test("flipping all arguments"):
-          //intercept[IllegalArgumentException](NIE("0000001RX"))
-          assert(
-            NIE.make("0000001RX") match
-              case Left(error) => error == InvalidNieLetter("0").cause
-              case Right(_) => false
-          )
-
-    }
-
-    test("IDs") {
-
+    test("IDs"):
+      
       import ID.formatted
 
-      test("Compile false positives"):
+      test("Runtime happy path"):
 
-        test("empty"):
-          //intercept[NoSuchElementException](ID(""))
-          assert(
-            ID.make("") match
-              case Left(error) => error  == InvalidInput("").cause
-              case Right(_) => false
-            )
-
-        test("invisible characters"):
-          //intercept[NoSuchElementException](ID("\n\r\t"))
-          assert(
-            ID.make("\n\r\t") match
-              case Left(error) => error  == InvalidInput("\n\r\t").cause
-              case Right(_) => false
-            )
-
-        test("symbol"):
-          //intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
-          assert(
-            ID.make("@#¢∞¬÷“”≠") match
-              case Left(error) => error  == InvalidInput("@#¢∞¬÷“”≠").cause
-              case Right(_) => false
-            )
- 
-
-        test("absent number and control letter in NIE"):
-          //intercept[IllegalArgumentException](ID("Y"))
-          assert(
-            ID.make("Y") match
-              case Left(error) => error  == InvalidNieNumber("").cause
-              case Right(_) => false
-            )
- 
-        test("invalid nie letter"):
-          //intercept[IllegalArgumentException](ID("A1234567T"))
-          assert(
-            ID.make("A1234567T") match
-              case Left(error) => error == InvalidNieLetter("A").cause
-              case Right(_) => false
-          )
-
-        test("too short number"):
-          //intercept[IllegalArgumentException](ID("1234567T"))
-          assert(
-            ID.make("1234567T") match
-              case Left(error) => error == InvalidDniNumber("1234567").cause
-              case Right(_) => false
-          )
-
-        test("too long number"):
-          //intercept[IllegalArgumentException](ID("123456789T"))
-          assert(
-            ID.make("123456789T") match
-              case Left(error) => error == InvalidDniNumber("123456789").cause
-              case Right(_) => false
-          )
-
-        test("invalid number"):
-          //intercept[IllegalArgumentException](ID("1234567AT"))
-          assert(
-            ID.make("1234567AT") match
-              case Left(error) => error == InvalidNumber("1234567A").cause
-              case Right(_) => false
-          )
-
-        test(" invalid controll letter"):
-          //intercept[IllegalArgumentException](ID("Y2345678Ñ"))
-          assert(
-            ID.make("Y2345678Ñ") match
-              case Left(error) => error == InvalidControlLetter("Ñ").cause
-              case Right(_) => false
-          )
-
-      test("edge cases"):
-        // Taks for que brave
-        // Modify the code to make the following tests pass
-        //test("whitespace handling"):
-        //  assert(ID.make("  12345678Z  ").map(_.formatted) == Right("12345678-Z"))
-        //  assert(ID.make("  12345678Z  ").map(_.formatted) == Right("12345678-Z"))
-
-        //test("dash handling"):
-        //  assert(ID.make("12345678-Z").map(_.formatted) == Right("12345678-Z"))
-        //  assert(ID.make("X-1234567-L").map(_.formatted) == Right("X-1234567-L"))
-
-        test("lower case handling"):
+        test("Valid input"):
           Seq(
-            ("12345678z", "12345678-Z"),
-            ("00000001r", "00000001-R"),
-            ("99999999r", "99999999-R"),
-            ("X0000001r", "X-0000001-R"),
-            ("Y2345678z", "Y-2345678-Z")
-          ).foreach { case (input, expected) =>
-            ID.make(input).foreach { result => 
-            assert(result.formatted == expected)
-            }
-          }
-    }
+            ("12345678Z", "12345678-Z"),
+            ("00000001R", "00000001-R"),
+            ("99999999R", "99999999-R"),
+            ("X0000001R", "X-0000001-R"),
+            ("Y2345678Z", "Y-2345678-Z")
+          ).foreach:
+            case (input, expected) => ID.make(input).foreach:
+             id => id.formatted == expected
+
+        test("Handling"):
+          
+          test("white spaces"):
+            Seq(
+              ("  12345678Z  ", "12345678-Z"),
+              ("  X1234567L  ", "X-1234567-L")
+            ).foreach:
+              case (input, expected) => ID.make(input).foreach:
+                id => assert(id.formatted == expected)
+
+            test("Dash"):
+              Seq(
+                ("12345678-Z", "12345678-Z"),
+                ("X-1234567-L", "X-1234567-L")
+              ).foreach:
+                case (input, expected) => ID.make(input).foreach:
+                  id => assert(id.formatted == expected)    
+
+            test("Lower case"):
+              Seq(
+                ("12345678z", "12345678-Z"),
+                ("00000001r", "00000001-R"),
+                ("99999999r", "99999999-R"),
+                ("X0000001r", "X-0000001-R"),
+                ("Y2345678z", "Y-2345678-Z")
+              ).foreach:
+                case (input, expected) => ID.make(input).foreach:
+                  id => assert(id.formatted == expected)
+
+      test("Runtime unhappy path"):
+        
+        test("InvalidInput: empty"):
+          ID.make("         ") match
+            case Left(error) => assert(error == InvalidInput("         ").cause)
+            case Right(_) => assert(false)
+  
+        test("InvalidInput: invisible characters"):
+          ID.make("\n\r\t\n\r\t\n\r\t") match
+            case Left(error) => assert(error == InvalidInput("\n\r\t\n\r\t\n\r\t").cause)
+            case Right(_) => assert(false)
+          
+        test("InvalidInput: symbols"):
+          ID.make("@#¢∞¬÷“”≠") match
+            case Left(error) => assert(error == InvalidInput("@#¢∞¬÷“”≠").cause)
+            case Right(_) => assert(false)
+  
+        test("InvalidInput: too short"):
+          ID.make("Y") match
+            case Left(error) => assert(error == InvalidInput("Y").cause)
+            case Right(_) => assert(false)
+          
+        test("InvalidInput: too long - number"):
+          ID.make("123456789-Z") match
+            case Left(error) => assert(error == InvalidInput("123456789-Z").cause)
+            case Right(_) => assert(false)
+          
+        test("InvalidInput: too long - underscore"):
+          ID.make("12345678_Z") match
+            case Left(error) => assert(error == InvalidInput("12345678_Z").cause)
+            case Right(_) => assert(false)
+          
+        test("InvalidInput: too long - dot"):
+          ID.make("12345678.Z") match
+            case Left(error) => assert(error == InvalidInput("12345678.Z").cause)
+            case Right(_) => assert(false)  
   }
