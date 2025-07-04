@@ -71,15 +71,16 @@ object A_NeoType:
           .trim              // Handeling empty spaces around
           .replace("-", "")  // Removing dashes
           .toUpperCase()     // Handling lower case 
-      if _input.isEmpty || _input.forall(!_.isLetterOrDigit)
-      then Left(InvalidInput(input).cause)
+      if _input.isEmpty || !_input.forall(_.isLetterOrDigit) then Left(InvalidInput(input).cause)
       else
         // Validating the cleaned input
         require(!_input.isEmpty)
+        println("input " + input)
+        println("_input.forall(_.isLetterOrDigit) " + _input.forall(_.isLetterOrDigit))
         require(_input.forall(_.isLetterOrDigit))
       
         // Selecting which type of ID base on initial character type - Letter or Digit
         if _input.head.isDigit // Splitting between DNI and NIE
         then DNI.either(_input)
         else NIE.either(_input)
-        
+        //12345678! fails outside the left
