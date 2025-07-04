@@ -8,6 +8,7 @@ import backend.vanilla.{
   D_ValueClassesWithErrorHandling,
   E_OpaqueTypesWithErrorHandling
 }
+import backend.libraries.A_NeoType
 
 object CaskServer extends cask.MainRoutes:
   
@@ -110,15 +111,18 @@ object CaskServer extends cask.MainRoutes:
   def optionsOpaqueTypeErrorHandling(): cask.Response[String] = 
     cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)
 
-
-  // Unimplemented endpoints
+  // NeoType with Error Handling endpoints
   @cask.post("/neo_type")
-  def neoType(request: cask.Request): Nothing = ??? // NeoType.ID(request.text())
+  def neoType(request: cask.Request): cask.Response[String] =
+    A_NeoType.ID.either(request.text()) match
+      case Right(result) => successResponse(result.formatted)
+      case Left(error) => errorResponse(error)
 
   @cask.options("/neo_type")
   def optionsNeoType(): cask.Response[String] = 
     cask.Response("Options of NeoType", headers = corsHeaders)
-
+  
+  // Unimplemented endpoints
   @cask.post("/iron")
   def iron(request: cask.Request): Nothing = ??? // Iron.ID(request.text())
 

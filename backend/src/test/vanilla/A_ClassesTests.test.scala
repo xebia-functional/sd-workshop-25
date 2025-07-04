@@ -1,10 +1,10 @@
 package backend.vanilla
 
-import backend.vanilla.A_RawClasses.*
+import backend.vanilla.A_Classes.*
 
 import utest.*
 
-object A_RawClassesTests extends TestSuite:
+object A_ClassesTests extends TestSuite:
 
   val tests = Tests {
 

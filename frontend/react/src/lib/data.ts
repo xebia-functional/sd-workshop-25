@@ -24,11 +24,11 @@ const data = [
     title: " Opaque Type + Error Handling",
     endpoint: "/opaque_type_error_handling",
   },
-  //{
-  //  name: "neo-type",
-  //  title: "NeoType",
-  //  endpoint: "/neo_type",
-  //},
+  {
+    name: "neo-type",
+    title: "NeoType",
+    endpoint: "/neo_type",
+  },
   //{
   //  name: "iron",
   //  title: "Iron",
