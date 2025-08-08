@@ -70,14 +70,22 @@ object common:
   private def invalidNie(nieLetter: NieLetter, nieNumber: String, letter: ControlLetter): String = s"Invalid NIE: '$nieLetter-$nieNumber' does not match the control letter '$letter'"
     
   // All validations
-  def requireValidInput(input: String) = require(input.length == 9 && input.forall(_.isLetterOrDigit), invalidInput(input))
-  def requireValidNumber(number: String) = require(number.forall(_.isDigit), invalidNumber(number))
-  def requireValidDniNumber(dniNumber: String) = require(dniNumber.length == 8, invalidDniNumber(dniNumber))
-  def requireValidNieNumber(nieNumber: String) = require(nieNumber.length == 7, invalidNieNumber(nieNumber))
-  def requireValidNieLetter(nieLetter: String) = require(NieLetter.values.map(_.toString).contains(nieLetter), invalidNieLetter(nieLetter))
-  def requireValidControlLetter(controlLetter: String) = require(ControlLetter.values.map(_.toString).contains(controlLetter), invalidControlLetter(controlLetter))
-  def requireValidDni(dniNumber: String, letter: ControlLetter) = require(dniNumber.toInt % 23 == letter.ordinal, invalidDni(dniNumber, letter))
-  def requireValidNie(nieLetter: NieLetter, nieNumber: String, letter: ControlLetter) = require(
+  def requireValidInput(input: String): Unit = 
+    require(input.length == 9 && input.forall(_.isLetterOrDigit), invalidInput(input))
+  def requireValidNumber(number: String): Unit = 
+    require(number.forall(_.isDigit), invalidNumber(number))
+  def requireValidDniNumber(dniNumber: String): Unit = 
+    require(dniNumber.length == 8, invalidDniNumber(dniNumber))
+  def requireValidNieNumber(nieNumber: String): Unit = 
+    require(nieNumber.length == 7, invalidNieNumber(nieNumber))
+  def requireValidNieLetter(nieLetter: String): Unit = 
+    require(NieLetter.values.map(_.toString).contains(nieLetter), invalidNieLetter(nieLetter))
+  def requireValidControlLetter(controlLetter: String): Unit = 
+    require(ControlLetter.values.map(_.toString).contains(controlLetter), invalidControlLetter(controlLetter))
+  def requireValidDni(dniNumber: String, letter: ControlLetter): Unit = 
+    require(dniNumber.toInt % 23 == letter.ordinal, invalidDni(dniNumber, letter))
+  def requireValidNie(nieLetter: NieLetter, nieNumber: String, letter: ControlLetter): Unit =
+    require(
     s"${nieLetter.ordinal}$nieNumber".toInt % 23 == letter.ordinal,
     invalidNie(nieLetter, nieNumber, letter)
     )

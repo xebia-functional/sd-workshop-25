@@ -12,7 +12,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
 
 2. **NIE (Número de Identidad de Extranjero)**:
     - Used by foreign residents in Spain
-    - Composed of 1 prefix letter (X, Y, or Z), 7 numerical digits, and 1 control letter
+    - Composed of 1 NIE letter (X, Y, or Z), 7 numerical digits, and 1 control letter
 
 3. **Control Digit/Letter**:
     - Verifies the validity of both NIF and NIE numbers
@@ -25,7 +25,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
 5. **Control Letter**:
     - Corresponds to a remainder value mapped to a specific character (e.g., 0 → T, 1 → R, 2 → W, etc.)
 
-6. **Prefix Letter** (NIE-specific):
+6. **NIE Letter** (NIE-specific):
     - Represents the category of the resident:
         - X → 0, Y → 1, Z → 2 (substitution rules)
 
@@ -43,14 +43,14 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - Ensure the input follows proper formats (NIF: [8 digits + 1 letter], NIE: [1 letter + 7 digits + 1 letter])
 
 2. **Normalize NIE Prefix**:
-    - Substitute NIE prefix letters X, Y, or Z with their respective numeric equivalents (0, 1, 2)
+    - Substitute NIE letters X, Y, or Z with their respective numeric equivalents (0, 1, 2)
 
 3. **Extract Control Letter**:
     - Extract the control letter from the input string
 
 4. **Extract Core Number**:
     - For NIF: Extract the 8 digits
-    - For NIE: Extract the transformed numeric prefix along with the 7 digits
+    - For NIE: Extract the transformed numeric NIE letter along with the 7 digits
 
 5. **Perform Remainder Calculation**:
     - Divide the core number by 23 and calculate the remainder
@@ -73,15 +73,15 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - The control letter is determined by dividing the 8 digits by 23, calculating the remainder, and referencing the mapping table
 
 2. **NIE Validation**:
-    - A NIE must consist of 1 prefix letter (X, Y, or Z), followed by 7 numerical digits, and 1 control letter (e.g., Y1234567L)
-    - The prefix letter must be replaced by its numeric equivalent:
+    - A NIE must consist of 1 NIE letter (X, Y, or Z), followed by 7 numerical digits, and 1 control letter (e.g., Y1234567L)
+    - The NIE letter must be replaced by its numeric equivalent:
         - X → 0
         - Y → 1
         - Z → 2
     - The control letter is then determined using the same algorithm as the NIF
 
 3. **Mapping Table for Control Letter**:
-    - The remainder from the division of the core number (NIF: 8 digits; NIE: prefix replaced + 7 digits) by 23 maps to a specific letter:
+    - The remainder from the division of the core number (NIF: 8 digits; NIE: replaced NIE letter  + 7 digits) by 23 maps to a specific letter:
       ```
       Remainders and Corresponding Letters:
       0 → T, 1 → R, 2 → W, 3 → A, 4 → G, 5 → M, 6 → Y, 7 → F, 8 → P, 9 → D,
