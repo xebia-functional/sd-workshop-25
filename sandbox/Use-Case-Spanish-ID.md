@@ -6,7 +6,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
 
 ### Nouns
 
-1. **NIF or DNI** (Número de Identificación Fiscal / Documento Nacional de Identidad):
+1. **DNI** (Documento Nacional de Identidad):
     - Used by Spanish citizens
     - Composed of 8 numerical digits and 1 control letter
 
@@ -15,7 +15,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - Composed of 1 NIE letter (X, Y, or Z), 7 numerical digits, and 1 control letter
 
 3. **Control Digit/Letter**:
-    - Verifies the validity of both NIF and NIE numbers
+    - Verifies the validity of both DNI and NIE numbers
     - Calculated using a specific algorithm
 
 4. **Remainder**:
@@ -34,13 +34,13 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
         - Remainders (0-22) correspond to specific letters (e.g., 14 → Z)
 
 8. **Input Data**:
-    - NIF or NIE number provided by the user that requires validation
+    - DNI or NIE number provided by the user that requires validation
 
 ### Behaviors
 
 1. **Accept Input**:
-    - Allow the user to input a valid NIF or NIE string
-    - Ensure the input follows proper formats (NIF: [8 digits + 1 letter], NIE: [1 letter + 7 digits + 1 letter])
+    - Allow the user to input a valid DNI or NIE string
+    - Ensure the input follows proper formats (DNI: [8 digits + 1 letter], NIE: [1 letter + 7 digits + 1 letter])
 
 2. **Normalize NIE Prefix**:
     - Substitute NIE letters X, Y, or Z with their respective numeric equivalents (0, 1, 2)
@@ -49,7 +49,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - Extract the control letter from the input string
 
 4. **Extract Core Number**:
-    - For NIF: Extract the 8 digits
+    - For DNI: Extract the 8 digits
     - For NIE: Extract the transformed numeric NIE letter along with the 7 digits
 
 5. **Perform Remainder Calculation**:
@@ -63,13 +63,13 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - Determine whether the input is valid (matches) or invalid (does not match)
 
 8. **Provide Feedback**:
-    - If valid, indicate success (e.g., "Valid NIF/NIE")
-    - If invalid, provide the user with an appropriate error message (e.g., "Invalid NIF/NIE. Control letter mismatch.")
+    - If valid, indicate success (e.g., "Valid DNI/NIE")
+    - If invalid, provide the user with an appropriate error message (e.g., "Invalid DNI/NIE. Control letter mismatch.")
 
 ### Rules
 
-1. **NIF Validation**:
-    - A NIF must consist of 8 numerical digits followed by 1 letter (e.g., 12345678Z)
+1. **DNI Validation**:
+    - A DNI must consist of 8 numerical digits followed by 1 letter (e.g., 12345678Z)
     - The control letter is determined by dividing the 8 digits by 23, calculating the remainder, and referencing the mapping table
 
 2. **NIE Validation**:
@@ -78,10 +78,10 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
         - X → 0
         - Y → 1
         - Z → 2
-    - The control letter is then determined using the same algorithm as the NIF
+    - The control letter is then determined using the same algorithm as the DNI
 
 3. **Mapping Table for Control Letter**:
-    - The remainder from the division of the core number (NIF: 8 digits; NIE: replaced NIE letter  + 7 digits) by 23 maps to a specific letter:
+    - The remainder from the division of the core number (DNI: 8 digits; NIE: replaced NIE letter  + 7 digits) by 23 maps to a specific letter:
       ```
       Remainders and Corresponding Letters:
       0 → T, 1 → R, 2 → W, 3 → A, 4 → G, 5 → M, 6 → Y, 7 → F, 8 → P, 9 → D,
@@ -90,7 +90,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
       ```
 
 4. **Valid Characters**:
-    - **NIF**:
+    - **DNI**:
         - Digits: 0-9 for core number
         - Final character is a letter from the mapping table
     - **NIE**:
@@ -112,7 +112,7 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
     - Y → 1
     - Z → 2
 
-4. Input strings that do not fit the structure of NIF or NIE are always invalid
+4. Input strings that do not fit the structure of DNI or NIE are always invalid
 
 5. The mapping table for the control letter is fixed and invariant. Here is the correspondence for reference:
    ```
@@ -121,16 +121,16 @@ The original source (in Spanish only) can be found [here](https://www.interior.g
    19 → L, 20 → C, 21 → K, 22 → E
    ```
 
-6. A NIF or NIE with a mismatched control letter is never valid
+6. A DNI or NIE with a mismatched control letter is never valid
 
 ### Example Use Cases
 
-1. **Valid NIF Validation**:
+1. **Valid DNI Validation**:
     - Input: `12345678Z`
     - Calculation: `12345678 % 23 = 14 → Z`
     - Result: Valid
 
-2. **Invalid NIF Validation**:
+2. **Invalid DNI Validation**:
     - Input: `12345678A`
     - Calculation: `12345678 % 23 = 14 → Z`
     - Result: Invalid

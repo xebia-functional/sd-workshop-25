@@ -1,5 +1,29 @@
 ## Scala-CLI mini guide
 
+### Install Scala-CLI
+For macOS:
+```shell
+brew install Virtuslab/scala-cli/scala-cli
+```
+For Linux:
+```shell
+curl -sSLf https://scala-cli.virtuslab.org/get | sh
+```
+For Windows:
+```shell
+winget install virtuslab.scalacli
+```
+If some of the above methods does not work, visit the [official installation page](https://scala-cli.virtuslab.org/docs/overview/#installation).
+
+You can check this [Scala-CLI mini guide](SCALACLI.md) to get up to speed.
+
+#### IDE support for Scala-CLI
+If you use `IntelliJ Idea`, `VS Code` or any other alternative that uses `Metals`, then run the following command so `scala-cli` generates the `Build Server Protocol` (BSP) Json file needed for your IDE to understand the Scala files.
+````shell
+scala-cli setup-ide . --scala <your_scala_version>
+````
+More information about IDE support [here](https://scala-cli.virtuslab.org/docs/commands/setup-ide/).
+
 Once you are located in the root folder of the project, you can do many things with Scala-CLI. The usual suspects are:
 1. [Compile](https://scala-cli.virtuslab.org/docs/commands/compile/)
 2. [Test](https://scala-cli.virtuslab.org/docs/commands/test/)
@@ -23,7 +47,6 @@ When you want Scala-CLI to recompile your code on any changes, add the option `-
 scala-cli compile --watch . 
 ````
 
-
 ### 2. Test
 To create a test file, add `test` between the file name and the extension `scala`.
 For example: `MyFile.test.scala`
@@ -31,7 +54,7 @@ For example: `MyFile.test.scala`
 To add dependencies to your tests, use directives with a `test` prefix on the dependency. For example:
 
 ````scala
-//> using test.dep org.scalameta::munit:1.1.0
+//> using test.dep com.lihaoyi::utest:0.9.0
 ````
 
 Testing all the tests suites in the current directory and subdirectories:
@@ -43,6 +66,17 @@ Testing a specific test suite:
 ````shell
 scala-cli test <path_from_the_root>/MyFile.test.scala
 ````
+
+#### 2.1 Experimental flag
+
+In the presence of the following directive in a test files
+```shell
+//> using target.scope test
+```
+You need to include `--power` in the Scala-CLI command. For example:ç
+```shell
+scala-cli --power test .
+```
 
 ### 3. Format
 Scala CLI can format your code based on a default configuration of `scalafmt` that is set up by the Scala CLI team.

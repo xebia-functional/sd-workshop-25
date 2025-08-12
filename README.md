@@ -1,38 +1,101 @@
 # ScalaDays 2025 - DDD workshop
 
-## Pre-requisites
 
-There is no prior knowledge required.
+## Abstract
 
-Knowledge in Domain Driven Design, Scala and metaprogramming are a plus.
+One of the shortcomings of Domain Driven Design (DDD) is that it can be a lengthy process to define the bounded contexts
+(BCs) properly, and subsequently to transcribe the BCs into a code and to introduce them in your codebase.
+
+This workshop aims to demonstrate how to minimize this inconvenience by relying on:
+- The robustness of DDD in Scala
+- The fast iteration loop provided by scripting in Scala-CLI
+- The ease of transforming a Proof of Concept (PoC) into a Minimum Viable Product (MVP) with the current Scala tooling
+
+You will learn:
+- What the building blocks of DDD and Scala 3 are
+- Which production-tested libraries help us do DDD in Scala 3
+- How to go from a design to a safe and convenient code in a matter of hours
+
+By the end of the workshop, you will have a full stack app with DDD implementations, ready for review.
+
+
+## Target Audience
+
+If you are a Full-Stack Developer, a Software Engineer, a Data Engineer, a Migration Architect or a programming aficionado
+who would like to acquire, upgrade or master your skills in DDD, this workshop is for you.
+
+## Prerequisites
+
+Prior knowledge of Scala is not necessary, although it is a plus – regardless of the flavour of Scala you code in.
+
+Basic understanding of functional programming concepts like map, flapMap, error handling, type classes, etc. is required.
 
 ## Requirements
-1. Install Scala-CLI
-   1. IDE support for Scala-CLI
 
-### Install Scala-CLI
-For macOS:
-```shell
-brew install Virtuslab/scala-cli/scala-cli
-```
-For Linux:
-```shell
-curl -sSLf https://scala-cli.virtuslab.org/get | sh
-```
-For Windows:
-```shell
-winget install virtuslab.scalacli
-```
-If some of the above methods does not work, visit the [official installation page](https://scala-cli.virtuslab.org/docs/overview/#installation).
+Have installed on your computer:
+- Scala-CLI (check additional docs [here](./SCALACLI.md))
+- IDE:
+    - IntelliJ Idea with Scala plugin
+    - VS Code with Metals
+    - Or any other IDE that supports Scala
 
-You can check this [Scala-CLI mini guide](SCALACLI.md) to get up to speed.
+## Agenda
 
-#### IDE support for Scala-CLI
-If you use `IntelliJ Idea`, `VS Code` or any other alternative that uses `Metals`, then run the following command so `scala-cli` generates the `Build Server Protocol` (BSP) Json file needed for your IDE to understand the Scala files.
-````shell
-scala-cli setup-ide . --scala <your_scala_version>
-````
-More information about IDE support [here](https://scala-cli.virtuslab.org/docs/commands/setup-ide/).
+### Use Case: Spanish ID validator
+- Business needs
+- Front-end or back-end validation?
+- Task requirements
+
+### Why DDD? Domain Driven Design premises
+- Benefits of making illegal states unrepresentable
+- Who are the domain experts?
+- What is the ubiquitous language?
+- What is a model?
+- What is a bounded context?
+- Quiz
+- Bonus: DDD in the time of LLMs
+
+### Hands-on with Scala-CLI - PoC
+- Identifying the nouns, behaviours, rules and invariants
+- Codifying invariants
+- Codifying the rules
+- Testing the behaviour
+
+### Domain types
+- Business Domain
+- Types of Subdomains
+- Comparing Subdomains
+- Bounded Context vs Subdomains
+- Quiz
+
+### Trade-offs
+- Software complexity vs Domain accuracy
+- Engineering expertise vs Business needs
+
+### Hands-on Full-stack App with Mill
+- Basic Implementation - MVP
+- Parse, don't validate - Error handling
+- Scala 3 libraries to the rescue
+
+### DDD building blocks
+- Value Objects
+- Entities
+- Aggregates
+- Domain Events
+- Domain Services
+- Quiz
+
+### Hands-on Spanish ID as a Value Object
+- Metaprogramming in Scala 3
+- Compile-time validation
+- Advance usage of Scala 3 libraries
+
+### Conclusion
+- Trade-offs revisited
+    - Software complexity vs Domain accuracy
+    - Engineering expertise vs Business needs
+- Benefits & Limitations
+- Engineering staffing challenges
 
 ## Full stack DDD ID validator
 The app consist of two components that work slightly differently:
@@ -54,43 +117,3 @@ Website: https://tyrian.indigoengine.io/
 It spins a server with almost no ceremony, making it a perfect library for prototyping and figuring things out.
 
 Website: https://com-lihaoyi.github.io/cask/
-
-### Validator
-The validator will be implemented in many of the various ways Scala allows us to do it.
-This way, we will experience the pros and cons of each technique.
-The techniques are grouped in 3 conceptual units:
-1. Scala's building blocks
-2. Scala's basic metaprogramming
-3. Scala's Domain Driven Design libraries
-
-#### Scala's building blocks
-Many of Scala's building blocks are present in other languages.
-If you are not a Scala developer, these similarity will help you understand the second and third block better.
-
-Each of the building blocks provides you with some way of validating inputs and building valid instances of the IDs.
-We will explore and compare: 
-- Algebraic Data types (ADTs)
-- Enums (Enumerations)
-- Classes
-- Type aliases
-- Value classes
-- Classes with validation (assertions)
-- Value Classes with error handling 
-
-#### Scala's basic metaprogramming
-Scala 3 metaprogramming has been redesigned from Scala 2 metaprogramming. 
-Opaque types -a zero cost abstraction - allows you to use techniques of metaprogramming. 
-Opaque types are flexible and powerful enough to create robust DDD types.
-It just looks like normal code.
-The block explores 3 usages of opaque types:
-- Opaque Types with compile time errors
-- Opaque Types with validation
-- Opaque Types with error handling 
-
-#### Scala's DDD libraries
-1. NeoType
-2. Iron
-
-##### NeoType
-
-##### Iron
