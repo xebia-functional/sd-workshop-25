@@ -4,12 +4,12 @@
 package sandbox
 
 import utest.*
-import sandbox.Errors.requirements.*
+import sandbox.Rules.requirements.*
 import scala.util.Try
 import sandbox.Invariants.ControlLetter
 import sandbox.Invariants.NieLetter
 
-object ErrorsTest extends TestSuite:
+object RulesTest extends TestSuite:
 
   val tests = Tests {
 
@@ -63,7 +63,7 @@ object ErrorsTest extends TestSuite:
 
   }
 
-end ErrorsTest
+end RulesTest
 
 
 
