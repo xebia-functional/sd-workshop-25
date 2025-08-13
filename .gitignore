@@ -24,6 +24,10 @@ frontend/react/node_modules
 frontend/react/.next/
 frontend/react/out/
 
+# mill
+backend/out
+backend/mill
+
 # production
 frontend/react/build
 

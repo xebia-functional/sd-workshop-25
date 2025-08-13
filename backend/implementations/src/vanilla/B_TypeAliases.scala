@@ -1,6 +1,6 @@
-package backend.vanilla
+package implementations.vanilla
 
-import backend.common.*
+import implementations.common.*
 
 /** =Type Aliases in Scala=
   *
@@ -25,39 +25,39 @@ import backend.common.*
   */
 
 object B_TypeAliases:
-  
+
   private[vanilla] type Number = String
-  
+
   private[vanilla] object Number:
-    
+
     def apply(number: String): Number =
       requireValidNumber(number)
       number
-  
+
   private[vanilla] type DniNumber = String
-  
+
   private[vanilla] object DniNumber:
-    
+
     def apply(dniNumber: String): DniNumber =
       val number = Number.apply(dniNumber)
       requireValidDniNumber(number.toString)
       number
 
   private[vanilla] type NieNumber = String
-  
+
   private[vanilla] object NieNumber:
-    
+
     def apply(nieNumber: String): NieNumber =
       val number = Number(nieNumber)
       requireValidNieNumber(number.toString)
       number
 
   private[vanilla] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
-    
+
     override def formatted: String = s"$dniNumber-$letter"
 
   private[vanilla] object DNI:
-    
+
     def apply(input: String): DNI =
       val number = input.dropRight(1)
       val dniNumber = DniNumber(number)
@@ -68,12 +68,13 @@ object B_TypeAliases:
       // new DNI(number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
       new DNI(dniNumber, controlLetter)
 
-  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
-    
+  private[vanilla] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter)
+      extends ID:
+
     override def formatted: String = s"$nieLetter-$nieNumber-$letter"
 
   private[vanilla] object NIE:
-    
+
     def apply(input: String): NIE =
       val nieLetter = input.head.toString
       requireValidNieLetter(nieLetter)
@@ -88,19 +89,18 @@ object B_TypeAliases:
       new NIE(_nieLetter, nieNumber, controlLetter)
 
   object ID:
-    
-    def apply(input: String): ID = 
-      
+
+    def apply(input: String): ID =
+
       // Preprocesing the input
-      val _input = 
-        input
-          .trim              // Handeling empty spaces around
-          .replace("-", "")  // Removing dashes
-          .toUpperCase()     // Handling lower case 
-      
+      val _input =
+        input.trim // Handeling empty spaces around
+          .replace("-", "") // Removing dashes
+          .toUpperCase() // Handling lower case
+
       // Validating the cleaned input
       requireValidInput(_input)
-      
+
       // Selecting which type of ID base on initial character type - Letter or Digit
       if _input.head.isDigit // Splitting between DNI and NIE
       then DNI(_input)

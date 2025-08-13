@@ -1,6 +1,6 @@
-package backend.libraries
+package implementations.libraries
 
-import backend.common.*
+import implementations.common.*
 import neotype.*
 
 object A_NeoType:
@@ -12,14 +12,14 @@ object A_NeoType:
     override inline def validate(nieNumber: String): Boolean | String =
       if !nieNumber.forall(_.isDigit) then InvalidNumber(nieNumber).cause
       else if nieNumber.length != 7 then InvalidNieNumber(nieNumber).cause
-      else true  
-      
+      else true
+
   private type DniNumber = DniNumber.Type
   private object DniNumber extends Newtype[String]:
     override inline def validate(dniNumber: String): Boolean | String =
       if !dniNumber.forall(_.isDigit) then InvalidNumber(dniNumber).cause
       else if dniNumber.length != 8 then InvalidDniNumber(dniNumber).cause
-      else true  
+      else true
 
   // Our model: DNI, NIE
 
@@ -39,9 +39,9 @@ object A_NeoType:
           InvalidDni(dniNumber.unwrap, controlLetter).cause
         )
       yield result
-      
 
-  private[libraries] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
+  private[libraries] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter)
+      extends ID:
     override def formatted: String = s"$nieLetter-$number-$letter"
 
   private[libraries] object NIE:
@@ -63,14 +63,13 @@ object A_NeoType:
   // Entry point: ID
 
   object ID:
-    def either(input: String): Either[String, ID] = 
-      
+    def either(input: String): Either[String, ID] =
+
       // Preprocesing the input
-      val _input = 
-        input
-          .trim              // Handeling empty spaces around
-          .replace("-", "")  // Removing dashes
-          .toUpperCase()     // Handling lower case 
+      val _input =
+        input.trim // Handeling empty spaces around
+          .replace("-", "") // Removing dashes
+          .toUpperCase() // Handling lower case
       if _input.isEmpty || !_input.forall(_.isLetterOrDigit) then Left(InvalidInput(input).cause)
       else
         // Validating the cleaned input
@@ -78,9 +77,9 @@ object A_NeoType:
         println("input " + input)
         println("_input.forall(_.isLetterOrDigit) " + _input.forall(_.isLetterOrDigit))
         require(_input.forall(_.isLetterOrDigit))
-      
+
         // Selecting which type of ID base on initial character type - Letter or Digit
         if _input.head.isDigit // Splitting between DNI and NIE
         then DNI.either(_input)
         else NIE.either(_input)
-        //12345678! fails outside the left
+        // 12345678! fails outside the left
