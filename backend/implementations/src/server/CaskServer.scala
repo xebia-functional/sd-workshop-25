@@ -2,7 +2,7 @@ package implementations.server
 
 import scala.util.{Try, Success, Failure}
 import implementations.vanilla.*
-import implementations.libraries.A_NeoType
+import implementations.libraries.*
 
 object CaskServer extends cask.MainRoutes:
 
@@ -113,7 +113,10 @@ object CaskServer extends cask.MainRoutes:
 
   // Unimplemented endpoints
   @cask.post("/iron")
-  def iron(request: cask.Request): Nothing = ??? // Iron.ID(request.text())
+  def iron(request: cask.Request): cask.Response[String] =
+    C_Iron.ID.either(request.text()) match
+      case Right(result) => successResponse(result.formatted)
+      case Left(error)   => errorResponse(error)
 
   @cask.options("/iron")
   def optionsIron(): cask.Response[String] =
