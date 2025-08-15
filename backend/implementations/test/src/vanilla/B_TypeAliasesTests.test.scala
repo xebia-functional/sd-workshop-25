@@ -1,8 +1,7 @@
-package backend.vanilla
+package implementations.vanilla
 
-import backend.vanilla.B_TypeAliases.*
-
-import utest.*
+import implementations.vanilla.B_TypeAliases.*
+import utest.{assert, *}
 
 object B_TypeAliasesTests extends TestSuite:
 
@@ -21,19 +20,19 @@ object B_TypeAliasesTests extends TestSuite:
       test("Runtime unhappy path"):
 
         test("Invalid Dni Number: Too short"):
-          intercept[IllegalArgumentException](DNI("1234567T"))
+          assertThrows[IllegalArgumentException](DNI("1234567T"))
 
         test("Invalid Dni Number: Too long"):
-          intercept[IllegalArgumentException](DNI("123456789T"))
+          assertThrows[IllegalArgumentException](DNI("123456789T"))
 
         test("Invalid Number"):
-          intercept[IllegalArgumentException](DNI("1234567AT"))
+          assertThrows[IllegalArgumentException](DNI("1234567AT"))
 
         test("Invalid ControlLetter"):
-          intercept[IllegalArgumentException](DNI("12345678Ñ"))
+          assertThrows[IllegalArgumentException](DNI("12345678Ñ"))
 
         test("Invalid Dni"):
-          intercept[IllegalArgumentException](DNI("00000001Z"))
+          assertThrows[IllegalArgumentException](DNI("00000001Z"))
 
     test("NIE"):
 
@@ -47,22 +46,22 @@ object B_TypeAliasesTests extends TestSuite:
       test("Runtime unhappy path"):
 
         test("Invalid Nie Letter"):
-          intercept[IllegalArgumentException](NIE("A1234567T"))
+          assertThrows[IllegalArgumentException](NIE("A1234567T"))
 
         test("Invalid Nie Number: Too short"):
-          intercept[IllegalArgumentException](NIE("Y234567T"))
+          assertThrows[IllegalArgumentException](NIE("Y234567T"))
 
         test("Invalid Nie Number: Too long"):
-          intercept[IllegalArgumentException](NIE("Y23456789T"))
+          assertThrows[IllegalArgumentException](NIE("Y23456789T"))
 
         test("Invalid Number"):
-          intercept[IllegalArgumentException](NIE("Y234567AT"))
+          assertThrows[IllegalArgumentException](NIE("Y234567AT"))
 
         test("Invalid Control Letter"):
-          intercept[IllegalArgumentException](NIE("Y2345678Ñ"))
+          assertThrows[IllegalArgumentException](NIE("Y2345678Ñ"))
 
         test("Invalid Nie"):
-          intercept[IllegalArgumentException](NIE("X0000001Z"))
+          assertThrows[IllegalArgumentException](NIE("X0000001Z"))
 
     test("IDs"):
 
@@ -77,9 +76,9 @@ object B_TypeAliasesTests extends TestSuite:
             ("Y2345678Z", "Y-2345678-Z")
           ).foreach:
             case (input, expected) => assert(ID(input).formatted == expected)
-        
-        test("Handling"): 
-           
+
+        test("Handling"):
+
           test("white spaces"):
             Seq(
               ("  12345678Z  ", "12345678-Z"),
@@ -107,23 +106,23 @@ object B_TypeAliasesTests extends TestSuite:
       test("Runtime unhappy path"):
 
         test("InvalidInput: empty"):
-          intercept[IllegalArgumentException](ID("         "))
+          assertThrows[IllegalArgumentException](ID("         "))
 
         test("InvalidInput: invisible characters"):
-          intercept[IllegalArgumentException](ID("\n\r\t\n\r\t\n\r\t"))
-        
+          assertThrows[IllegalArgumentException](ID("\n\r\t\n\r\t\n\r\t"))
+
         test("InvalidInput: symbols"):
-          intercept[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
+          assertThrows[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
 
         test("InvalidInput: too short"):
-          intercept[IllegalArgumentException](ID("Y"))
-        
+          assertThrows[IllegalArgumentException](ID("Y"))
+
         test("InvalidInput: too long - number"):
-          intercept[IllegalArgumentException](ID("123456789-Z"))
-        
+          assertThrows[IllegalArgumentException](ID("123456789-Z"))
+
         test("InvalidInput: too long - underscore"):
-          intercept[IllegalArgumentException](ID("12345678_Z"))
-        
+          assertThrows[IllegalArgumentException](ID("12345678_Z"))
+
         test("InvalidInput: too long - dot"):
-          intercept[IllegalArgumentException](ID("12345678.Z"))
+          assertThrows[IllegalArgumentException](ID("12345678.Z"))
   }
