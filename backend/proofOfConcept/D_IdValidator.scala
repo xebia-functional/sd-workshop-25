@@ -1,14 +1,15 @@
-package ScalaCLI
+package proofOfConcept
 
-import ScalaCLI.Invariants.ControlLetter
-import ScalaCLI.Invariants.NieLetter
-import ScalaCLI.Rules.requirements.*
+import proofOfConcept.A_Invariants.ControlLetter
+import proofOfConcept.A_Invariants.NieLetter
+import proofOfConcept.B_Rules.requirements.*
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 import scala.annotation.tailrec
+import scala.util.{Failure, Success, Try}
 
-object ProofOfConcept:
+object D_IdValidator:
 
   class DNI(dni: String):
     requireValidInput(dni)

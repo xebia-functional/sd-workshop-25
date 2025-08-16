@@ -33,11 +33,8 @@ Once you are located in the root folder of the project, you can do many things w
 
 ### 0. Experimental flag
 
-In the presence of the following directive in a test files
-```shell
-//> using target.scope test
-```
-You need to include `--power` in the Scala-CLI command.
+In the presence of the directive `//> using target.scope test` in a test file, the option `--power` has to be 
+included in the Scala-CLI command.
 
 ### 1. Compile
 To compile the current folder - every file inside, run:
@@ -75,8 +72,6 @@ Testing a specific test suite:
 scala-cli --power test <path_from_the_root>/MyFile.test.scala
 ````
 
-
-
 ### 3. Format
 Scala CLI can format your code based on a default configuration of `scalafmt` that is set up by the Scala CLI team.
 If you want to use a specific configuration, you have to add a `.scalafmt.conf` file in the root directory.
@@ -104,9 +99,9 @@ As a result, a directory `scala-doc` will be created. To see the documentation, 
 ### 5. Run
 To run your main class you can use:
 ````shell
-scala-cli --power run ProofOfConcept.scala .
+scala-cli --power run D_IdValidator.scala .
 ````
 But since `run` is the default mode of Scala-CLI, the following is equivalent:
 ```shell
-scala-cli --power ProofOfConcept.scala .
+scala-cli --power D_IdValidator.scala .
 ```

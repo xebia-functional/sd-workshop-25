@@ -1,6 +1,6 @@
-package ScalaCLI
+package proofOfConcept
 
-object Invariants:
+object A_Invariants:
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with number they represent
   enum NieLetter:
@@ -35,4 +35,4 @@ object Invariants:
     case K // 21
     case E // 22
 
-end Invariants
+end A_Invariants

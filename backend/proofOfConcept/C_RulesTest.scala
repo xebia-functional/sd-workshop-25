@@ -1,15 +1,14 @@
 //> using target.scope test
 //> using test.dep com.lihaoyi::utest:0.9.0
 
-package ScalaCLI
+package proofOfConcept
 
 import utest.*
-import ScalaCLI.Rules.requirements.*
+import proofOfConcept.A_Invariants.*
+import proofOfConcept.B_Rules.requirements.*
 import scala.util.Try
-import ScalaCLI.Invariants.ControlLetter
-import ScalaCLI.Invariants.NieLetter
 
-object RulesTest extends TestSuite:
+object C_RulesTest extends TestSuite:
 
   val tests = Tests {
 
@@ -71,4 +70,4 @@ object RulesTest extends TestSuite:
 
   }
 
-end RulesTest
+end C_RulesTest

@@ -1,9 +1,8 @@
-package ScalaCLI
+package proofOfConcept
 
-import ScalaCLI.Invariants.ControlLetter
-import ScalaCLI.Invariants.NieLetter
+import proofOfConcept.A_Invariants.*
 
-object Rules:
+object B_Rules:
 
   /** Come up with tailored error messages you want to give back to the user in
     * the UI
@@ -77,4 +76,4 @@ object Rules:
 
   end requirements
 
-end Rules
+end B_Rules
