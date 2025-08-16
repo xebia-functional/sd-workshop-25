@@ -31,15 +31,23 @@ Once you are located in the root folder of the project, you can do many things w
 4. [Document](https://scala-cli.virtuslab.org/docs/commands/doc/)
 5. [Run](https://scala-cli.virtuslab.org/docs/commands/run/)
 
+### 0. Experimental flag
+
+In the presence of the following directive in a test files
+```shell
+//> using target.scope test
+```
+You need to include `--power` in the Scala-CLI command.
+
 ### 1. Compile
 To compile the current folder - every file inside, run:
 ````shell
-scala-cli compile .
+scala-cli --power compile .
 ````
 
 To compile only the test files, you need to add the `--test` option. For example:
 ````shell
-scala-cli compile --test . 
+scala-cli --power compile --test . 
 ````
 
 When you want Scala-CLI to recompile your code on any changes, add the option `--watch`. For example:
@@ -59,24 +67,15 @@ To add dependencies to your tests, use directives with a `test` prefix on the de
 
 Testing all the tests suites in the current directory and subdirectories:
 ````shell
-scala-cli test .
+scala-cli --power test .
 ````
 
 Testing a specific test suite:
 ````shell
-scala-cli test <path_from_the_root>/MyFile.test.scala
+scala-cli --power test <path_from_the_root>/MyFile.test.scala
 ````
 
-#### 2.1 Experimental flag
 
-In the presence of the following directive in a test files
-```shell
-//> using target.scope test
-```
-You need to include `--power` in the Scala-CLI command. For example:ç
-```shell
-scala-cli --power test .
-```
 
 ### 3. Format
 Scala CLI can format your code based on a default configuration of `scalafmt` that is set up by the Scala CLI team.
@@ -97,7 +96,7 @@ Scala CLI will read all your `scaladoc` in the source code and generate a docume
 
 The scope of the generated documentation will be limited to the directory where you execute the following command:
 ````shell
-scala-cli doc . -o scala-doc
+scala-cli --power doc . -o scala-doc
 ````
 
 As a result, a directory `scala-doc` will be created. To see the documentation, just open `/index.html` inside the `scala-doc` directory.
@@ -105,23 +104,9 @@ As a result, a directory `scala-doc` will be created. To see the documentation, 
 ### 5. Run
 To run your main class you can use:
 ````shell
-scala-cli run MyMainClass.scala
+scala-cli --power run ProofOfConcept.scala .
 ````
 But since `run` is the default mode of Scala-CLI, the following is equivalent:
 ```shell
-scala-cli MyMainCalss.scala
-```
-To pass arguments to the main method, do it after `--` and separate them with a space, like this:
-```shell
-scala-cli MyMainClass.scala -- first_argument second_argument
-```
-The `--watch` option makes Scala CLI watch your code for changes, and re-runs it upon any change or when the ENTER key is passed from the command line:
-```shell
-scala-cli run Hello.scala  --watch
-```
-
-Scala.js applications can also be compiled and run with the `--js` option. 
-Note that this requires `node` to be installed on your system:
-```shell
-scala-cli MyScalaJsApp.scala --js
+scala-cli --power ProofOfConcept.scala .
 ```

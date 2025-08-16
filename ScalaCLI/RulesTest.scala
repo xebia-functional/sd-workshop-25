@@ -1,13 +1,13 @@
 //> using target.scope test
 //> using test.dep com.lihaoyi::utest:0.9.0
 
-package sandbox
+package ScalaCLI
 
 import utest.*
-import sandbox.Rules.requirements.*
+import ScalaCLI.Rules.requirements.*
 import scala.util.Try
-import sandbox.Invariants.ControlLetter
-import sandbox.Invariants.NieLetter
+import ScalaCLI.Invariants.ControlLetter
+import ScalaCLI.Invariants.NieLetter
 
 object RulesTest extends TestSuite:
 
@@ -53,13 +53,21 @@ object RulesTest extends TestSuite:
       test("happy path"):
         assert(Try(requireValidDni("12345678", ControlLetter.Z)).isSuccess)
       test("unhappy path"):
-        assertThrows[IllegalArgumentException](requireValidDni("12345678", ControlLetter.R))
+        assertThrows[IllegalArgumentException](
+          requireValidDni("12345678", ControlLetter.R)
+        )
 
     test("valid NIE"):
       test("happy path"):
-        assert(Try(requireValidNie(NieLetter.X, "0000001", ControlLetter.R)).isSuccess)
+        assert(
+          Try(
+            requireValidNie(NieLetter.X, "0000001", ControlLetter.R)
+          ).isSuccess
+        )
       test("unhappy path"):
-        assertThrows[IllegalArgumentException](requireValidNie(NieLetter.X, "0000001", ControlLetter.Z))
+        assertThrows[IllegalArgumentException](
+          requireValidNie(NieLetter.X, "0000001", ControlLetter.Z)
+        )
 
   }
 

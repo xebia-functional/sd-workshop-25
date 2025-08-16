@@ -1,4 +1,4 @@
-package sandbox
+package ScalaCLI
 
 object Invariants:
   // Do NOT change the order of the enumeration.
