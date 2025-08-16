@@ -16,7 +16,7 @@ object sdtyrian extends TyrianIOApp[Msg, Model]:
     ("Value Class + Error Handling", "value_class_error_handling"),
     ("Opaque Type + Error Handling", "opaque_type_error_handling"),
     ("Neo Type", "neo_type"),
-    //("Iron", "iron")
+    ("Iron", "iron")
   )
 
   def router: Location => Msg =

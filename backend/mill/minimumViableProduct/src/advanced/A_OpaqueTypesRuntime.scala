@@ -45,7 +45,7 @@ import mvp.common.*
   *     type.
   */
 
-object F_OpaqueTypesRuntime:
+object A_OpaqueTypesRuntime:
 
   private[advanced] opaque type DNI = (Int, String)
   extension (dni: DNI) def formatted: String = s"${s"%0${8}d".format(dni._1)}-${dni._2}"

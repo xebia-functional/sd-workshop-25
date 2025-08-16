@@ -24,7 +24,7 @@ object B_FullNeoType:
   private type ValidInput = ValidInput.Type
   private object ValidInput extends Newtype[String]:
     override inline def validate(input: String): Boolean | String =
-      if input.forall(_.isLetterOrDigit) && !input.isEmpty() && input.length >= 9
+      if input.forall(_.isLetterOrDigit) && input.nonEmpty && input.length >= 9
       then true
       else InvalidInput(input).cause
 

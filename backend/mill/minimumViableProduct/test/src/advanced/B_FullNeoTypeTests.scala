@@ -4,7 +4,6 @@ import B_FullNeoType.*
 import B_FullNeoType.DNI.*
 import B_FullNeoType.ID.*
 import B_FullNeoType.NIE.*
-import neotype.*
 import mvp.common.*
 import utest.*
 

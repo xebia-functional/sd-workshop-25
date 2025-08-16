@@ -81,7 +81,7 @@ object CaskServer extends cask.MainRoutes:
   // Value Class with Error Handling endpoints
   @cask.post("/value_class_error_handling")
   def valueClassErrorHandling(request: cask.Request): cask.Response[String] =
-    D_ValueClassesWithErrorHandling.ID.either(request.text()) match
+    A_ValueClassesWithErrorHandling.ID.either(request.text()) match
       case Right(result) => successResponse(result.formatted)
       case Left(error)   => errorResponse(error.cause)
 
@@ -92,7 +92,7 @@ object CaskServer extends cask.MainRoutes:
   // Opaque Type with Error Handling endpoints
   @cask.post("/opaque_type_error_handling")
   def opaqueTypeErrorHandling(request: cask.Request): cask.Response[String] =
-    E_OpaqueTypesWithErrorHandling.ID.either(request.text()) match
+    B_OpaqueTypesWithErrorHandling.ID.either(request.text()) match
       case Right(result) => successResponse(result.formatted)
       case Left(error)   => errorResponse(error.cause)
 
@@ -113,7 +113,10 @@ object CaskServer extends cask.MainRoutes:
 
   // Unimplemented endpoints
   @cask.post("/iron")
-  def iron(request: cask.Request): Nothing = ??? // Iron.ID(request.text())
+  def iron(request: cask.Request): cask.Response[String] =
+    C_Iron.ID.either(request.text()) match
+      case Right(result) => successResponse(result.formatted)
+      case Left(error)   => errorResponse(error)
 
   @cask.options("/iron")
   def optionsIron(): cask.Response[String] =

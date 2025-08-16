@@ -29,11 +29,11 @@ const data = [
     title: "NeoType",
     endpoint: "/neo_type",
   },
-  //{
-  //  name: "iron",
-  //  title: "Iron",
-  //  endpoint: "/iron",
-  //},
+  {
+    name: "iron",
+    title: "Iron",
+    endpoint: "/iron",
+  },
 ];
 
 export default data;
