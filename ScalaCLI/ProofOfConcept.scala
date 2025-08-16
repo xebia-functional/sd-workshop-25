@@ -1,8 +1,8 @@
-package sandbox
+package ScalaCLI
 
-import sandbox.Invariants.ControlLetter
-import sandbox.Invariants.NieLetter
-import sandbox.Rules.requirements.*
+import ScalaCLI.Invariants.ControlLetter
+import ScalaCLI.Invariants.NieLetter
+import ScalaCLI.Rules.requirements.*
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
@@ -18,7 +18,7 @@ object ProofOfConcept:
     requireValidControlLetter(letter)
     private val _number = number.toInt
     private val _letter = ControlLetter.valueOf(letter)
-    requireValidDni(number,_letter)
+    requireValidDni(number, _letter)
 
     override def toString: String = dni
   end DNI
@@ -38,10 +38,8 @@ object ProofOfConcept:
     override def toString: String = nie
   end NIE
 
-
   @main def run(): Unit =
-    println(
-      """
+    println("""
         | *----------------------*
         | | Spanish ID validator |
         | *----------------------*
@@ -71,8 +69,11 @@ object ProofOfConcept:
           then DNI.apply(userInput)
           else NIE.apply(userInput)
         ) match
-          case Success(id) => println(s"${id.toString} is a valid ID")
-          case Failure(error) => println(s"$userInput is not a valid ID. Reason: ${error.getMessage}")
+          case Success(id)    => println(s"${id.toString} is a valid ID")
+          case Failure(error) =>
+            println(
+              s"$userInput is not a valid ID. Reason: ${error.getMessage}"
+            )
         loop()
       }
 
