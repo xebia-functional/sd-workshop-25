@@ -33,7 +33,7 @@ Basic understanding of functional programming concepts like map, flapMap, error 
 ## Requirements
 
 Have installed on your computer:
-- Scala-CLI (check additional docs [here](./SCALACLI.md))
+- Scala-CLI (check additional docs [here](backend/proofOfConcept/SCALACLI.md))
 - IDE:
     - IntelliJ Idea with Scala plugin
     - VS Code with Metals

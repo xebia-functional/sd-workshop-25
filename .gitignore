@@ -28,6 +28,12 @@ frontend/react/out/
 backend/out
 backend/mill
 
+# scala-cli
+backend/proofOfConcept/out
+backend/proofOfConcept/scala-doc
+backend/proofOfConcept/ScalaCLI.iml
+
+
 # production
 frontend/react/build
 
