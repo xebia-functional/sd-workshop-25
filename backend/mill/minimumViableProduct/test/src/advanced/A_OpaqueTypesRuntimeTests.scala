@@ -1,10 +1,10 @@
 package advanced
 
-import F_OpaqueTypesRuntime.*
+import A_OpaqueTypesRuntime.*
 
 import scala.compiletime.testing.typeCheckErrors
 import utest.*
-object F_OpaqueTypesRuntimeTests extends TestSuite:
+object A_OpaqueTypesRuntimeTests extends TestSuite:
 
   val tests = Tests {
 

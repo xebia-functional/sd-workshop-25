@@ -1,13 +1,13 @@
-package implementations.libraries
+package libraries
 
-import implementations.common.*
+import mvp.common.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
 object C_Iron:
 
-  private type ValidInput = ValidInput.T
-  private object ValidInput
+  private[libraries] type ValidInput = ValidInput.T
+  private[libraries] object ValidInput
       extends RefinedType[
         String,
         DescribedAs[Alphanumeric & FixedLength[9], "Should be AlphaNumeric and have 9 characters"]
@@ -15,21 +15,20 @@ object C_Iron:
 
   private type ValidNumber = DescribedAs[ForAll[Digit], "Should not contain letters"]
 
-  private type DniNumber = DniNumber.T
+  private type ValidDniNumber = DniNumber.T
   private object DniNumber
       extends RefinedType[String, DescribedAs[MaxLength[8] & ValidNumber, "Should contain 8 digits"]]
 
-  private type NieNumber = NieNumber.T
+  private type ValidNieNumber = NieNumber.T
   private object NieNumber
       extends RefinedType[String, DescribedAs[MaxLength[7] & ValidNumber, "Should contain 7 digits"]]
 
-  private[libraries] class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
+  private[libraries] class DNI private (number: ValidDniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$number-$letter"
 
   private[libraries] object DNI:
-    def either(input: String): Either[String, DNI] = {
+    def either(validInput: ValidInput): Either[String, DNI] = {
       for
-        validInput <- ValidInput.either(input)
         number <- DniNumber.either(validInput.value.dropRight(1))
         letter <- ControlLetter.either(validInput.value.last.toUpper.toString).swap.map(_.cause).swap
         result <- Either.cond(
@@ -40,13 +39,12 @@ object C_Iron:
       yield result
     }
 
-  private[libraries] class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter) extends ID:
+  private[libraries] class NIE private (nieLetter: NieLetter, number: ValidNieNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$nieLetter-$number-$letter"
 
   private[libraries] object NIE:
-    def either(input: String): Either[String, NIE] = {
+    def either(validInput: ValidInput): Either[String, NIE] = {
       for
-        validInput <- ValidInput.either(input)
         nieLetter <- NieLetter.either(validInput.value.head.toUpper.toString).swap.map(_.cause).swap
         number <- NieNumber.either(validInput.value.tail.dropRight(1))
         letter <- ControlLetter.either(validInput.value.last.toUpper.toString).swap.map(_.cause).swap
@@ -61,8 +59,8 @@ object C_Iron:
   object ID:
     def either(input: String): Either[String, ID] =
       val _input = input.trim.replace("-", "").toUpperCase
-      if _input.isEmpty
-      then Left("Should be AlphaNumeric and have 9 characters")
-      else if _input.head.isDigit
-      then DNI.either(_input)
-      else NIE.either(_input)
+      ValidInput.either(_input).flatMap { validInput =>
+        if validInput.value.head.isDigit
+        then DNI.either(validInput)
+        else NIE.either(validInput)
+      }
