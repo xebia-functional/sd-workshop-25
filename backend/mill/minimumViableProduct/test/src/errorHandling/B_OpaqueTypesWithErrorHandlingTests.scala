@@ -1,9 +1,9 @@
 package errorHandling
 
-import D_ValueClassesWithErrorHandling.*
+import B_OpaqueTypesWithErrorHandling.*
 import utest.*
 import mvp.common.*
-object D_ValueClassesWithErrorHandlingTests extends TestSuite:
+object B_OpaqueTypesWithErrorHandlingTests extends TestSuite:
 
   val tests = Tests {
 
