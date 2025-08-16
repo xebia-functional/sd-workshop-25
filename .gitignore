@@ -25,13 +25,13 @@ frontend/react/.next/
 frontend/react/out/
 
 # mill
-backend/out
-backend/mill
+backend/mill/out
+backend/mill/mill
 
 # scala-cli
-backend/proofOfConcept/out
-backend/proofOfConcept/scala-doc
-backend/proofOfConcept/ScalaCLI.iml
+backend/scalaCLI/proofOfConcept/out
+backend/scalaCLI/proofOfConcept/scala-doc
+backend/scalaCLI/proofOfConcept/ScalaCLI.iml
 
 
 # production
