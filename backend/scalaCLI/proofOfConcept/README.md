@@ -15,8 +15,6 @@ winget install virtuslab.scalacli
 ```
 If some of the above methods does not work, visit the [official installation page](https://scala-cli.virtuslab.org/docs/overview/#installation).
 
-You can check this [Scala-CLI mini guide](SCALACLI.md) to get up to speed.
-
 #### IDE support for Scala-CLI
 If you use `IntelliJ Idea`, `VS Code` or any other alternative that uses `Metals`, then run the following command so `scala-cli` generates the `Build Server Protocol` (BSP) Json file needed for your IDE to understand the Scala files.
 ````shell

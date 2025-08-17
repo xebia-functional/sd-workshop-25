@@ -50,8 +50,8 @@ object D_IdValidator:
       else {
         Try(
           if userInput.head.isDigit
-          then DNI.apply(userInput)
-          else NIE.apply(userInput)
+          then DNI(userInput)
+          else NIE(userInput)
         ) match
           case Success(id)    => println(s"${id.toString} is a valid ID")
           case Failure(error) =>

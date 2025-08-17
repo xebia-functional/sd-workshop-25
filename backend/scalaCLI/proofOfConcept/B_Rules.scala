@@ -4,9 +4,9 @@ import proofOfConcept.A_Invariants.*
 
 object B_Rules:
 
-  /** Come up with tailored error messages you want to give back to the user in
-    * the UI
-    */
+  /** 
+   * Come up with tailored error messages you want to give back to the user in the UI 
+   */
   object messages:
 
     def invalidInput(input: ???): String = ???
@@ -20,13 +20,13 @@ object B_Rules:
     
   end messages
 
-  /** Codify those error messages into requirements
-    */
+  /** 
+   * Codify those error messages into requirements
+   */
   object requirements:
 
     import messages.*
 
-    // All validations
     def requireValidInput(input: ???): Unit = ???
     def requireValidNumber(number: ???): Unit = ???
     def requireValidDniNumber(dniNumber: ???): Unit = ???
