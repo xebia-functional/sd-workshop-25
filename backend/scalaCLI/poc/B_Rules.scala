@@ -1,6 +1,6 @@
 package poc
 
-import poc.A_Invariants.*
+import A_Invariants.*
 
 object B_Rules:
 

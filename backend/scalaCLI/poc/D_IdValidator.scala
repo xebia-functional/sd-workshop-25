@@ -1,8 +1,8 @@
 package poc
 
-import poc.A_Invariants.ControlLetter
-import poc.A_Invariants.NieLetter
-import poc.B_Rules.requirements.*
+import A_Invariants.ControlLetter
+import A_Invariants.NieLetter
+import B_Rules.requirements.*
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success

@@ -4,8 +4,8 @@
 package poc
 
 import utest.*
-import poc.A_Invariants.*
-import poc.B_Rules.requirements.*
+import A_Invariants.*
+import B_Rules.requirements.*
 import scala.util.Try
 
 object C_RulesTest extends TestSuite:
