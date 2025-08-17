@@ -9,35 +9,18 @@ import scala.util.Success
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
+/**
+ * Implement the 2 classes:
+ * - DNI
+ * - NIE
+ *  In a way that only correct input will generate an instance of the class (use requirements)
+ *  Also, modify the method `toString` to return the value on the instance capitalize and without dashes
+ */
 object D_IdValidator:
 
-  class DNI(dni: String):
-    requireValidInput(dni)
-    private val (number, letter) = dni.splitAt(8)
-    requireValidNumber(number)
-    requireValidDniNumber(number)
-    requireValidControlLetter(letter)
-    private val _number = number.toInt
-    private val _letter = ControlLetter.valueOf(letter)
-    requireValidDni(number, _letter)
+  class DNI(dni: String)
 
-    override def toString: String = dni
-  end DNI
-
-  class NIE(nie: String):
-    private val nieLetter = nie.head.toString
-    requireValidNieLetter(nieLetter)
-    private val (number, letter) = nie.tail.splitAt(7)
-    requireValidNumber(number)
-    requireValidNieNumber(number)
-    requireValidControlLetter(letter)
-    private val _nieLetter = NieLetter.valueOf(nieLetter)
-    private val _number = number.toInt
-    private val _letter = ControlLetter.valueOf(letter)
-    requireValidNie(_nieLetter, number, _letter)
-
-    override def toString: String = nie
-  end NIE
+  class NIE(nie: String)
 
   @main def run(): Unit =
     println("""

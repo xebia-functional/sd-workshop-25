@@ -17,29 +17,16 @@ The tactical part is all about the "how?"
 | **Use Ubiquitous Language**         | Strict, shared terminology for code, docs, and conversation     |
 | **Define Bounded Contexts**         | Each model exists within a well-defined boundary                |
 
-### Tactical aspects of DDD
-| Premise                  | Explanation                                                |
-|--------------------------|------------------------------------------------------------|
-| **Value Objects**        | Immutable objects, identified only by attributes           |
-| **Entities**             | Objects with identity field than allow state changes       |
-| **Aggregates**           | Consistency boundaries for enforcing invariants            |
-| **Domain Events**        | Immutable facts (logs*) about meaningful domain changes    |
-| **Domain Services**      | Domain operations not natural to entities or value objects |
-| **Layered Architecture** | Keeps business logic isolated from UI/Infrastructure       |
-
-
 ## 2. Benefits of Making Illegal State Irrepresentable
 
 There is plenty of literature about this topic. 
 The main premise is that if you make illegal state irrepresentable, you do not have to write any defensive programing 
 and additional testing.
 
-Let's have a look at these 2 pieces:
-
-- [Making Illegal States Unrepresentable](https://ybogomolov.me/making-illegal-states-unrepresentable) by Yuriy Bogomolov
-- [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/) by Alex King
-
 ### Making Illegal Statements Unrepresentable
+
+[Making Illegal States Unrepresentable](https://ybogomolov.me/making-illegal-states-unrepresentable) by Yuriy Bogomolov
+
 The blog introduces a design principle aimed at leveraging the type system to prevent runtime errors by enforcing 
 correctness at compile time. It explores techniques like:
 - **opaque types** for distinguishing primitive types
@@ -49,16 +36,6 @@ correctness at compile time. It explores techniques like:
 The article emphasizes **type-level programming** to encode business logic, ensure data validity,
 and eliminate invalid states, culminating in advanced concepts like **tagless final** patterns and **indexed monads**
 for maintaining strict control over program flow and logic transitions.
-
-### Parse, don't validate
-The blog post advocates for **type-driven design**, emphasizing the mantra *"Parse, don’t validate"*. 
-This approach leverages static type systems to make illegal states unrepresentable, enhancing code correctness and
-reliability by embedding constraints directly into data types. 
-
-Instead of relying on runtime validation checks, parsing transforms less-structured input into more-structured types 
-upfront, reducing redundant checks, potential bugs, and performance costs. Examples like using `NonEmpty` lists in 
-Haskell showcase how parsing ensures that data invariants are preserved at the language level, enabling programs to 
-fail at compile-time rather than runtime. This approach promotes more robust, maintainable, and error-resistant code.
 
 ### What has Scala 3 to offer?
 
