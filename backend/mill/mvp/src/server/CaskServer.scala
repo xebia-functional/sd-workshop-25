@@ -1,8 +1,6 @@
 package server
 
-import basic.*
 import errorHandling.*
-import libraries.*
 import scala.util.*
 
 object CaskServer extends cask.MainRoutes:
@@ -46,40 +44,6 @@ object CaskServer extends cask.MainRoutes:
       headers = corsHeaders
     )
 
-  // Class endpoints
-  @cask.post("/class")
-  def rawClass(request: cask.Request): cask.Response[String] =
-    Try(A_Classes.ID(request.text())) match
-      case Success(result) => successResponse(result.formatted)
-      case Failure(error)  => errorResponse(error.getMessage)
-
-  @cask.options("/class")
-  def optionsRawClass(): cask.Response[String] =
-    cask.Response("Options of Class", headers = corsHeaders)
-
-  // Type Alias endpoints
-  @cask.post("/type_alias")
-  def typeAlias(request: cask.Request): cask.Response[String] =
-    Try(B_TypeAliases.ID(request.text())) match
-      case Success(result) => successResponse(result.formatted)
-      case Failure(error)  => errorResponse(error.getMessage)
-
-  @cask.options("/type_alias")
-  def optionsTypeAlias(): cask.Response[String] =
-    cask.Response("Options of Type Alias", headers = corsHeaders)
-
-  // Value Class endpoints
-  @cask.post("/value_class")
-  def valueClass(request: cask.Request): cask.Response[String] =
-    Try(C_ValueClasses.ID(request.text())) match
-      case Success(result) => successResponse(result.formatted)
-      case Failure(error)  => errorResponse(error.getMessage)
-
-  @cask.options("/value_class")
-  def optionsValueClass(): cask.Response[String] =
-    cask.Response("Options of Value Class", headers = corsHeaders)
-
-  // Value Class with Error Handling endpoints
   @cask.post("/value_class_error_handling")
   def valueClassErrorHandling(request: cask.Request): cask.Response[String] =
     A_ValueClassesWithErrorHandling.ID.either(request.text()) match
@@ -90,7 +54,6 @@ object CaskServer extends cask.MainRoutes:
   def optionsValueClassErrorHandling(): cask.Response[String] =
     cask.Response("Options of Value Class Error Handling", headers = corsHeaders)
 
-  // Opaque Type with Error Handling endpoints
   @cask.post("/opaque_type_error_handling")
   def opaqueTypeErrorHandling(request: cask.Request): cask.Response[String] =
     B_OpaqueTypesWithErrorHandling.ID.either(request.text()) match
@@ -100,27 +63,5 @@ object CaskServer extends cask.MainRoutes:
   @cask.options("/opaque_type_error_handling")
   def optionsOpaqueTypeErrorHandling(): cask.Response[String] =
     cask.Response("Options of Opaque Type Error Handling", headers = corsHeaders)
-
-  // NeoType with Error Handling endpoints
-  @cask.post("/neo_type")
-  def neoType(request: cask.Request): cask.Response[String] =
-    A_NeoType.ID.either(request.text()) match
-      case Right(result) => successResponse(result.formatted)
-      case Left(error)   => errorResponse(error)
-
-  @cask.options("/neo_type")
-  def optionsNeoType(): cask.Response[String] =
-    cask.Response("Options of NeoType", headers = corsHeaders)
-
-  // Unimplemented endpoints
-  @cask.post("/iron")
-  def iron(request: cask.Request): cask.Response[String] =
-    C_Iron.ID.either(request.text()) match
-      case Right(result) => successResponse(result.formatted)
-      case Left(error)   => errorResponse(error)
-
-  @cask.options("/iron")
-  def optionsIron(): cask.Response[String] =
-    cask.Response("Options of Iron", headers = corsHeaders)
 
   initialize()

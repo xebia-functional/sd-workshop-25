@@ -45,7 +45,7 @@ You can run them directly from here using an IDE.
 ```
 - Test specific tests
 ```shell
-./mill mvp.test.testOnly minimumViableProduct.basic.A_ClassesTests
+./mill mvp.test.testOnly mvp.basic.A_ClassesTests
 
 ```
 

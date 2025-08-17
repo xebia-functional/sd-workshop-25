@@ -48,139 +48,44 @@ object A_ValueClassesWithErrorHandling:
 
   private final class Number(val value: String) extends AnyVal
   private object Number:
-    def apply(number: String): Number =
-      requireValidNumber(number)
-      new Number(number)
-
-    def either(number: String): Either[InvalidNumber, Number] =
-      Either.cond(
-        number.forall(_.isDigit),
-        new Number(number),
-        InvalidNumber(number)
-      )
+    // TODO implement it making sure all the requirements are met
+    def apply(number: String): Number = ???
+    def either(number: String): Either[InvalidNumber, Number] = ???
 
   private final class NieNumber(val value: String) extends AnyVal
   private object NieNumber:
-    def apply(nieNumber: String): NieNumber =
-      val number = Number(nieNumber)
-      requireValidNieNumber(number.value)
-      new NieNumber(number.value)
-
-    def either(nieNumber: String): Either[FailedValidation, NieNumber] =
-      Number
-        .either(nieNumber)
-        .flatMap: number =>
-          Either.cond(
-            number.value.length == 7,
-            new NieNumber(number.value),
-            InvalidNieNumber(number.value)
-          )
+    // TODO implement it making sure all the requirements are met
+    def apply(nieNumber: String): NieNumber = ???
+    def either(nieNumber: String): Either[FailedValidation, NieNumber] = ???
 
   private final class DniNumber(val value: String) extends AnyVal
   private object DniNumber:
-    def apply(dniNumber: String): DniNumber =
-      val number = Number(dniNumber)
-      requireValidDniNumber(number.value)
-      new DniNumber(number.value)
-
-    def either(dniNumber: String): Either[FailedValidation, DniNumber] =
-      Number
-        .either(dniNumber)
-        .flatMap: number =>
-          Either.cond(
-            number.value.length == 8,
-            new DniNumber(number.value),
-            InvalidDniNumber(number.value)
-          )
+    // TODO implement it making sure all the requirements are met
+    def apply(dniNumber: String): DniNumber = ???
+    def either(dniNumber: String): Either[FailedValidation, DniNumber] = ???
 
   private[errorHandling] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"${dniNumber.value}-$letter"
 
   private[errorHandling] object DNI:
-    def apply(input: String): DNI =
-      val number = input.dropRight(1)
-      val dniNumber = DniNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidDni(dniNumber.value, controlLetter)
-      new DNI(dniNumber, controlLetter)
-
-    def either(input: String): Either[FailedValidation, DNI] =
-      val number = input.dropRight(1)
-      val letter = input.last.toString
-      for
-        dniNumber <- DniNumber.either(number)
-        controlLetter <- ControlLetter.either(letter)
-        result <- Either.cond(
-          dniNumber.value.toInt % 23 == controlLetter.ordinal,
-          new DNI(dniNumber, controlLetter),
-          InvalidDni(dniNumber.value, controlLetter)
-        )
-      yield result
+    // TODO implement it making sure all the requirements are met
+    def apply(input: String): DNI = ???
+    def either(input: String): Either[FailedValidation, DNI] = ???
 
   private[errorHandling] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter)
       extends ID:
     override def formatted: String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[errorHandling] object NIE:
-    def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
-      val nieNumber = NieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, nieNumber.value, controlLetter)
-      new NIE(_nieLetter, nieNumber, controlLetter)
-
-    def either(input: String): Either[FailedValidation, NIE] =
-      val nieLetter = input.head.toString
-      val number = input.tail.dropRight(1)
-      val letter = input.last.toString
-      for
-        _nieLetter <- NieLetter.either(nieLetter)
-        nieNumber <- NieNumber.either(number)
-        controlLetter <- ControlLetter.either(letter)
-        result <- Either.cond(
-          ((_nieLetter.ordinal * 10000000) + nieNumber.value.toInt) % 23 == controlLetter.ordinal,
-          new NIE(_nieLetter, nieNumber, controlLetter),
-          InvalidNie(_nieLetter, nieNumber.value.toString, controlLetter)
-        )
-      yield result
+    // TODO implement it making sure all the requirements are met
+    def apply(input: String): NIE = ???¡
+    def either(input: String): Either[FailedValidation, NIE] = ???
 
   object ID:
-    def apply(input: String): ID =
-
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
-          .replace("-", "") // Removing dashes
-          .toUpperCase() // Handling lower case
-
-      // Validating the cleaned input
-      requireValidInput(_input)
-
-      // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
-
-    def either(input: String): Either[FailedValidation, ID] =
-
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
-          .replace("-", "") // Removing dashes
-          .toUpperCase() // Handling lower case
-
-      if !(_input.length == 9 && _input.forall(_.isLetterOrDigit))
-      then Left(InvalidInput(input))
-      else
-
-        // Selecting which type of ID base on initial character type - Letter or Digit
-        if _input.head.isDigit // Splitting between DNI and NIE
-        then DNI.either(_input)
-        else NIE.either(_input)
+    // TODO implement it adding some additional requirements for ergonomics of users:
+    // - Trim the input
+    // - Replace dashes with empty char
+    // - Capitalize the input
+    // If the user add an ID with a dash, with lower case or adds an empty spaces, it will be handled
+    def apply(input: String): ID = ???
+    def either(input: String): Either[FailedValidation, ID] = ???
