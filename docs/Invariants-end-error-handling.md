@@ -58,38 +58,6 @@ The comments indicate critical invariants - the enum ordering directly maps to d
 // The ordinal value of each letter corresponds with the remainder of number divided by 23
 ```
 
-## Error Handling Strategy
-
-### Typed Error Hierarchy
-```scala
-sealed trait FailedValidation(val cause: String) extends Exception with NoStackTrace
-
-case class InvalidInput(input: String) extends FailedValidation(invalidInput(input))
-case class InvalidDni(dniNumber: String, letter: ControlLetter) extends FailedValidation(invalidDni(dniNumber, letter))
-// ... other specific error types
-```
-
-This implements type-safe error handling by:
-- Using a sealed trait to ensure exhaustive error handling at compile time
-- Providing specific error types for each validation failure scenario
-- Including contextual information in each error for debugging and user feedback
-- Extending `NoStackTrace` for performance optimization
-
-### Functional Error Handling
-```scala
-def either(letter: String): Either[InvalidNieLetter, NieLetter] =
-  Either.cond(
-    NieLetter.values.map(_.toString).contains(letter),
-    NieLetter.valueOf(letter),
-    InvalidNieLetter(letter)
-  )
-```
-
-The code provides functional alternatives to exception-based validation using `Either`, allowing for:
-- Explicit error handling in the type system
-- Composable validation chains
-- Avoiding exceptional control flow for expected validation failures
-
 ## DDD Relationship Analysis
 
 ### Invariant Preservation
@@ -106,11 +74,3 @@ The code maintains ubiquitous language by:
 
 This implementation demonstrates **DDD practices** by making domain concepts explicit, enforcing invariants 
 through the type system, and providing comprehensive error handling that maintains domain integrity.
-
-### Bonus: Value Objects vs Entities
-While this code snippet doesn't show complete Entity implementations, the `ID` trait suggests that actual DNI/NIE
-objects would be Value Objects rather than Entities because:
-- No lifecycle management is needed
-- Equality is based on value, not identity
-- Immutable once validated
-- No business operations beyond validation and formatting

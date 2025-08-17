@@ -14,15 +14,6 @@ object common:
     case Y // 1
     case Z // 2
 
-  object NieLetter:
-
-    def either(letter: String): Either[InvalidNieLetter, NieLetter] =
-      Either.cond(
-        NieLetter.values.map(_.toString).contains(letter),
-        NieLetter.valueOf(letter),
-        InvalidNieLetter(letter)
-      )
-
   // Do NOT change the order of the enumeration.
   // The ordinal value of each letter corresponds with the remainder of number divided by 23
   enum ControlLetter:
@@ -50,14 +41,6 @@ object common:
     case K // 21
     case E // 22
 
-  object ControlLetter:
-
-    def either(letter: String): Either[InvalidControlLetter, ControlLetter] =
-      Either.cond(
-        ControlLetter.values.map(_.toString).contains(letter),
-        ControlLetter.valueOf(letter),
-        InvalidControlLetter(letter)
-      )
 
   // All error messages as functions
   private def invalidInput(input: String): String =
@@ -94,16 +77,3 @@ object common:
       s"${nieLetter.ordinal}$nieNumber".toInt % 23 == letter.ordinal,
       invalidNie(nieLetter, nieNumber, letter)
     )
-
-  // All posible failed validations
-  sealed trait FailedValidation(val cause: String) extends Exception with NoStackTrace
-  case class InvalidInput(input: String) extends FailedValidation(invalidInput(input))
-  case class InvalidNumber(number: String) extends FailedValidation(invalidNumber(number))
-  case class InvalidDniNumber(dniNumber: String) extends FailedValidation(invalidDniNumber(dniNumber))
-  case class InvalidNieNumber(nieNumber: String) extends FailedValidation(invalidNieNumber(nieNumber))
-  case class InvalidNieLetter(nieLetter: String) extends FailedValidation(invalidNieLetter(nieLetter))
-  case class InvalidControlLetter(controlLetter: String) extends FailedValidation(invalidControlLetter(controlLetter))
-  case class InvalidDni(dniNumber: String, letter: ControlLetter)
-      extends FailedValidation(invalidDni(dniNumber, letter))
-  case class InvalidNie(nieLetter: NieLetter, nieNumber: String, letter: ControlLetter)
-      extends FailedValidation(invalidNie(nieLetter, nieNumber, letter))
