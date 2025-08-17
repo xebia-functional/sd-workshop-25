@@ -1,8 +1,8 @@
-package mvp.basic
+package basic
 
-import mvp.domain.ID
-import mvp.domain.invariants.*
-import mvp.domain.rules.*
+import domain.ID
+import domain.invariants.*
+import domain.rules.*
 
 /** =Regular Classes in Scala=
   *

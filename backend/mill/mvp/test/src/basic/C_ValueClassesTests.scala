@@ -1,7 +1,8 @@
-package mvp.basic
+package basic
 
 import C_ValueClasses.*
 import utest.*
+
 object C_ValueClassesTests extends TestSuite:
 
   val tests = Tests {

@@ -1,6 +1,6 @@
-package mvp.server
+package server
 
-import mvp.basic.*
+import basic.*
 import scala.util.*
 
 object CaskServer extends cask.MainRoutes:

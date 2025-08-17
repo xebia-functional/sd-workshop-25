@@ -1,7 +1,8 @@
-package mvp.basic
+package basic
 
 import B_TypeAliases.*
 import utest.*
+
 object B_TypeAliasesTests extends TestSuite:
 
   val tests = Tests {
