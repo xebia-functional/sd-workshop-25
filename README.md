@@ -1,5 +1,12 @@
 # ScalaDays 2025 - DDD workshop
 
+#### Index
+- [Abstract](#abstract)
+- [Target Audience](#target-audience)
+- [Prerequisites](#prerequisites)
+- [Requirements](#requirements)
+- [Agenda](#agenda)
+- [Full-stack DDD App](#full-stack-ddd-id-validator)
 
 ## Abstract
 
@@ -18,7 +25,6 @@ You will learn:
 
 By the end of the workshop, you will have a full stack app with DDD implementations, ready for review.
 
-
 ## Target Audience
 
 If you are a Full-Stack Developer, a Software Engineer, a Data Engineer, a Migration Architect or a programming aficionado
@@ -33,7 +39,7 @@ Basic understanding of functional programming concepts like map, flapMap, error 
 ## Requirements
 
 Have installed on your computer:
-- Scala-CLI (check additional docs [here](backend/scalaCLI/proofOfConcept/SCALACLI.md))
+- Scala-CLI (check additional docs [here](backend/scalaCLI/proofOfConcept/README.md))
 - IDE:
     - IntelliJ Idea with Scala plugin
     - VS Code with Metals
@@ -103,17 +109,26 @@ The app consist of two components that work slightly differently:
 2. Back end
 3. ID Validator
 
-The front end relies on `ScalaJS` while the back end is `scala` on the `JVM`.
+The front end relies on `ScalaJS` or `JS` while the back end is `scala` on the `JVM`.
 
 ### Front end
 `Tyrian` is an Elm-inspired ScalaJS library for frontend and game development.
 
 Website: https://tyrian.indigoengine.io/
 
-### Back end
+Alternative front-end is written using the `JS` framework `react`
 
-#### Cask
+### Back end - Cask
 `Cask` is a lightweight scala library similar to Python's `Flask` that belongs to the `Haoyi Li` stack.
 It spins a server with almost no ceremony, making it a perfect library for prototyping and figuring things out.
 
 Website: https://com-lihaoyi.github.io/cask/
+
+### How to run it
+
+Go to the dedicated readme.md files under the following paths:
+- [Tyrian](./frontend/tyrian/README.md)
+- [React](./frontend/react/README.md)
+- [Cask](./backend/mill/README.md)
+
+You need to run the `cask` server and at least one of the front-ends.

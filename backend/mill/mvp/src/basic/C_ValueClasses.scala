@@ -1,5 +1,8 @@
-package basic
-import mvp.common.*
+package mvp.basic
+
+import mvp.domain.ID
+import mvp.domain.invariants.*
+import mvp.domain.rules.*
 
 /** =Value Classes in Scala=
   *
@@ -15,13 +18,10 @@ import mvp.common.*
   * ==Key Features==
   *   - Can only wrap one value
   *   - Creates effectively a new type by masking the underlying type
-  *   - Zero-Cost Abstraction
   *
   * ==Pros of Value Classes==
   *   - Type Safety: Provides compile-time type checking by preventing mixing up different types that share the same
   *     underlying representation
-  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime, resulting in no performance overhead compared to
-  *     using the underlying type directly
   *   - Domain Modeling: Helps create more meaningful domain types and makes the code more readable and self-documenting
   *   - Encapsulation: Allows the addition of methods to primitive types without the need for inheritance and keeps
   *     related functionality together within the wrapper class
@@ -38,68 +38,42 @@ import mvp.common.*
 
 object C_ValueClasses:
 
+  //TODO: create 3 value classes:
+  // - Number
+  // - DniNumber
+  // - NieNumber
+  // Each containing internally its own validation
+  
   private final class Number(val value: String) extends AnyVal
   private object Number:
-    def apply(number: String): Number =
-      requireValidNumber(number)
-      new Number(number)
+    def apply(number: String): Number = ???
 
   private final class NieNumber(val value: String) extends AnyVal
   private object NieNumber:
-    def apply(nieNumber: String): NieNumber =
-      val number = Number(nieNumber)
-      requireValidNieNumber(number.value)
-      new NieNumber(number.value)
+    def apply(nieNumber: String): NieNumber = ???
 
   private final class DniNumber(val value: String) extends AnyVal
   private object DniNumber:
-    def apply(dniNumber: String): DniNumber =
-      val number = Number(dniNumber)
-      requireValidDniNumber(number.value)
-      new DniNumber(number.value)
+    def apply(dniNumber: String): DniNumber = ???
 
   private[basic] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"${dniNumber.value}-$letter"
 
   private[basic] object DNI:
-    def apply(input: String): DNI =
-      val number = input.dropRight(1)
-      val dniNumber = DniNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidDni(dniNumber.value, controlLetter)
-      new DNI(dniNumber, controlLetter)
+    // TODO implement it making sure all the requirements are met
+    def apply(input: String): DNI = ???
 
   private[basic] final class NIE private (nieLetter: NieLetter, nieNumber: NieNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$nieLetter-${nieNumber.value}-$letter"
 
   private[basic] object NIE:
-    def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
-      val nieNumber = NieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, nieNumber.value, controlLetter)
-      new NIE(_nieLetter, nieNumber, controlLetter)
-
+    // TODO implement it making sure all the requirements are met
+    def apply(input: String): NIE = ???
+    
   object ID:
-    def apply(input: String): ID =
-
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
-          .replace("-", "") // Removing dashes
-          .toUpperCase() // Handling lower case
-
-      // Validating the cleaned input
-      requireValidInput(_input)
-
-      // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
+    // TODO implement it adding some additional requirements for ergonomics of users:
+    // - Trim the input
+    // - Replace dashes with empty char
+    // - Capitalize the input
+    // If the user add an ID with a dash, with lower case or adds an empty spaces, it will be handled
+    def apply(input: String): ID = ???

@@ -1,8 +1,8 @@
-package basic
+package mvp.basic
 
-import C_ValueClasses.*
+import B_TypeAliases.*
 import utest.*
-object C_ValueClassesTests extends TestSuite:
+object B_TypeAliasesTests extends TestSuite:
 
   val tests = Tests {
 
@@ -102,26 +102,26 @@ object C_ValueClassesTests extends TestSuite:
             ).foreach:
               case (input, expected) => assert(ID(input).formatted == expected)
 
-        test("Runtime unhappy path"):
+      test("Runtime unhappy path"):
 
-          test("InvalidInput: empty"):
-            assertThrows[IllegalArgumentException](ID("         "))
+        test("InvalidInput: empty"):
+          assertThrows[IllegalArgumentException](ID("         "))
 
-          test("InvalidInput: invisible characters"):
-            assertThrows[IllegalArgumentException](ID("\n\r\t\n\r\t\n\r\t"))
+        test("InvalidInput: invisible characters"):
+          assertThrows[IllegalArgumentException](ID("\n\r\t\n\r\t\n\r\t"))
 
-          test("InvalidInput: symbols"):
-            assertThrows[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
+        test("InvalidInput: symbols"):
+          assertThrows[IllegalArgumentException](ID("@#¢∞¬÷“”≠"))
 
-          test("InvalidInput: too short"):
-            assertThrows[IllegalArgumentException](ID("Y"))
+        test("InvalidInput: too short"):
+          assertThrows[IllegalArgumentException](ID("Y"))
 
-          test("InvalidInput: too long - number"):
-            assertThrows[IllegalArgumentException](ID("123456789-Z"))
+        test("InvalidInput: too long - number"):
+          assertThrows[IllegalArgumentException](ID("123456789-Z"))
 
-          test("InvalidInput: too long - underscore"):
-            assertThrows[IllegalArgumentException](ID("12345678_Z"))
+        test("InvalidInput: too long - underscore"):
+          assertThrows[IllegalArgumentException](ID("12345678_Z"))
 
-          test("InvalidInput: too long - dot"):
-            assertThrows[IllegalArgumentException](ID("12345678.Z"))
+        test("InvalidInput: too long - dot"):
+          assertThrows[IllegalArgumentException](ID("12345678.Z"))
   }

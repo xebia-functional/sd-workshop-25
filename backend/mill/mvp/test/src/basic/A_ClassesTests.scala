@@ -1,4 +1,4 @@
-package basic
+package mvp.basic
 
 import A_Classes.*
 import utest.*
