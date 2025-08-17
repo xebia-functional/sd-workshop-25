@@ -6,54 +6,46 @@ import domain.invariants.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
+/**
+ * Implement the logic based on this 2 pieces of reference:
+ *
+ * - [[https://iltotore.github.io/iron/docs/reference/iron-type.html Iron-Type]]
+ *
+ * - [[https://iltotore.github.io/iron/docs/reference/refinement.html Refinement-Methods]]
+ *
+ * Pay especial attention to:
+ * {{{
+ * val x: Int :| Greater[0] = 5
+ * type Username = DescribedAs[Alphanumeric, "Username should be alphanumeric"]
+ * }}}
+ */
 object B_Iron:
 
-  private type ValidInput = DescribedAs[Alphanumeric & FixedLength[9], "Should be AlphaNumeric and have 9 characters"]
-  private type ValidNumber = DescribedAs[ForAll[Digit], "Should not contain letters"]
-  private type ValidDniNumber = DescribedAs[MaxLength[8] & ValidNumber, "Should contain 8 digits"]
-  private type ValidNieNumber = DescribedAs[MaxLength[7] & ValidNumber, "Should contain 7 digits"]
+  // TODO implement the type validation and the error message
+  private type ValidInput = DescribedAs[???, ""]
+  private type ValidNumber = DescribedAs[???, ""]
+  private type ValidDniNumber = DescribedAs[???, ""]
+  private type ValidNieNumber = DescribedAs[???, ""]
 
   private[libraries] class DNI private (number: String :| ValidDniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$number-$letter"
 
   private[libraries] object DNI:
-    def either(input: String): Either[String, DNI] = {
-      for
-        validInput <- input.refineEither[ValidInput]
-        number <- validInput.dropRight(1).refineEither[ValidDniNumber]
-        letter <- ControlLetter.either(validInput.last.toUpper.toString).swap.map(_.cause).swap
-        result <- Either.cond(
-          letter.ordinal == number.toInt % 23,
-          new DNI(number, letter),
-          InvalidDni(number, letter).cause
-        )
-      yield result
-    }
+    // TODO implement with all the validations
+    def either(input: String): Either[String, DNI] = ???
 
   private[libraries] class NIE private (nieLetter: NieLetter, number: String :| ValidNieNumber, letter: ControlLetter)
       extends ID:
     override def formatted: String = s"$nieLetter-$number-$letter"
 
   private[libraries] object NIE:
-    def either(input: String): Either[String, NIE] = {
-      for
-        validInput <- input.refineEither[ValidInput]
-        nieLetter <- NieLetter.either(validInput.head.toUpper.toString).swap.map(_.cause).swap
-        number <- validInput.tail.dropRight(1).refineEither[ValidNieNumber]
-        letter <- ControlLetter.either(validInput.last.toUpper.toString).swap.map(_.cause).swap
-        result <- Either.cond(
-          letter.ordinal == s"${nieLetter.ordinal}$number".toInt % 23,
-          new NIE(nieLetter, number, letter),
-          InvalidNie(nieLetter, number, letter).cause
-        )
-      yield result
-    }
+    // TODO implement with all the validations
+    def either(input: String): Either[String, NIE] = ???
 
   object ID:
-    def either(input: String): Either[String, ID] =
-      val _input = input.trim.replace("-", "").toUpperCase
-      _input.refineEither[ValidInput].flatMap { validInput =>
-        if _input.head.isDigit
-        then DNI.either(validInput)
-        else NIE.either(validInput)
-      }
+    // TODO implement it adding some additional requirements for ergonomics of users:
+    // - Trim the input
+    // - Replace dashes with empty char
+    // - Capitalize the input
+    // If the user add an ID with a dash, with lower case or adds an empty spaces, it will be handled
+    def either(input: String): Either[String, ID] = ???

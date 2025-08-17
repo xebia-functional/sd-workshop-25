@@ -6,81 +6,45 @@ import domain.invariants.*
 
 import neotype.*
 
+/**
+ * Implement the logic based on this 3 pieces of reference:
+ *
+ * - [[https://www.youtube.com/watch?v=6AxSX_WX7ek&themeRefresh=1 5-Minute-Video]]
+ *
+ * - [[https://github.com/kitlangton/neotype/blob/main/examples/src/main/scala/examples/Main.scala Main]]
+ *
+ * - [[https://github.com/kitlangton/neotype/blob/main/examples/src/main/scala/examples/types/Newtypes.scala New-Types]]
+ *
+ */
 object A_NeoType:
 
-  // Validated Fields: NieNumber and DniNumber
-
+  // TODO implement with all the validations
   private type NieNumber = NieNumber.Type
   private object NieNumber extends Newtype[String]:
-    override inline def validate(nieNumber: String): Boolean | String =
-      if !nieNumber.forall(_.isDigit) then InvalidNumber(nieNumber).cause
-      else if nieNumber.length != 7 then InvalidNieNumber(nieNumber).cause
-      else true
-
+    override inline def validate(nieNumber: String): Boolean | String = ???
   private type DniNumber = DniNumber.Type
   private object DniNumber extends Newtype[String]:
-    override inline def validate(dniNumber: String): Boolean | String =
-      if !dniNumber.forall(_.isDigit) then InvalidNumber(dniNumber).cause
-      else if dniNumber.length != 8 then InvalidDniNumber(dniNumber).cause
-      else true
+    override inline def validate(dniNumber: String): Boolean | String = ???
 
   private[libraries] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$number-$letter"
 
   private[libraries] object DNI:
-    def either(input: String): Either[String, DNI] =
-      val number = input.dropRight(1)
-      val letter = input.last.toString
-      for
-        dniNumber <- DniNumber.make(number)
-        controlLetter <- ControlLetter.either(letter).swap.map(_.cause).swap
-        result <- Either.cond(
-          dniNumber.unwrap.toInt % 23 == controlLetter.ordinal,
-          new DNI(dniNumber, controlLetter),
-          InvalidDni(dniNumber.unwrap, controlLetter).cause
-        )
-      yield result
+    // TODO implement with all the validations
+    def either(input: String): Either[String, DNI] = ???
 
   private[libraries] final class NIE private (nieLetter: NieLetter, number: NieNumber, letter: ControlLetter)
       extends ID:
     override def formatted: String = s"$nieLetter-$number-$letter"
 
   private[libraries] object NIE:
-    def either(input: String): Either[String, NIE] =
-      val nieLetter = input.head.toString
-      val number = input.tail.dropRight(1)
-      val letter = input.last.toString
-      for
-        _nieLetter <- NieLetter.either(nieLetter).swap.map(_.cause).swap
-        nieNumber <- NieNumber.make(number)
-        controlLetter <- ControlLetter.either(letter).swap.map(_.cause).swap
-        result <- Either.cond(
-          ((_nieLetter.ordinal * 10000000) + nieNumber.unwrap.toInt) % 23 == controlLetter.ordinal,
-          new NIE(_nieLetter, nieNumber, controlLetter),
-          InvalidNie(_nieLetter, nieNumber.unwrap, controlLetter).cause
-        )
-      yield result
-
-  // Entry point: ID
+    // TODO implement with all the validations
+    def either(input: String): Either[String, NIE] = ???
 
   object ID:
-    def either(input: String): Either[String, ID] =
-
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
-          .replace("-", "") // Removing dashes
-          .toUpperCase() // Handling lower case
-      if _input.isEmpty || !_input.forall(_.isLetterOrDigit) then Left(InvalidInput(input).cause)
-      else
-        // Validating the cleaned input
-        require(!_input.isEmpty)
-        println("input " + input)
-        println("_input.forall(_.isLetterOrDigit) " + _input.forall(_.isLetterOrDigit))
-        require(_input.forall(_.isLetterOrDigit))
-
-        // Selecting which type of ID base on initial character type - Letter or Digit
-        if _input.head.isDigit // Splitting between DNI and NIE
-        then DNI.either(_input)
-        else NIE.either(_input)
-        // 12345678! fails outside the left
+    // TODO implement it adding some additional requirements for ergonomics of users:
+    // - Trim the input
+    // - Replace dashes with empty char
+    // - Capitalize the input
+    // If the user add an ID with a dash, with lower case or adds an empty spaces, it will be handled
+    def either(input: String): Either[String, ID] = ???
