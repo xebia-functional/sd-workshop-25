@@ -18,13 +18,10 @@ import domain.rules.*
   * ==Key Features==
   *   - Can only wrap one value
   *   - Creates effectively a new type by masking the underlying type
-  *   - Zero-Cost Abstraction
   *
   * ==Pros of Value Classes==
   *   - Type Safety: Provides compile-time type checking by preventing mixing up different types that share the same
   *     underlying representation
-  *   - Zero-Cost Abstraction: Eliminates the wrapper class at runtime, resulting in no performance overhead compared to
-  *     using the underlying type directly
   *   - Domain Modeling: Helps create more meaningful domain types and makes the code more readable and self-documenting
   *   - Encapsulation: Allows the addition of methods to primitive types without the need for inheritance and keeps
   *     related functionality together within the wrapper class
