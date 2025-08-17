@@ -1,11 +1,11 @@
 //> using target.scope test
 //> using test.dep com.lihaoyi::utest:0.9.0
 
-package proofOfConcept
+package poc
 
 import utest.*
-import proofOfConcept.A_Invariants.*
-import proofOfConcept.B_Rules.requirements.*
+import poc.A_Invariants.*
+import poc.B_Rules.requirements.*
 import scala.util.Try
 
 object C_RulesTest extends TestSuite:

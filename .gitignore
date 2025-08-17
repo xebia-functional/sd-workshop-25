@@ -29,9 +29,9 @@ backend/mill/out
 backend/mill/mill
 
 # scala-cli
-backend/scalaCLI/proofOfConcept/out
-backend/scalaCLI/proofOfConcept/scala-doc
-backend/scalaCLI/proofOfConcept/ScalaCLI.iml
+backend/scalaCLI/poc/out
+backend/scalaCLI/poc/scala-doc
+backend/scalaCLI/poc/ScalaCLI.iml
 
 
 # production

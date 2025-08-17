@@ -1,4 +1,4 @@
-package proofOfConcept
+package poc
 
 /**
  * Codify the invariants of the ID Validator:
