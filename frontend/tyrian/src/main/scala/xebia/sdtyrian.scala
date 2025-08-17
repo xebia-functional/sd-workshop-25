@@ -10,13 +10,8 @@ import scala.scalajs.js.annotation.*
 object sdtyrian extends TyrianIOApp[Msg, Model]:
 
   private val validatorEndpoints: List[(String, String)] = List(
-    ("Class", "class"),
-    ("Type Alias", "type_alias"),
-    ("Value Class", "value_class"),
     ("Value Class + Error Handling", "value_class_error_handling"),
-    ("Opaque Type + Error Handling", "opaque_type_error_handling"),
-    ("Neo Type", "neo_type"),
-    ("Iron", "iron")
+    ("Opaque Type + Error Handling", "opaque_type_error_handling")
   )
 
   def router: Location => Msg =
