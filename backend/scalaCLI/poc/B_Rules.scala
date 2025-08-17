@@ -1,6 +1,6 @@
-package proofOfConcept
+package poc
 
-import proofOfConcept.A_Invariants.*
+import A_Invariants.*
 
 object B_Rules:
 

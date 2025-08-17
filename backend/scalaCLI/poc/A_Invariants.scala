@@ -1,4 +1,4 @@
-package proofOfConcept
+package poc
 
 object A_Invariants:
   // Do NOT change the order of the enumeration.

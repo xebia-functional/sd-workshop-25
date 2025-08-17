@@ -1,8 +1,8 @@
-package proofOfConcept
+package poc
 
-import proofOfConcept.A_Invariants.ControlLetter
-import proofOfConcept.A_Invariants.NieLetter
-import proofOfConcept.B_Rules.requirements.*
+import A_Invariants.ControlLetter
+import A_Invariants.NieLetter
+import B_Rules.requirements.*
 import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
