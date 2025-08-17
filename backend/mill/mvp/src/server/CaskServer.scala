@@ -1,8 +1,5 @@
 package server
 
-import basic.*
-import errorHandling.*
-import libraries.*
 import scala.util.*
 
 object CaskServer extends cask.MainRoutes:
@@ -45,5 +42,7 @@ object CaskServer extends cask.MainRoutes:
       "No info for you Sir.",
       headers = corsHeaders
     )
+    
+  // TODO implement your own endpoint  
 
   initialize()

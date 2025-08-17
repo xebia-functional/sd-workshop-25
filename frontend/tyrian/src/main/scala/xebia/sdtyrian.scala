@@ -9,7 +9,9 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("TyrianApp")
 object sdtyrian extends TyrianIOApp[Msg, Model]:
 
-  private val validatorEndpoints: List[(String, String)] = List()
+  private val validatorEndpoints: List[(String, String)] = List(
+    // TODO include here the endpoints
+  )
 
   def router: Location => Msg =
     Routing.none(Msg.NoOp)
