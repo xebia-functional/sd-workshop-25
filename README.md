@@ -129,6 +129,6 @@ Website: https://com-lihaoyi.github.io/cask/
 Go to the dedicated readme.md files under the following paths:
 - [Tyrian](./frontend/tyrian/README.md)
 - [React](./frontend/react/README.md)
-- [Cask](./backend/mill/minimumViableProduct/README.md)
+- [Cask](backend/mill/mvp/README.md)
 
 You need to run the `cask` server and at least one of the front-ends.

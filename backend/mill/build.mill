@@ -4,7 +4,7 @@ package build
 
 import mill.*, scalalib.*
 
-object minimumViableProduct extends ScalaModule {
+object mvp extends ScalaModule {
   def scalaVersion = "3.7.2"
   def mvnDeps = Seq(
     mvn"com.lihaoyi::cask:0.10.2",
