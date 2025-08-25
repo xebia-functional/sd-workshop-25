@@ -37,45 +37,43 @@ object A_Classes:
 
   private[basic] object DNI:
     def apply(input: String): DNI =
-      val number = input.dropRight(1)
+      requireValidInput(input)
+      val (number, letter) = input.splitAt(8)
       requireValidNumber(number)
       requireValidDniNumber(number)
-      val letter = input.last.toString
       requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidDni(number, _letter)
-      new DNI(number, _letter)
+      val controlLetter = ControlLetter.valueOf(letter)
+      requireValidDni(number, controlLetter)
+      new DNI(number, controlLetter)
 
   private[basic] final class NIE private (nieLetter: NieLetter, nieNumber: String, letter: ControlLetter) extends ID:
     override def formatted: String = s"$nieLetter-$nieNumber-$letter"
 
   private[basic] object NIE:
     def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
+      requireValidInput(input)
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(7)
+      requireValidNieLetter(firstLetter)
       requireValidNumber(number)
       requireValidNieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val _letter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, number, _letter)
-      new NIE(_nieLetter, number, _letter)
+      requireValidControlLetter(secondLetter)
+      val (nieLetter, controlLetter) = (NieLetter.valueOf(firstLetter), ControlLetter.valueOf(secondLetter))
+      requireValidNie(nieLetter, number, controlLetter)
+      new NIE(nieLetter, number, controlLetter)
 
   object ID:
     def apply(input: String): ID =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
 
       // Validating the cleaned input
-      requireValidInput(_input)
+      requireValidInput(sanitizedInput)
 
       // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
+      if sanitizedInput.head.isDigit // Splitting between DNI and NIE
+      then DNI(sanitizedInput)
+      else NIE(sanitizedInput)
