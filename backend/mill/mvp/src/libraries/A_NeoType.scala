@@ -1,6 +1,6 @@
 package libraries
 
-import domain.errors.*
+import domain.rules.*
 import domain.ID
 import domain.invariants.*
 
@@ -8,20 +8,18 @@ import neotype.*
 
 object A_NeoType:
 
-  // Validated Fields: NieNumber and DniNumber
-
   private type NieNumber = NieNumber.Type
   private object NieNumber extends Newtype[String]:
     override inline def validate(nieNumber: String): Boolean | String =
-      if !nieNumber.forall(_.isDigit) then InvalidNumber(nieNumber).cause
-      else if nieNumber.length != 7 then InvalidNieNumber(nieNumber).cause
+      if !nieNumber.forall(_.isDigit) then invalidNumber(nieNumber)
+      else if nieNumber.length != 7 then invalidNieNumber(nieNumber)
       else true
 
   private type DniNumber = DniNumber.Type
   private object DniNumber extends Newtype[String]:
     override inline def validate(dniNumber: String): Boolean | String =
-      if !dniNumber.forall(_.isDigit) then InvalidNumber(dniNumber).cause
-      else if dniNumber.length != 8 then InvalidDniNumber(dniNumber).cause
+      if !dniNumber.forall(_.isDigit) then invalidNumber(dniNumber)
+      else if dniNumber.length != 8 then invalidDniNumber(dniNumber)
       else true
 
   private[libraries] final class DNI private (number: DniNumber, letter: ControlLetter) extends ID:
@@ -29,15 +27,14 @@ object A_NeoType:
 
   private[libraries] object DNI:
     def either(input: String): Either[String, DNI] =
-      val number = input.dropRight(1)
-      val letter = input.last.toString
+      val (number, letter) = input.splitAt(input.length - 1)
       for
         dniNumber <- DniNumber.make(number)
-        controlLetter <- ControlLetter.either(letter).swap.map(_.cause).swap
+        controlLetter <- ControlLetter.either(letter).left.map(_.cause)
         result <- Either.cond(
           dniNumber.unwrap.toInt % 23 == controlLetter.ordinal,
           new DNI(dniNumber, controlLetter),
-          InvalidDni(dniNumber.unwrap, controlLetter).cause
+          invalidDni(dniNumber.unwrap, controlLetter)
         )
       yield result
 
@@ -47,40 +44,30 @@ object A_NeoType:
 
   private[libraries] object NIE:
     def either(input: String): Either[String, NIE] =
-      val nieLetter = input.head.toString
-      val number = input.tail.dropRight(1)
-      val letter = input.last.toString
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(input.length - 2)
       for
-        _nieLetter <- NieLetter.either(nieLetter).swap.map(_.cause).swap
+        nieLetter <- NieLetter.either(firstLetter).left.map(_.cause)
         nieNumber <- NieNumber.make(number)
-        controlLetter <- ControlLetter.either(letter).swap.map(_.cause).swap
+        controlLetter <- ControlLetter.either(secondLetter).left.map(_.cause)
         result <- Either.cond(
-          ((_nieLetter.ordinal * 10000000) + nieNumber.unwrap.toInt) % 23 == controlLetter.ordinal,
-          new NIE(_nieLetter, nieNumber, controlLetter),
-          InvalidNie(_nieLetter, nieNumber.unwrap, controlLetter).cause
+          ((nieLetter.ordinal * 10000000) + nieNumber.unwrap.toInt) % 23 == controlLetter.ordinal,
+          new NIE(nieLetter, nieNumber, controlLetter),
+          invalidNie(nieLetter, nieNumber.unwrap, controlLetter)
         )
       yield result
 
   // Entry point: ID
-
   object ID:
     def either(input: String): Either[String, ID] =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
-      if _input.isEmpty || !_input.forall(_.isLetterOrDigit) then Left(InvalidInput(input).cause)
-      else
-        // Validating the cleaned input
-        require(!_input.isEmpty)
-        println("input " + input)
-        println("_input.forall(_.isLetterOrDigit) " + _input.forall(_.isLetterOrDigit))
-        require(_input.forall(_.isLetterOrDigit))
-
-        // Selecting which type of ID base on initial character type - Letter or Digit
-        if _input.head.isDigit // Splitting between DNI and NIE
-        then DNI.either(_input)
-        else NIE.either(_input)
-        // 12345678! fails outside the left
+      // Validating the cleaned input
+      if sanitizedInput.isEmpty || !sanitizedInput.forall(_.isLetterOrDigit)
+      then Left(invalidInput(input))
+      else if sanitizedInput.head.isDigit
+      then DNI.either(sanitizedInput)
+      else NIE.either(sanitizedInput)

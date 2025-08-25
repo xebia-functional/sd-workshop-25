@@ -37,27 +37,24 @@ object B_TypeAliases:
   private type DniNumber = String
   private object DniNumber:
     def apply(dniNumber: String): DniNumber =
-      val number = Number.apply(dniNumber)
-      requireValidDniNumber(number.toString)
-      number
+      requireValidDniNumber(Number(dniNumber))
+      dniNumber
 
   private type NieNumber = String
   private object NieNumber:
     def apply(nieNumber: String): NieNumber =
-      val number = Number(nieNumber)
-      requireValidNieNumber(number.toString)
-      number
+      requireValidNieNumber(Number(nieNumber))
+      nieNumber
 
   private[basic] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"$dniNumber-$letter"
 
   private[basic] object DNI:
     def apply(input: String): DNI =
-      val number = input.dropRight(1)
-      val dniNumber = DniNumber(number)
-      val letter = input.last.toString
+      requireValidInput(input)
+      val (number, letter) = input.splitAt(8)
       requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
+      val (dniNumber, controlLetter) = (DniNumber(number), ControlLetter.valueOf(letter))
       requireValidDni(dniNumber, controlLetter)
       // new DNI(number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
       new DNI(dniNumber, controlLetter)
@@ -67,31 +64,29 @@ object B_TypeAliases:
 
   private[basic] object NIE:
     def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
-      val nieNumber = NieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, nieNumber, controlLetter)
-      // new NIE(_nieLetter, number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
-      new NIE(_nieLetter, nieNumber, controlLetter)
+      requireValidInput(input)
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(7)
+      requireValidNieLetter(firstLetter)
+      requireValidControlLetter(secondLetter)
+      val (nieLetter, nieNumber, controlLetter) =
+        (NieLetter.valueOf(firstLetter), NieNumber(number), ControlLetter.valueOf(secondLetter))
+      requireValidNie(nieLetter, nieNumber, controlLetter)
+      // new NIE(nieLetter, number, controlLetter) // Compiles, passes tests... but it is actually wrong. Check it out!
+      new NIE(nieLetter, nieNumber, controlLetter)
 
   object ID:
     def apply(input: String): ID =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
 
       // Validating the cleaned input
-      requireValidInput(_input)
+      requireValidInput(sanitizedInput)
 
       // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
+      if sanitizedInput.head.isDigit // Splitting between DNI and NIE
+      then DNI(sanitizedInput)
+      else NIE(sanitizedInput)

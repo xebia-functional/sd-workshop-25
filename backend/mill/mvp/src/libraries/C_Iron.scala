@@ -1,6 +1,6 @@
 package libraries
 
-import domain.errors.*
+import domain.rules.*
 import domain.ID
 import domain.invariants.*
 import io.github.iltotore.iron.*
@@ -32,11 +32,11 @@ object C_Iron:
     def either(validInput: ValidInput): Either[String, DNI] = {
       for
         number <- DniNumber.either(validInput.value.dropRight(1))
-        letter <- ControlLetter.either(validInput.value.last.toUpper.toString).swap.map(_.cause).swap
+        letter <- ControlLetter.either(validInput.value.last.toUpper.toString).left.map(_.cause)
         result <- Either.cond(
           letter.ordinal == number.value.toInt % 23,
           new DNI(number, letter),
-          InvalidDni(number.value, letter).cause
+          invalidDni(number.value, letter)
         )
       yield result
     }
@@ -47,22 +47,22 @@ object C_Iron:
   private[libraries] object NIE:
     def either(validInput: ValidInput): Either[String, NIE] = {
       for
-        nieLetter <- NieLetter.either(validInput.value.head.toUpper.toString).swap.map(_.cause).swap
+        nieLetter <- NieLetter.either(validInput.value.head.toUpper.toString).left.map(_.cause)
         number <- NieNumber.either(validInput.value.tail.dropRight(1))
-        letter <- ControlLetter.either(validInput.value.last.toUpper.toString).swap.map(_.cause).swap
+        letter <- ControlLetter.either(validInput.value.last.toUpper.toString).left.map(_.cause)
         result <- Either.cond(
           letter.ordinal == s"${nieLetter.ordinal}$number".toInt % 23,
           new NIE(nieLetter, number, letter),
-          InvalidNie(nieLetter, number.value, letter).cause
+          invalidNie(nieLetter, number.value, letter)
         )
       yield result
     }
 
   object ID:
     def either(input: String): Either[String, ID] =
-      val _input = input.trim.replace("-", "").toUpperCase
-      ValidInput.either(_input).flatMap { validInput =>
-        if validInput.value.head.isDigit
-        then DNI.either(validInput)
-        else NIE.either(validInput)
-      }
+      ValidInput
+        .either(input.trim.replace("-", "").toUpperCase)
+        .flatMap: validInput =>
+          if validInput.value.head.isDigit
+          then DNI.either(validInput)
+          else NIE.either(validInput)

@@ -61,8 +61,8 @@ object B_OpaqueTypesWithErrorHandling:
 
   private[errorHandling] opaque type NieNumber = String
   private[errorHandling] object NieNumber:
-    def apply(nieNumber: String): Number =
-      requireValidNieNumber(nieNumber)
+    def apply(nieNumber: String): NieNumber =
+      requireValidNieNumber(Number(nieNumber))
       nieNumber
 
     def either(nieNumber: String): Either[FailedValidation, NieNumber] =
@@ -70,15 +70,15 @@ object B_OpaqueTypesWithErrorHandling:
         .either(nieNumber)
         .flatMap: number =>
           Either.cond(
-            number.toString.length == 7,
+            number.length == 7,
             NieNumber(number),
             InvalidNieNumber(number)
           )
 
   private[errorHandling] opaque type DniNumber = String
   private[errorHandling] object DniNumber:
-    def apply(dniNumber: String): Number =
-      requireValidDniNumber(dniNumber)
+    def apply(dniNumber: String): DniNumber =
+      requireValidDniNumber(Number(dniNumber))
       dniNumber
 
     def either(dniNumber: String): Either[FailedValidation, DniNumber] =
@@ -86,7 +86,7 @@ object B_OpaqueTypesWithErrorHandling:
         .either(dniNumber)
         .flatMap: number =>
           Either.cond(
-            number.toString.length == 8,
+            number.length == 8,
             DniNumber(number),
             InvalidDniNumber(number)
           )
@@ -96,17 +96,15 @@ object B_OpaqueTypesWithErrorHandling:
 
   private[errorHandling] object DNI:
     def apply(input: String): DNI =
-      val number = input.dropRight(1)
-      val dniNumber = DniNumber(number)
-      val letter = input.last.toString
+      requireValidInput(input)
+      val (number, letter) = input.splitAt(8)
       requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
+      val (dniNumber, controlLetter) = (DniNumber(number), ControlLetter.valueOf(letter))
       requireValidDni(dniNumber, controlLetter)
       new DNI(dniNumber, controlLetter)
 
     def either(input: String): Either[FailedValidation, DNI] =
-      val number = input.dropRight(1)
-      val letter = input.last.toString
+      val (number, letter) = input.splitAt(input.length - 1)
       for
         dniNumber <- DniNumber.either(number)
         controlLetter <- ControlLetter.either(letter)
@@ -123,25 +121,21 @@ object B_OpaqueTypesWithErrorHandling:
 
   private[errorHandling] object NIE:
     def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
-      val nieNumber = NieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, nieNumber, controlLetter)
-      new NIE(_nieLetter, nieNumber, controlLetter)
+      requireValidInput(input)
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(7)
+      requireValidNieLetter(firstLetter)
+      requireValidControlLetter(secondLetter)
+      val (nieLetter, nieNumber, controlLetter) =
+        (NieLetter.valueOf(firstLetter), NieNumber(number), ControlLetter.valueOf(secondLetter))
+      requireValidNie(nieLetter, nieNumber, controlLetter)
+      new NIE(nieLetter, nieNumber, controlLetter)
 
     def either(input: String): Either[FailedValidation, NIE] =
-      val nieLetter = input.head.toString
-      val number = input.tail.dropRight(1)
-      val letter = input.last.toString
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(input.length - 2)
       for
-        _nieLetter <- NieLetter.either(nieLetter)
+        _nieLetter <- NieLetter.either(firstLetter)
         nieNumber <- NieNumber.either(number)
-        controlLetter <- ControlLetter.either(letter)
+        controlLetter <- ControlLetter.either(secondLetter)
         result <- Either.cond(
           ((_nieLetter.ordinal * 10000000) + nieNumber.toInt) % 23 == controlLetter.ordinal,
           new NIE(_nieLetter, nieNumber, controlLetter),
@@ -152,31 +146,31 @@ object B_OpaqueTypesWithErrorHandling:
   object ID:
     def apply(input: String): ID =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
 
       // Validating the cleaned input
-      requireValidInput(_input)
+      requireValidInput(sanitizedInput)
 
       // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
+      if sanitizedInput.head.isDigit // Splitting between DNI and NIE
+      then DNI(sanitizedInput)
+      else NIE(sanitizedInput)
 
     def either(input: String): Either[FailedValidation, ID] =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
-      if !(_input.length == 9 && _input.forall(_.isLetterOrDigit))
+      if !(sanitizedInput.length == 9 && sanitizedInput.forall(_.isLetterOrDigit))
       then Left(InvalidInput(input))
       else
         // Selecting which type of ID base on initial character type - Letter or Digit
-        if _input.head.isDigit // Splitting between DNI and NIE
-        then DNI.either(_input)
-        else NIE.either(_input)
+        if sanitizedInput.head.isDigit // Splitting between DNI and NIE
+        then DNI.either(sanitizedInput)
+        else NIE.either(sanitizedInput)

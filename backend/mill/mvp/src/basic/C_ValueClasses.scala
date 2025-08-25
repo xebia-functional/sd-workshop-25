@@ -47,27 +47,24 @@ object C_ValueClasses:
   private final class NieNumber(val value: String) extends AnyVal
   private object NieNumber:
     def apply(nieNumber: String): NieNumber =
-      val number = Number(nieNumber)
-      requireValidNieNumber(number.value)
-      new NieNumber(number.value)
+      requireValidNieNumber(Number(nieNumber).value)
+      new NieNumber(nieNumber)
 
   private final class DniNumber(val value: String) extends AnyVal
   private object DniNumber:
     def apply(dniNumber: String): DniNumber =
-      val number = Number(dniNumber)
-      requireValidDniNumber(number.value)
-      new DniNumber(number.value)
+      requireValidDniNumber(Number(dniNumber).value)
+      new DniNumber(dniNumber)
 
   private[basic] final class DNI private (dniNumber: DniNumber, letter: ControlLetter) extends ID:
     override def formatted: String = s"${dniNumber.value}-$letter"
 
   private[basic] object DNI:
     def apply(input: String): DNI =
-      val number = input.dropRight(1)
-      val dniNumber = DniNumber(number)
-      val letter = input.last.toString
+      requireValidInput(input)
+      val (number, letter) = input.splitAt(8)
       requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
+      val (dniNumber, controlLetter) = (DniNumber(number), ControlLetter.valueOf(letter))
       requireValidDni(dniNumber.value, controlLetter)
       new DNI(dniNumber, controlLetter)
 
@@ -76,30 +73,28 @@ object C_ValueClasses:
 
   private[basic] object NIE:
     def apply(input: String): NIE =
-      val nieLetter = input.head.toString
-      requireValidNieLetter(nieLetter)
-      val _nieLetter = NieLetter.valueOf(nieLetter)
-      val number = input.tail.dropRight(1)
-      val nieNumber = NieNumber(number)
-      val letter = input.last.toString
-      requireValidControlLetter(letter)
-      val controlLetter = ControlLetter.valueOf(letter)
-      requireValidNie(_nieLetter, nieNumber.value, controlLetter)
-      new NIE(_nieLetter, nieNumber, controlLetter)
+      requireValidInput(input)
+      val (firstLetter, number, secondLetter) = input.head.toString *: input.tail.splitAt(7)
+      requireValidNieLetter(firstLetter)
+      requireValidControlLetter(secondLetter)
+      val (nieLetter, nieNumber, controlLetter) =
+        (NieLetter.valueOf(firstLetter), NieNumber(number), ControlLetter.valueOf(secondLetter))
+      requireValidNie(nieLetter, nieNumber.value, controlLetter)
+      new NIE(nieLetter, nieNumber, controlLetter)
 
   object ID:
     def apply(input: String): ID =
 
-      // Preprocesing the input
-      val _input =
-        input.trim // Handeling empty spaces around
+      // Preprocessing the input
+      val sanitizedInput =
+        input.trim // Handling empty spaces around
           .replace("-", "") // Removing dashes
           .toUpperCase() // Handling lower case
 
       // Validating the cleaned input
-      requireValidInput(_input)
+      requireValidInput(sanitizedInput)
 
       // Selecting which type of ID base on initial character type - Letter or Digit
-      if _input.head.isDigit // Splitting between DNI and NIE
-      then DNI(_input)
-      else NIE(_input)
+      if sanitizedInput.head.isDigit // Splitting between DNI and NIE
+      then DNI(sanitizedInput)
+      else NIE(sanitizedInput)
