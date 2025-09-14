@@ -1,5 +1,5 @@
 //> using target.scope test
-//> using test.dep com.lihaoyi::utest:0.9.0
+//> using test.dep com.lihaoyi::utest:0.9.1
 
 package poc
 
